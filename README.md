@@ -1,16 +1,29 @@
 # Email Essentials
 A plugin to make WordPress outgoing emails better.
 
-# BREAKING CHANGES:
-
-From version 4.1.0 on, the plugin is fully WP Coding standards compliant and fully Namespaced.
-The side effect is that While versions 4.0.0 - 4.0.2 are backwards compatible; version 4.1.0 is NOT -- IF -- you access the WP_Email_Essentials methods directly.
-
-Please TEST your website with the latest version of WPES locally or on a test-server _BEFORE_ you update your live website.
-
 # Introduction:
 
 The main purpose is to vastly reduce the chances of your emails being marked as spam or being rejected.
+
+This plugin started as a debugging tool to find out why emails were not sent, but has grown into a full-fledged email enhancement plugin.
+
+Please note that this plugin is not meant to replace a full-fledged SMTP plugin, but rather to enhance the email sending capabilities of WordPress.
+If you need to send emails with other protocols than SMTP, this plugin is not for you. You might want to look at plugins like Post SMTP (not affiliated).
+
+And since version 6.0.0, after more than 10 years of development, this plugin is now a FOSS plugin, meaning it is free to use, modify and distribute under the GPLv2 license.
+
+In return, we ask you to support the development of this plugin by contributing to the codebase, reporting bugs, and helping others in the community.
+
+## Responsible disclosure
+
+If you find a vulnerability, please email us at [responsibledisclosure@acato.nl](mailto:responsibledisclosure@acato.nl).
+
+# BREAKING CHANGES:
+
+From version 4.1.0 on, the plugin is fully WP Coding standards compliant and fully Namespaced.
+The side effect is that While versions 4.0.0 - 4.0.2 are backwards compatible; version 4.1.0 is NOT -- IF -- you access the WP_Email_Essentials methods directly. In version 6.0.0 the namespace is changed to `Acato\Email_Essentials` but backward compatibility is available.
+
+Please TEST your website with the latest version of WPES locally or on a test-server _BEFORE_ you update your live website.
 
 # This plugin offers your WP-site...
 * A good From name,
@@ -28,6 +41,7 @@ The main purpose is to vastly reduce the chances of your emails being marked as 
 * Altering destination of certain emails normally addressed to the site-admin,
 * Keeping a history of outgoing emails with their results (for debugging, history is cleared on deactivation of this function),
 * When history is enabled, add a tracker to track correct receipt of emails *1,
+* Add a re-send button for emails in the history, so you can re-send an email that failed to send.
 
 # Important note:
 This tool is created for people that know what to do and why they do it. If you don't know what a feature does, ask for help :)
@@ -36,7 +50,7 @@ This tool is created for people that know what to do and why they do it. If you 
 
 # WordPress Filters:
 
-`wpes_settings`
+`email_essentials_settings`
 
 Parameters:
 - (array) `$settings` The current settings of the plugin.
@@ -46,7 +60,7 @@ Expected return:
 
 ---
 
-`wpes_defaults`
+`email_essentials_defaults`
 
 Parameters:
 - (array) `$defaults` The current default settings of the plugin.
@@ -56,7 +70,7 @@ Expected return:
 
 ---
 
-`wpes_body`
+`email_essentials_body`
 
 Parameters:
 - (string) `$should_be_html` A text that should be html, but might not yet be, your job to make a nice HTML body.
@@ -67,7 +81,7 @@ Expected return:
 
 ---
 
-`wpes_head`
+`email_essentials_head`
 
 Parameters:
 - (string) `$the_head_section` HTML that is the HEAD section of the HTML email.
@@ -78,7 +92,7 @@ Expected return:
 
 ---
 
-`wpes_css`
+`email_essentials_css`
 
 Parameters:
 - (string) `$the_css` CSS for the email (empty by default).
@@ -89,7 +103,7 @@ Expected return:
 
 ---
 
-`wpes_subject`
+`email_essentials_subject`
 
 Parameters:
 - (string) `$the_subject` Subject for the email.

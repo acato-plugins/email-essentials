@@ -80,6 +80,22 @@ $wpes_dkim_identities  = [];
 						</li>
 					<?php } ?>
 				</ul>
+				<strong>
+					<?php print wp_kses_post( __( 'Related settings', 'email-essentials' ) ); ?>
+				</strong>
+				<ul class="toc">
+					<?php
+					$urls = [
+						__( 'Blog settings', 'email-essentials' )      => admin_url( 'options-general.php' ),
+						__( 'Site settings', 'email-essentials' )      => is_multisite() ? network_admin_url( 'settings.php' ) : false,
+						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'wpes-admins', admin_url( 'admin.php' ) ),
+					];
+					$urls = array_filter( $urls );
+					foreach ( $urls as $url_name => $url ) {
+						print '<li><a target="_blank" href="' . esc_attr( $url ) . '">' . esc_html( $url_name ) . '</a></li>';
+					}
+					?>
+				</ul>
 			</div>
 		</div>
 
@@ -565,7 +581,7 @@ $wpes_dkim_identities  = [];
 			<div id="email-queue" class="postbox">
 				<div class="postbox-header">
 					<h2>
-						<?php print wp_kses_post( __( 'Email Throttling', 'email-essentials' ) ); ?>
+						<?php print wp_kses_post( __( 'Email Throttling', 'email-essentials' ) ); ?> <em class="beta"><?php esc_html_e( 'Beta feature', 'email-essentials'); ?> - <?php esc_html_e( 'It works but not without flaws.', 'email-essentials'); ?></em>
 					</h2>
 				</div>
 				<div class="inside">
@@ -1157,57 +1173,40 @@ $wpes_dkim_identities  = [];
 						<?php print wp_kses_post( __( 'Send Test Email', 'email-essentials' ) ); ?>
 					</h2>
 				</div>
+				<?php
+				$blog_admin        = get_option( 'admin_email', false );
+				$site_admin        = is_multisite() ? get_site_option( 'admin_email', false ) : false;
+				$wpes_sample_email = [
+					'to'      => $blog_admin,
+					'subject' => Plugin::dummy_subject(),
+				];
+				$wpes_sample_email = Plugin::alternative_to( $wpes_sample_email );
+				$configured_email  = reset( $wpes_sample_email['to'] );
+				$configured_email  = Plugin::rfc_decode( $configured_email )['email'] ?? false;
+
+				$wpes_recipients = [
+					'The blog administrator: ' . $blog_admin => $blog_admin,
+					'The site administrator: ' . $site_admin => $site_admin,
+				];
+				$wpes_recipients = array_filter( $wpes_recipients );
+				if ( ! in_array( $configured_email, $wpes_recipients ) ) {
+					$wpes_recipients[ 'Configured recipient: ' . $configured_email ] = $configured_email;
+				}
+
+				$wpes_last_test_sent_to = get_option( 'wpes_last_test_sent_to', reset( $wpes_recipients ) );
+
+				$wpes_senders = [];
+				// Add 'default' as set in the settings.
+				$wpes_senders[ 'Default from email: ' . $wpes_config['from_email'] ] = $wpes_config['from_email'];
+				// Add the others, as determined at 'To'.
+				$wpes_senders = array_merge( $wpes_senders, $wpes_recipients );
+				// Check the last one used.
+				$wpes_last_test_sent_from = get_option( 'wpes_last_test_sent_from', reset( $wpes_recipients ) );
+				?>
 				<div class="inside cols">
-					<div class="inside col">
-						<strong><?php esc_html_e( 'Send test-email to:', 'email-essentials' ); ?></strong>
-						<?php
-
-						$blog_admin        = get_option( 'admin_email', false );
-						$site_admin        = is_multisite() ? get_site_option( 'admin_email', false ) : false;
-						$wpes_sample_email = [
-							'to'      => $blog_admin,
-							'subject' => Plugin::dummy_subject(),
-						];
-						$wpes_sample_email = Plugin::alternative_to( $wpes_sample_email );
-						$configured_email  = reset( $wpes_sample_email['to'] );
-						$configured_email  = Plugin::rfc_decode( $configured_email )['email'] ?? false;
-
-						$wpes_recipients = [
-							'The blog administrator: ' . $blog_admin => $blog_admin,
-							'The site administrator: ' . $site_admin => $site_admin,
-						];
-						$wpes_recipients = array_filter( $wpes_recipients );
-						if ( ! in_array( $configured_email, $wpes_recipients ) ) {
-							$wpes_recipients[ 'Configured recipient: ' . $configured_email ] = $configured_email;
-						}
-
-						$wpes_last_test_sent_to = get_option( 'wpes_last_test_sent_to', reset( $wpes_recipients ) );
-
-						foreach ( $wpes_recipients as $wpes_recipient_name => $wpes_recipient_email ) {
-							$wpes_checked = $wpes_last_test_sent_to === $wpes_recipient_email ? 'checked' : '';
-							print '<label><input type="radio" name="send-test-email-to" value="' . esc_attr( $wpes_recipient_email ) . '" ' . esc_attr( $wpes_checked ) . '/>' . esc_html( $wpes_recipient_name ) . '</label>';
-						}
-
-						$urls = [
-							__( 'Blog settings', 'email-essentials' )      => admin_url( 'options-general.php' ),
-							__( 'Site settings', 'email-essentials' )      => is_multisite() ? network_admin_url( 'settings.php' ) : false,
-							__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'wpes-admins', admin_url( 'admin.php' ) ),
-						];
-						$urls = array_filter( $urls );
-						?>
-						<em><?php esc_html_e( 'This setting will allow you to test the "Alternative Admins" settings.', 'email-essentials' ); ?></em>
-					</div>
 					<div class="inside col">
 						<strong><?php esc_html_e( 'Send test-email from:', 'email-essentials' ); ?></strong>
 						<?php
-						$wpes_senders = [];
-						// Add 'default' as set in the settings.
-						$wpes_senders[ 'Default from email: ' . $wpes_config['from_email'] ] = $wpes_config['from_email'];
-						// Add the others, as determined at 'To'.
-						$wpes_senders = array_merge( $wpes_senders, $wpes_recipients );
-						// Check the last one used.
-						$wpes_last_test_sent_from = get_option( 'wpes_last_test_sent_from', reset( $wpes_recipients ) );
-
 						foreach ( $wpes_senders as $wpes_sender_name => $wpes_sender_email ) {
 							$wpes_checked = $wpes_last_test_sent_from === $wpes_sender_email ? 'checked' : '';
 							print '<label><input type="radio" name="send-test-email-from" value="' . esc_attr( $wpes_sender_email ) . '" ' . esc_attr( $wpes_checked ) . '/>' . esc_html( $wpes_sender_name ) . '</label>';
@@ -1215,19 +1214,22 @@ $wpes_dkim_identities  = [];
 						?>
 						<em><?php esc_html_e( 'This setting will allow you to test the sender-replacement setting. Depending on your settings above, the chosen address will either be the actual sender-address, or the reply-to address.', 'email-essentials' ); ?></em>
 					</div>
+					<div class="inside col">
+						<strong><?php esc_html_e( 'Send test-email to:', 'email-essentials' ); ?></strong>
+						<?php
+						foreach ( $wpes_recipients as $wpes_recipient_name => $wpes_recipient_email ) {
+							$wpes_checked = $wpes_last_test_sent_to === $wpes_recipient_email ? 'checked' : '';
+							print '<label><input type="radio" name="send-test-email-to" value="' . esc_attr( $wpes_recipient_email ) . '" ' . esc_attr( $wpes_checked ) . '/>' . esc_html( $wpes_recipient_name ) . '</label>';
+						}
+						?>
+						<em><?php esc_html_e( 'This setting will allow you to test the "Alternative Admins" settings.', 'email-essentials' ); ?></em>
+					</div>
 				</div>
 				<div class="inside">
 					<input
 						type="submit" name="op"
 						value="<?php print  esc_attr__( 'Send sample mail', 'email-essentials' ); ?>"
 						class="button-secondary action"/>
-					<?php
-					print '<em><strong>Settings panels:</strong>';
-					foreach ( $urls as $url_name => $url ) {
-						print '<br /><a href="' . esc_attr( $url ) . '">' . esc_html( $url_name ) . '</a>';
-					}
-					print '</em>';
-					?>
 				</div>
 
 				<?php if ( Plugin::$debug ) { ?>
