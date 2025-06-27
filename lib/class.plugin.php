@@ -1237,14 +1237,11 @@ class Plugin {
 			$entry['host']         = $entry['name'] ?? $hostname;
 			$ip                    = $entry['data'] ?? '';
 			$return_type           = strtolower( $return_type );
-			$entry[ $return_type ] = trim( $entry['data'] ?? '', '" ' );
+			$entry[ $return_type ] = trim( $entry['data'] ?? '' );
 			$quote                 = substr( $entry['data'], 0, 1 );
 			if ( $quote === '"' ) {
-				// Remove quotes from the start and end of the data.
-				$data = $entry['data'];
-				// Remove line split mark.
-				$data                  = str_replace( "$quote $quote", '', $data );
-				$entry[ $return_type ] = trim( trim( $data, $quote ), $quote );
+				$entry[ $return_type ] = str_replace( "$quote $quote", '', $entry[ $return_type ] );
+				$entry[ $return_type ] = trim( $entry[ $return_type ], $quote );
 			}
 			if ( IP::is_6( $ip ) ) {
 				$entry['ipv6'] = $ip;
