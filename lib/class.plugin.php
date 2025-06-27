@@ -20,7 +20,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const SLUG = 'wp-email-essentials/wp-email-essentials.php';
+	const SLUG = 'email-essentials/email-essentials.php';
 
 	const IP_SERVICE  = 'https://ip.acato.nl';
 	const IP4_SERVICE = 'https://ip4.acato.nl';
