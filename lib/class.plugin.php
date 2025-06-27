@@ -22,24 +22,6 @@ class Plugin {
 	 */
 	const SLUG = 'email-essentials/email-essentials.php';
 
-	const IP_SERVICE  = 'https://ip.acato.nl';
-	const IP4_SERVICE = 'https://ip4.acato.nl';
-	const IP6_SERVICE = 'https://ip6.acato.nl';
-
-	/**
-	 * RegExp to validate IPv4
-	 *
-	 * @const string
-	 */
-	const REGEXP_IP4 = '/^(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/';
-
-	/**
-	 * RegExp to validate IPv6
-	 *
-	 * @const string
-	 */
-	const REGEXP_IP6 = '(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]+|::(ffff(:0{1,4})?:)?((25[0-5]|(2[0-4]|1?\d)?\d)\.){3}(25[0-5]|(2[0-4]|1?\d)?\d)|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1?\d)?\d)\.){3}(25[0-5]|(2[0-4]|1?\d)?\d))';
-
 	/**
 	 * Holds a message to show in the admin panel.
 	 *
@@ -638,96 +620,6 @@ class Plugin {
 	 * @return string
 	 */
 	public static function get_spf( $email, $fix = false, $as_html = false ) {
-		return self::get_spf_v2( $email, $fix, $as_html );
-	}
-
-	/**
-	 * Get SPF record for the domain of the email given.
-	 *
-	 * @param string $email   The email address.
-	 * @param bool   $fix     If true; give a fixed SPF record.
-	 * @param bool   $as_html If true, return as richly formatted HTML.
-	 *
-	 * @return string
-	 */
-	public static function get_spf_v1( $email, $fix = false, $as_html = false ) {
-		static $lookup;
-		if ( ! $lookup ) {
-			$lookup = [];
-		}
-
-		$sending_domain = self::get_domain( $email );
-		if ( '' === $sending_domain ) {
-			return false; // invalid email.
-		}
-		$sending_server = self::get_sending_ip();
-		// we assume here that everything NOT IP4 is IP6. This will do for now, but ...
-		// @phpcs:ignore Generic.Commenting.Todo.TaskFound
-		// todo: actual ip6 check!.
-		$ip               = preg_match( '/^\d+\.\d+\.\d+\.\d+$/', trim( $sending_server ) ) ? 'ip4' : 'ip6';
-		$sending_server_4 = false; // only set if ipv6 in use.
-		if ( 'ip6' === $ip ) {
-			$sending_server_4 = self::get_sending_ip( true );
-		}
-
-		if ( ! isset( $lookup[ $sending_domain ] ) ) {
-			$dns = self::dns_get_record( $sending_domain, DNS_TXT );
-			foreach ( $dns as $record ) {
-				if ( false !== strpos( $record['txt'], 'v=spf1' ) ) {
-					$lookup[ $sending_domain ] = $record['txt'];
-					break;
-				}
-			}
-		}
-
-		if ( ! isset( $lookup[ $sending_domain ] ) ) {
-			$lookup[ $sending_domain ] = '';
-		}
-
-		$spf = $lookup[ $sending_domain ];
-
-		if ( $fix ) {
-			if ( ! $spf ) {
-				$spf = 'v=spf1 a mx ~all';
-			}
-
-			// insert.
-			$spf      = explode( ' ', str_replace( 'include:', 'include: ', $spf ) );
-			$position = in_array( 'mx', $spf, true ) ? array_search( 'mx', $spf, true ) + 1 : false;
-			$position = false !== $position ? $position : ( in_array( 'a', $spf, true ) ? array_search( 'a', $spf, true ) + 1 : false );
-			$position = false !== $position ? $position : ( in_array( 'include:', $spf, true ) ? array_search( 'include:', $spf, true ) - 1 : false );
-			$position = false !== $position ? $position : ( in_array( 'v=spf1', $spf, true ) ? array_search( 'v=spf1', $spf, true ) + 1 : false );
-
-			array_splice( $spf, $position, 0, $ip . ':' . $sending_server );
-			if ( $sending_server_4 ) {
-				array_splice( $spf, $position, 0, 'ip4:' . $sending_server_4 );
-			}
-			$spf = str_replace( 'include: ', 'include:', implode( ' ', $spf ) );
-		}
-
-		if ( $as_html ) {
-			$spf = $spf ? $sending_domain . '. IN TXT ' . $spf : '<span class="error">no spf-record available</span>';
-
-			$color = $fix ? 'red' : 'green';
-			$spf   = str_replace( $ip . ':' . $sending_server, '<strong style="color:' . $color . ';">' . $ip . ':' . $sending_server . '</strong>', $spf );
-			if ( $sending_server_4 ) {
-				$spf = str_replace( 'ip4:' . $sending_server_4, '<strong style="color:' . $color . ';">ip4:' . $sending_server_4 . '</strong>', $spf );
-			}
-		}
-
-		return $spf;
-	}
-
-	/**
-	 * Get SPF record for the domain of the email given.
-	 *
-	 * @param string $email   The email address.
-	 * @param bool   $fix     If true; give a fixed SPF record.
-	 * @param bool   $as_html If true, return as richly formatted HTML.
-	 *
-	 * @return string
-	 */
-	public static function get_spf_v2( $email, $fix = false, $as_html = false ) {
 		static $lookup;
 		if ( ! $lookup ) {
 			$lookup = [];
@@ -743,10 +635,10 @@ class Plugin {
 		$sending_server   = self::get_sending_ip();
 		$sending_server_4 = false;
 		switch ( true ) {
-			case (bool) preg_match( self::REGEXP_IP4, trim( $sending_server ) ):
+			case (bool) filter_var( trim( $sending_server ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ):
 				$ip = 'ip4';
 				break;
-			case (bool) preg_match( self::REGEXP_IP6, trim( $sending_server ) ):
+			case (bool) filter_var( trim( $sending_server ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ):
 				$ip = 'ip6';
 				// Also get IPv4.
 				$sending_server_4 = self::get_sending_ip( true );
@@ -903,6 +795,25 @@ class Plugin {
 	 * @return string
 	 */
 	public static function get_sending_ip( $force_ip4 = false ) {
+		$sender_is_localhost = false;
+		if ( 'definitely' === self::sender_validation_works() ) {
+			$sender_is_localhost = true;
+		}
+
+		if ( ! $sender_is_localhost ) {
+			// Get an IP for the configured SMTP server.
+			$smtp_server = self::get_config()['smtp']['host'] ?? '';
+			// This cannot be empty, because sender_validation_works() would have returned 'definitely' if it was.
+			self::start_ip_trace();
+			$remote_ip = self::dns_get_record_with_recurse( $smtp_server, $force_ip4 ? DNS_A | DNS_CNAME : DNS_AAAA | DNS_A | DNS_CNAME );
+			$trace     = self::get_ip_trace();
+			$tail      = end( $trace );
+			// Clean the trace.
+			self::start_ip_trace();
+
+			return $remote_ip;
+		}
+
 		static $sending_ip;
 		if ( ! $sending_ip ) {
 			$sending_ip = [];
@@ -914,35 +825,17 @@ class Plugin {
 		$url = admin_url( 'admin-ajax.php' );
 		$ip  = false; // start with unknown.
 
-		$ipv4_validation_regex = self::REGEXP_IP4;
-
 		/**
 		 * Services:
 		 *
-		 * Service hostname: ip4.me             ; single-stack ip report, will always report ipv4.
-		 * Service hostname: ip6.me             ; dual-stack ip report, will report ipv6 if possible, ipv4 otherwise.
-		 * Service hostname: self::IP_SERVICE   ; dual-stack ip report, will report ipv6 if possible, ipv4 otherwise. (see above).
-		 * Service hostname: self::IP4_SERVICE  ; single-stack ip report, will always report ipv4. (see above).
-		 * Service hostname: watismijnip.nl     ; dual-stack ip report, will report ipv6 if possible, ipv4 otherwise.
+		 * Will use a defined service ($see self::get_ip_service()) to get the IP address.
+		 * Will use a callback to the website itself, if a service is unavailable.
 		 */
-		if ( ! $ip && $force_ip4 ) {
+		$ipv4_service = self::get_ip_service( 'ipv4' );
+		if ( ! $ip && $force_ip4 && $ipv4_service ) {
 			$ip = wp_remote_retrieve_body(
 				wp_remote_get(
-					'http://ip4.me',
-					[
-						'httpversion' => '1.1',
-						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
-						'user-agent'  => $_SERVER['HTTP_USER_AGENT'] ?? sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
-					]
-				)
-			);
-			preg_match( $ipv4_validation_regex, $ip, $part );
-			$ip = $part[0] ?? false;
-		}
-		if ( ! $ip && $force_ip4 ) {
-			$ip = wp_remote_retrieve_body(
-				wp_remote_get(
-					self::IP4_SERVICE,
+					$ipv4_service,
 					[
 						'httpversion' => '1.1',
 						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
@@ -950,19 +843,14 @@ class Plugin {
 					]
 				)
 			);
-			preg_match( $ipv4_validation_regex, $ip, $part );
-			$ip = $part[0] ?? false;
+			$ip = filter_var( trim( $ip ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
 		}
-		if ( ! $ip ) {
-			$ip = wp_remote_retrieve_body( wp_remote_get( $url . '?action=wpes_get_ip' ) );
-			if ( ! preg_match( '/^[0-9A-Fa-f.:]$/', $ip ) ) {
-				$ip = false;
-			}
-		}
-		if ( ! $ip ) {
+
+		$dual_stack_service = self::get_ip_service( 'dual-stack' ) ?: self::get_ip_service( 'ipv6' ) ?: self::get_ip_service( 'ipv4' );
+		if ( ! $ip && $dual_stack_service ) {
 			$ip = wp_remote_retrieve_body(
 				wp_remote_get(
-					self::IP_SERVICE,
+					$dual_stack_service,
 					[
 						'httpversion' => '1.1',
 						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
@@ -974,34 +862,18 @@ class Plugin {
 				$ip = false;
 			}
 		}
+
+		// If we have no IP yet, try to get it from the website itself.
 		if ( ! $ip ) {
-			$ip = wp_remote_retrieve_body(
-				wp_remote_get(
-					'http://watismijnip.nl',
-					[
-						'httpversion' => '1.1',
-						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
-						'user-agent'  => $_SERVER['HTTP_USER_AGENT'] ?? 'CLI',
-					]
-				)
-			);
-			preg_match( '/Uw IP-Adres: <b>([.:0-9A-Fa-f]+)/', $ip, $part );
-			$ip = $part[1];
+			$ip = wp_remote_retrieve_body( wp_remote_get( $url . '?action=wpes_get_ip' ) );
+
+			$ip_type_filter = $force_ip4 ? FILTER_FLAG_IPV4 : ( FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4 );
+			if ( ! filter_var( trim( $ip ), FILTER_VALIDATE_IP, $ip_type_filter ) ) {
+				$ip = false;
+			}
 		}
-		if ( ! $ip ) {
-			$ip = wp_remote_retrieve_body(
-				wp_remote_get(
-					'http://ip6.me',
-					[
-						'httpversion' => '1.1',
-						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
-						'user-agent'  => $_SERVER['HTTP_USER_AGENT'] ?? sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
-					]
-				)
-			);
-			preg_match( '/>([.:0-9A-Fa-f]+)</', $ip, $part );
-			$ip = $part[1];
-		}
+
+		// If all else fails, use the configured server address.
 		if ( ! $ip ) {
 			$ip = $_SERVER['SERVER_ADDR'];
 		}
@@ -1009,6 +881,36 @@ class Plugin {
 		$sending_ip[ $ipkey ] = $ip;
 
 		return $sending_ip[ $ipkey ];
+	}
+
+	/**
+	 * Get the sending IP addresses, list all IPs found.
+	 *
+	 * @return array
+	 */
+	public static function get_sending_ips() {
+		$sender_is_localhost = false;
+		if ( 'definitely' === self::sender_validation_works() ) {
+			$sender_is_localhost = true;
+		}
+		if ( $sender_is_localhost ) {
+			return array_values(
+				array_unique(
+					array_filter(
+						[
+							self::get_sending_ip(),
+							self::get_sending_ip( true ),
+						]
+					)
+				)
+			);
+		}
+
+		self::start_ip_trace();
+		$smtp_server = self::get_config()['smtp']['host'] ?? '';
+		$remote_ips  = self::dns_get_record_with_recurse( $smtp_server, DNS_AAAA | DNS_A | DNS_CNAME, true );
+
+		return array_unique( $remote_ips );
 	}
 
 	/**
@@ -1116,18 +1018,7 @@ class Plugin {
 	 */
 	public static function dns_get_record( $lookup, $filter, $single_output = null ) {
 		// pre-filter; these tlds can never have SPF or other special records.
-		$local_tlds = apply_filters(
-			'email_essentials_local_tlds',
-			Plugin::apply_filters_deprecated(
-				'wpes_local_tlds',
-				[
-					[ 'local', 'test', ],
-				],
-				'5.0.0',
-				'email_essentials_local_tlds'
-			),
-			[ 'local', 'test' ]
-		);
+		$local_tlds = apply_filters( 'wpes_local_tlds', [ 'local', 'test' ] );
 		$local_tlds = array_filter( array_unique( $local_tlds ) );
 		if ( [] !== $local_tlds ) {
 			$local_tlds = array_map( 'preg_quote', $local_tlds, [ '/' ] );
@@ -1160,6 +1051,65 @@ class Plugin {
 	}
 
 	/**
+	 * DNS lookup; will do IPv4, IPv6 and CNAME lookups, will recurse CNAME lookups.
+	 * Will return the first IP found.
+	 *
+	 * @param string $lookup The domain to lookup.
+	 * @param int    $filter A DNS_* constant indicating which records you are looking for, DNS_A, DNS_AAAA or DNS_CNAME are allowed.
+	 * @param bool   $all    If true, will return all records found, not just the first one.
+	 *
+	 * @return string|string[]|false An IP address, either IPv4 or IPv6, whichever is found first.
+	 */
+	public static function dns_get_record_with_recurse( $lookup, $filter = DNS_A | DNS_AAAA | DNS_CNAME, $all = false ) {
+		$return_values = [];
+		if ( ( $filter & DNS_AAAA ) === DNS_AAAA ) {
+			$ipv6 = self::dns_get_record( $lookup, DNS_AAAA );
+			foreach ( $ipv6 as $record ) {
+				if ( filter_var( $record['ipv6'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+					self::ip_trace_step( $record['ipv6'] );
+
+					if ( $all ) {
+						$return_values[] = $record['ipv6'];
+					} else {
+						return $record['ipv6'];
+					}
+				}
+			}
+		}
+		if ( ( $filter & DNS_A ) === DNS_A ) {
+			$ipv4 = self::dns_get_record( $lookup, DNS_A );
+			foreach ( $ipv4 as $record ) {
+				if ( filter_var( $record['ip'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+					self::ip_trace_step( $record['ip'] );
+
+					if ( $all ) {
+						$return_values[] = $record['ip'];
+					} else {
+						return $record['ip'];
+					}
+				}
+			}
+		}
+		if ( ( $filter & DNS_CNAME ) === DNS_CNAME ) {
+			$cname = self::dns_get_record( $lookup, DNS_CNAME );
+			foreach ( $cname as $record ) {
+				$lookup = $record['cname'];
+				self::ip_trace_step( $lookup );
+				$result = self::dns_get_record_with_recurse( $lookup, $filter );
+				if ( $result ) {
+					if ( $all ) {
+						$return_values = array_merge( $return_values, (array) $result );
+					} else {
+						return $result;
+					}
+				}
+			}
+		}
+
+		return $all ? $return_values : false;
+	}
+
+	/**
 	 * Wrapper for dns_get_record, with Cloudflare DoH as first option, php dns_get_record as fallback, if available.
 	 *
 	 * @param string $hostname The hostname to lookup.
@@ -1176,7 +1126,7 @@ class Plugin {
 			$returnA = self::_dns_get_record_cfdoh( $hostname, DNS_A );
 			try {
 				$returnAAAA = self::_dns_get_record_cfdoh( $hostname, DNS_AAAA );
-			} catch ( Exception $e ) {
+			} catch ( \Exception $e ) {
 				error_log( json_encode( $e ) );
 			}
 			$return = array_merge( (array) $returnA, (array) ( $returnAAAA ?? [] ) );
@@ -1191,7 +1141,7 @@ class Plugin {
 				$returnA = dns_get_record( $hostname, DNS_A );
 				try {
 					$returnAAAA = dns_get_record( $hostname, DNS_AAAA );
-				} catch ( Exception $e ) {
+				} catch ( \Exception $e ) {
 					error_log( json_encode( $e ) );
 				}
 				$return = array_merge( (array) $returnA, (array) ( $returnAAAA ?? [] ) );
@@ -1212,6 +1162,13 @@ class Plugin {
 	 * @return array
 	 */
 	private static function _dns_get_record_cfdoh( $hostname, $type = DNS_ANY ) {
+
+		$is_wildcard          = 0 === strpos( $hostname, '*.' );
+		$wildcard_hostname    = explode( '.', $hostname ?? '' ) ?: [];
+		$wildcard_hostname[0] = '*';
+		$wildcard_hostname    = implode( '.', $wildcard_hostname );
+		$hostname             = trim( $hostname, '.' ) . '.';
+
 		$php_to_cf_type   = [
 			DNS_A     => 'A',
 			DNS_AAAA  => 'AAAA',
@@ -1233,7 +1190,17 @@ class Plugin {
 			28 => 'AAAA',
 		];
 		$cf_type          = $php_to_cf_type[ $type ] ?? 'ANY';
-		$result           = wp_remote_get(
+
+		if ( 'ANY' === $cf_type ) {
+			$results = [];
+			foreach ( array_keys( $php_to_cf_type ) as $DNS_TYPE ) {
+				$results = array_merge( $results, dns_get_record( $hostname, $DNS_TYPE ) ?: [] );
+			}
+
+			return $results;
+		}
+
+		$result = wp_remote_get(
 			'https://cloudflare-dns.com/dns-query?name=' . $hostname . '&type=' . $cf_type,
 			[
 				'timeout' => 5,
@@ -1244,21 +1211,21 @@ class Plugin {
 			]
 		);
 		if ( is_wp_error( $result ) ) {
-			return [];
+			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
 		}
 		$result = wp_remote_retrieve_body( $result );
 		if ( ! $result ) {
-			return [];
+			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
 		}
 		$result = json_decode( $result, true );
 		if ( ! $result ) {
-			return [];
+			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
 		}
 		$answer = $result['Answer'] ?? [];
 		if ( ! $answer ) {
-			return [];
+			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
 		}
-		$return = array();
+		$return = [];
 		foreach ( $answer as $entry ) {
 			$entry                 = array_change_key_case( $entry, CASE_LOWER );
 			$return_type           = $entry['type'] ?? 0;
@@ -1271,6 +1238,14 @@ class Plugin {
 			$ip                    = $entry['data'] ?? '';
 			$return_type           = strtolower( $return_type );
 			$entry[ $return_type ] = trim( $entry['data'] ?? '', '" ' );
+			$quote                 = substr( $entry['data'], 0, 1 );
+			if ( $quote === '"' ) {
+				// Remove quotes from the start and end of the data.
+				$data = $entry['data'];
+				// Remove line split mark.
+				$data                  = str_replace( "$quote $quote", '', $data );
+				$entry[ $return_type ] = trim( trim( $data, $quote ), $quote );
+			}
 			if ( IP::is_6( $ip ) ) {
 				$entry['ipv6'] = $ip;
 			} else {
@@ -1279,7 +1254,7 @@ class Plugin {
 			$return[] = $entry;
 		}
 
-		return $return;
+		return $return || $is_wildcard ? $return : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
 	}
 
 	/**
@@ -3273,7 +3248,7 @@ Item 2
 			return;
 		}
 		$notices[] = sprintf( __( 'Email Essentials detected the use of deprecated functions or classes', 'email-essentials' ) );
-		$notices = array_reverse( $notices );
+		$notices   = array_reverse( $notices );
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
 			$notices[] = sprintf( __( 'Debug Logging is enabled in your site, please check the log for more information.', 'email-essentials' ) );
 		} else {
@@ -3311,5 +3286,102 @@ Item 2
 			});
 		</script>
 		<?php
+	}
+
+	private static $ip_trace = [];
+
+	public static function start_ip_trace() {
+		self::$ip_trace = [];
+	}
+
+	public static function ip_trace_step( $value ) {
+		self::$ip_trace[] = $value;
+	}
+
+	public static function get_ip_trace() {
+		return self::$ip_trace;
+	}
+
+	/**
+	 * Check if the sender validation works.
+	 *
+	 * @return string enumeration of 'definitely', 'maybe', 'nope'.
+	 */
+	public static function sender_validation_works() {
+		$config         = self::get_config();
+		$wpes_smtp_host = $config['smtp']['host'] ?? false;
+		if ( empty( $wpes_smtp_host ) ) {
+			// no SMTP host, so we assume it works.
+			return 'definitely';
+		}
+		if ( self::this_resolves_to_localhost( $wpes_smtp_host ) ) {
+			// this is localhost, so we assume it works.
+			return 'definitely';
+		}
+
+		// this is not localhost, but if it resolves, we can return a "maybe".
+		if ( ( $ip = self::dns_get_record( $wpes_smtp_host, DNS_A | DNS_AAAA, true ) ) && filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			// this is not localhost, but it resolves to a valid IP address.
+			// The SPF check should also use that IP address for validation.
+			return 'maybe';
+		}
+
+		// this is not localhost, and it does not resolve to a valid IP address.
+		return 'nope';
+	}
+
+	public static function this_resolves_to_localhost( $host ) {
+		$host = trim( $host );
+		if ( empty( $host ) ) {
+			return false;
+		}
+		self::ip_trace_step( $host );
+		if ( 'localhost' === $host ) {
+			return true;
+		}
+		if ( filter_var( $host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) === '127.0.0.1' ) {
+			return true;
+		}
+		if ( filter_var( $host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) === '::1' ) {
+			return true;
+		}
+
+		if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+			// this is an IP address, but it is not localhost as defined above.
+			// so we assume it is not localhost.
+			return false;
+		}
+
+		// this is a domain name, so we need to resolve it.
+		$ip = self::dns_get_record_with_recurse( $host );
+		if ( $ip ) {
+			return self::this_resolves_to_localhost( $ip );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get a remote address for an IP service. You can override with filter `email_essentials_ip_service` with parameter $type, or `email_essentials_ip_services` to change the array of services.
+	 *
+	 * @param string $type Enum ('ipv4', 'ipv6', 'dual-stack').
+	 *                     ipv4 service should always return IPv4 or blank string/no data in case of failure.
+	 *                     ipv6 service should always return IPv6 or blank string/no data in case of failure.
+	 *                     dual-stack service should return both IPv6 if available, IPv4 if not.
+	 *                     no service should return more than one IP address.
+	 *                     The default service is `ip.acato.nl`, please see the readme for setting-up your own service.
+	 *
+	 * @return string
+	 */
+	private static function get_ip_service( $type ) {
+		$services = [
+			'ipv4'       => 'https://ip4.acato.nl',
+			'ipv6'       => 'https://ip6.acato.nl',
+			'dual-stack' => 'https://ip.acato.nl',
+		];
+
+		$services = apply_filters( 'email_essentials_ip_services', $services );
+
+		return apply_filters( 'email_essentials_ip_service', $services[ $type ] ?? '', $type );
 	}
 }

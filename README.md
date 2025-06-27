@@ -112,6 +112,45 @@ Parameters:
 Expected return:
 - (string) The (altered) Subject.
 
+---
+
+`email_essentials_ip_services`
+
+Parameters:
+- (array) `$services` The current list of IP services used to determine the sender's IP address.
+
+The services must be keyed with `ipv4`, `ipv6` and `dual-stack`. The values must be URLs that return the IP address in plain text.
+The dual-stack service should return an IPv6 address if available, otherwise an IPv4 address, never both.
+
+You can set-up your own service like this;
+
+- You will need a webserver that can run PHP, and you need a DNS service that allows you to manually add records.
+- You will need three webspaces, for example; ipv4.myservice.com, ipv6.myservice.com and dual-stack.myservice.com.
+    - You could use the same webspace for all three, but you will still need three subdomains on the service.
+- For the ipv4 subdomain, ONLY register an A record, pointing to the webserver's IP address.
+- For the ipv6 subdomain, ONLY register an AAAA record, pointing to the webserver's IPv6 address.
+- For the dual-stack subdomain, register both an A and an AAAA record, pointing to the webserver's IP addresses.
+- Create a file called `index.php` in each of the webspaces with the following content:
+
+```php
+<?php
+header('Content-Type: text/plain');
+print $_SERVER['REMOTE_ADDR'];
+```
+
+That's it. You can now use these services in the plugin settings like this;
+
+```php
+add_filter('email_essentials_ip_services', 'my_custom_ip_services');
+function my_custom_ip_services($services) {
+    // Add your custom services here
+    $services['ipv4'] = 'https://ipv4.myservice.com';
+    $services['ipv6'] = 'https://ipv6.myservice.com';
+    $services['dual-stack'] = 'https://dual-stack.myservice.com';
+    return $services;
+}
+```
+
 # Changelog:
 
 6.0.0: [ VERY VERY SOON ] GOING FOSS! This is the first release of Email Essentials as a FOSS plugin.
