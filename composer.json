@@ -1,21 +1,4 @@
 {
-  "name": "acato/wp-email-essentials",
-  "type": "wordpress-plugin",
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packagist.acato.nl"
-    }
-  ],
-  "require-dev": {
-    "acato/wp-pre-commit-hook": "*",
-    "composer/installers": "~1.0"
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/installers": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true,
-      "acato/wp-pre-commit-hook": true
-    }
-  }
+  "name": "acato/email-essentials",
+  "type": "wordpress-plugin"
 }
