@@ -7,7 +7,7 @@ The main purpose is to vastly reduce the chances of your emails being marked as 
 
 This plugin started as a debugging tool to find out why emails were not sent, but has grown into a full-fledged email enhancement plugin.
 
-Please note that this plugin is not meant to replace a full-fledged SMTP plugin, but rather to enhance the email sending capabilities of WordPress.
+Please note that this plugin is not a "we support any type of transport" Email plugin. For other protocols than SMTP, but rather to enhance the email sending capabilities of WordPress.
 If you need to send emails with other protocols than SMTP, this plugin is not for you. You might want to look at plugins like Post SMTP (not affiliated).
 
 And since version 6.0.0, after more than 10 years of development, this plugin is now a FOSS plugin, meaning it is free to use, modify and distribute under the GPLv2 license.
@@ -26,22 +26,23 @@ The side effect is that While versions 4.0.0 - 4.0.2 are backwards compatible; v
 Please TEST your website with the latest version of WPES locally or on a test-server _BEFORE_ you update your live website.
 
 # This plugin offers your WP-site...
-* A good From name,
-* A good From email address,
-* The correct envelope-from e-mail address,
-* Reformatting as HTML, if needed, with proper plain text alternative,
-* process shortcodes,
-* UTF8-recoding,
-* filters for adding CSS, header, footer and body template,
-* convert CSS to inline styles for better support in tools like GMail, Outlook Online, Hotmail etc.),
-* SMTP configuration,
-* Send emails with multiple addressees as separate emails (less spammy),
-* S/MIME signing,
-* DKIM signing,
-* Altering destination of certain emails normally addressed to the site-admin,
-* Keeping a history of outgoing emails with their results (for debugging, history is cleared on deactivation of this function),
-* When history is enabled, add a tracker to track correct receipt of emails *1,
-* Add a re-send button for emails in the history, so you can re-send an email that failed to send.
+* Set a good From name and email address, automatically correcting it if needed. For example, a contact form is sent from the visitors email address, resulting in an invalid Sender address. This plugin will correct it to a valid email address. This plugin automatically corrects it.
+* Correct envelope-from address; often forgotten, but important for deliverability.
+* Reformat as HTML with plain text alternative; will detect the use of HTML ensures that emails are sent as HTML with a plain text alternative.
+* Process shortcodes in your email content.
+* UTF8 recoding, to ensure that special characters are correctly encoded in the email.
+* Email Essentials allows for adding CSS, header, footer, and body template using filters, see below.
+* Convert CSS to inline styles for better support in email clients
+* SMTP configuration
+* Send emails to multiple addressees as separate emails
+* S/MIME signing, using a supplied certificate, to ensure the authenticity of the email.
+* DKIM signing, and providing all information needed to set up DKIM signing for your domain.
+* Allow redirecting emails sent to the administrator to other email addresses based on the email subject.
+* Allow redirecting emails sent to the moderators (e.g., for comments).
+* Keep a history of outgoing emails (debugging, cleared on deactivation)
+* Email receipt tracking (for investigative purposes only, see GDPR note)
+* Re-send button for failed emails
+* Allow sending emails delayed, to prevent sending too many emails at once. (Beta feature)
 
 # Important note:
 This tool is created for people that know what to do and why they do it. If you don't know what a feature does, ask for help :)
