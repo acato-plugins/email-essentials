@@ -3096,7 +3096,7 @@ Item 2
 		if ( ! function_exists( 'get_plugin_data' ) ) {
 			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
 		}
-		$plugin_path = dirname( __DIR__ ) . '/wp-email-essentials.php';
+		$plugin_path = dirname( __DIR__ ) . '/' . basename( self::SLUG );
 		$plugin_data = get_plugin_data( $plugin_path );
 
 		return $plugin_data['Version'];
