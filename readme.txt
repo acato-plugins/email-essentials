@@ -95,8 +95,9 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 = 6.0.0 =
 * GOING FOSS! First release as a FOSS plugin.
 
-= 5.5.0 =
+= 5.4.7 =
 * i18n text domain changed to `email-essentials`.
+* Bugfix: add missing PHPMailer Exception class.
 
 = 5.4.6 =
 * Small bugfixes on the resend interface.

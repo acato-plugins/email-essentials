@@ -156,7 +156,8 @@ function my_custom_ip_services($services) {
 
 6.0.0: [ VERY VERY SOON ] GOING FOSS! This is the first release of Email Essentials as a FOSS plugin.
 
-5.5.0: i18n text domain changed to `email-essentials` to match future plugin slug, another step towards FOSS.
+5.4.7: i18n text domain changed to `email-essentials` to match future plugin slug, another step towards FOSS,
+       Bugfix: add missing PHPMailer Exception class.
 
 5.4.6: Small bugfixes on the resend interface
 
