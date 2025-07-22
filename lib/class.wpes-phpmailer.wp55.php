@@ -14,6 +14,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use phpmailerException;
 
 require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 
 /**
  * A wrapper for the WP 5.5 and later version of PHPMailer
