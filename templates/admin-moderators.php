@@ -41,7 +41,7 @@ if ( ! get_option( 'moderation_notify' ) ) {
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
 				<input
-					type="submit" name="op" value="<?php print  esc_attr__( 'Save settings', 'email-essentials' ); ?>"
+					type="submit" name="op" value="<?php print esc_attr_e( 'Save settings', 'email-essentials' ); ?>"
 					class="button-primary action"/>
 			</div>
 		</div>
@@ -66,13 +66,11 @@ if ( ! get_option( 'moderation_notify' ) ) {
 					<div class="wpes-notice--info">
 						<p>
 							<?php
-							print  esc_html__( 'Moderation for pingbacks and comments is', 'email-essentials' ) . ': ';
+							esc_html_e( 'Moderation for pingbacks and comments is', 'email-essentials' ) . ': ';
 							print wp_kses_post( '<strong>' . ( get_option( 'moderation_notify' ) ? __( 'enabled', 'email-essentials' ) : __( 'disabled', 'email-essentials' ) ) . '</strong>.' );
 							?>
 							<a href="<?php print esc_attr( admin_url( 'options-discussion.php' ) ); ?>#comment_order">
-								<?php
-								print  esc_html__( 'Change this setting', 'email-essentials' ) . '.';
-								?>
+								<?php esc_html_e( 'Change this setting', 'email-essentials' ) . '.'; ?>
 							</a>
 						</p>
 					</div>

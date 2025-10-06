@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable -- We don't care about formatting/codestyle for this file. It will be removed in the near future.
 // This file holds all classes in the deprecated namespace.
 namespace WP_Email_Essentials;
 
@@ -393,10 +393,10 @@ class Plugin extends \Acato\Email_Essentials\Plugin {
 		return parent::rfc_decode( $rfc );
 	}
 
-	public static function rfc_explode( $string ) {
+	public static function rfc_explode( $rfc_email_string ) {
 		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\Queue\\rfc_explode', '5.0.0', 'Acato\\Email_Essentials\\Plugin\\rfc_explode' );
 
-		return parent::rfc_explode( $string );
+		return parent::rfc_explode( $rfc_email_string );
 	}
 
 	public static function rfc_encode( $email_array ) {

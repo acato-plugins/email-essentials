@@ -22,7 +22,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		print '<div class="error"><p>' . wp_kses_post( Plugin::$error ) . '</p></div>';
 	}
 
-	require_once __DIR__ . '/../lib/class.wpes-queue-list-table.php';
+	require_once __DIR__ . '/../lib/class-wpes-queue-list-table.php';
 	$wpes_queue_list_table = new WPES_Queue_List_Table();
 
 	?>

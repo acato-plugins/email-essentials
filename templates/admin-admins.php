@@ -10,7 +10,9 @@ namespace Acato\Email_Essentials;
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( wp_kses_post( __( 'Uh uh uh! You didn\'t say the magic word!', 'email-essentials' ) ) );
 }
+
 global $current_user;
+
 $wpes_config          = get_option( 'mail_key_admins', [] );
 $wpes_mail_keys       = Plugin::mail_key_database();
 $wpes_wordpress_admin = get_option( 'admin_email' );
@@ -34,7 +36,7 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
 				<input
-					type="submit" name="op" value="<?php print  esc_attr__( 'Save settings', 'email-essentials' ); ?>"
+					type="submit" name="op" value="<?php esc_attr_e( 'Save settings', 'email-essentials' ); ?>"
 					class="button-primary action"/>
 			</div>
 		</div>
@@ -140,7 +142,7 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 								</td>
 							</tr>
 							<?php
-							$wpes_loop_iterator_0++;
+							++$wpes_loop_iterator_0;
 						}
 						?>
 						<?php for ( $wpes_loop_iterator_1 = 0; $wpes_loop_iterator_1 < 5; $wpes_loop_iterator_1++ ) { ?>

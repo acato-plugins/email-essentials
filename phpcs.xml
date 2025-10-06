@@ -88,10 +88,16 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="wpes"/>
-				<element value="WP_Email_Essentials"/>
+				<element value="email_essentials"/>
+				<element value="Acato\Email_Essentials"/>
+				<element value="wpes_"/>
 			</property>
 		</properties>
 	</rule>
 
+    <exclude-pattern>node_modules/*</exclude-pattern>
+    <exclude-pattern>languages/*</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>*.js</exclude-pattern>
+    <exclude-pattern>*.css</exclude-pattern>
 </ruleset>

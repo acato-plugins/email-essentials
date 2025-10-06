@@ -178,7 +178,6 @@ class WPES_Queue_List_Table extends WP_List_Table {
 			$item['id'],
 			$stati[ (int) $value ]
 		);
-
 	}
 
 	/**
@@ -194,7 +193,6 @@ class WPES_Queue_List_Table extends WP_List_Table {
 			'retry'    => __( 'Stale? Retry', 'email-essentials' ),
 			'release'  => __( 'Blocked? Release', 'email-essentials' ),
 		];
-
 	}
 
 	/**
@@ -262,7 +260,6 @@ class WPES_Queue_List_Table extends WP_List_Table {
 				exit;
 
 		}
-
 	}
 
 	/**

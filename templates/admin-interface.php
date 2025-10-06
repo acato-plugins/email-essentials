@@ -42,7 +42,7 @@ $wpes_dkim_identities  = [];
 			<div class="wpes-tools--box">
 				<input
 					type="submit" name="op"
-					value="<?php print  esc_attr__( 'Save settings', 'email-essentials' ); ?>"
+					value="<?php esc_attr_e( 'Save settings', 'email-essentials' ); ?>"
 					class="button-primary action"/>
 				<a class="button action" href="#email-test" style="text-align: center">
 					<?php esc_html_e( 'Send sample mail', 'email-essentials' ); ?>
@@ -85,14 +85,14 @@ $wpes_dkim_identities  = [];
 				</strong>
 				<ul class="toc">
 					<?php
-					$urls = [
+					$wpes_urls = [
 						__( 'Blog settings', 'email-essentials' )      => admin_url( 'options-general.php' ),
 						__( 'Site settings', 'email-essentials' )      => is_multisite() ? network_admin_url( 'settings.php' ) : false,
 						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'wpes-admins', admin_url( 'admin.php' ) ),
 					];
-					$urls = array_filter( $urls );
-					foreach ( $urls as $url_name => $url ) {
-						print '<li><a target="_blank" href="' . esc_attr( $url ) . '">' . esc_html( $url_name ) . '</a></li>';
+					$wpes_urls = array_filter( $wpes_urls );
+					foreach ( $wpes_urls as $wpes_url_name => $wpes_url ) {
+						print '<li><a target="_blank" href="' . esc_attr( $wpes_url ) . '">' . esc_html( $wpes_url_name ) . '</a></li>';
 					}
 					?>
 				</ul>
@@ -581,7 +581,9 @@ $wpes_dkim_identities  = [];
 			<div id="email-queue" class="postbox">
 				<div class="postbox-header">
 					<h2>
-						<?php print wp_kses_post( __( 'Email Throttling', 'email-essentials' ) ); ?> <em class="beta"><?php esc_html_e( 'Beta feature', 'email-essentials'); ?> - <?php esc_html_e( 'It works but not without flaws.', 'email-essentials'); ?></em>
+						<?php print wp_kses_post( __( 'Email Throttling', 'email-essentials' ) ); ?> <em
+							class="beta"><?php esc_html_e( 'Beta feature', 'email-essentials' ); ?>
+							- <?php esc_html_e( 'It works but not without flaws.', 'email-essentials' ); ?></em>
 					</h2>
 				</div>
 				<div class="inside">
@@ -805,7 +807,7 @@ $wpes_dkim_identities  = [];
 								</p>
 
 								<label
-									for="smime-sample-email"><?php esc_html_e( 'Type an email address to see the correct filenames', 'email-essentials' ) ?></label>
+									for="smime-sample-email"><?php esc_html_e( 'Type an email address to see the correct filenames', 'email-essentials' ); ?></label>
 								<input type="email" id="smime-sample-email" class="smime-sample-email">
 								<script>
 									jQuery(document).ready(function ($) {
@@ -952,13 +954,13 @@ $wpes_dkim_identities  = [];
 
 
 							<label
-								for="dkim-sample-domain"><?php esc_html_e( 'Type a domain to see the correct filenames and records', 'email-essentials' ) ?></label>
+								for="dkim-sample-domain"><?php esc_html_e( 'Type a domain to see the correct filenames and records', 'email-essentials' ); ?></label>
 							<input type="text" id="dkim-sample-domain" class="dkim-sample-input">
 							<label
-								for="dkim-sample-domainkey"><?php esc_html_e( 'Type the desired domainkey to see the correct DNS records', 'email-essentials' ) ?></label>
+								for="dkim-sample-domainkey"><?php esc_html_e( 'Type the desired domainkey to see the correct DNS records', 'email-essentials' ); ?></label>
 							<input type="text" id="dkim-sample-domainkey" class="dkim-sample-input">
 							<label
-								for="dkim-sample-password"><?php esc_html_e( 'Type a sample password to see the correct scripts', 'email-essentials' ) ?></label>
+								for="dkim-sample-password"><?php esc_html_e( 'Type a sample password to see the correct scripts', 'email-essentials' ); ?></label>
 							<input type="text" id="dkim-sample-password" class="dkim-sample-input">
 
 							<table class="wpes-info-table">
@@ -1015,8 +1017,8 @@ $wpes_dkim_identities  = [];
 								// items with class preload will generate pattern data on the fly
 								var preload_data = [
 									"domain.tld",
-									<?php print json_encode( _x( 'DKIM-SELECTOR-FOR-THIS-KEY', 'A sample DKIM selector', 'email-essentials' ) ); ?>,
-									<?php print json_encode( _x( 'YOUR-PASSWORD', 'A sample password', 'email-essentials' ) ); ?>
+									<?php print wp_json_encode( _x( 'DKIM-SELECTOR-FOR-THIS-KEY', 'A sample DKIM selector', 'email-essentials' ) ); ?>,
+									<?php print wp_json_encode( _x( 'YOUR-PASSWORD', 'A sample password', 'email-essentials' ) ); ?>
 								], sample_data = [], sample_data_key_numbers = {
 									domain: 0,
 									domainkey: 1,
@@ -1174,23 +1176,23 @@ $wpes_dkim_identities  = [];
 					</h2>
 				</div>
 				<?php
-				$blog_admin        = get_option( 'admin_email', false );
-				$site_admin        = is_multisite() ? get_site_option( 'admin_email', false ) : false;
-				$wpes_sample_email = [
-					'to'      => $blog_admin,
+				$wpes_blog_admin       = get_option( 'admin_email', false );
+				$wpes_site_admin       = is_multisite() ? get_site_option( 'admin_email', false ) : false;
+				$wpes_sample_email     = [
+					'to'      => $wpes_blog_admin,
 					'subject' => Plugin::dummy_subject(),
 				];
-				$wpes_sample_email = Plugin::alternative_to( $wpes_sample_email );
-				$configured_email  = reset( $wpes_sample_email['to'] );
-				$configured_email  = Plugin::rfc_decode( $configured_email )['email'] ?? false;
+				$wpes_sample_email     = Plugin::alternative_to( $wpes_sample_email );
+				$wpes_configured_email = reset( $wpes_sample_email['to'] );
+				$wpes_configured_email = Plugin::rfc_decode( $wpes_configured_email )['email'] ?? false;
 
 				$wpes_recipients = [
-					'The blog administrator: ' . $blog_admin => $blog_admin,
-					'The site administrator: ' . $site_admin => $site_admin,
+					'The blog administrator: ' . $wpes_blog_admin => $wpes_blog_admin,
+					'The site administrator: ' . $wpes_site_admin => $wpes_site_admin,
 				];
 				$wpes_recipients = array_filter( $wpes_recipients );
-				if ( ! in_array( $configured_email, $wpes_recipients ) ) {
-					$wpes_recipients[ 'Configured recipient: ' . $configured_email ] = $configured_email;
+				if ( ! in_array( $wpes_configured_email, $wpes_recipients, true ) ) {
+					$wpes_recipients[ 'Configured recipient: ' . $wpes_configured_email ] = $wpes_configured_email;
 				}
 
 				$wpes_last_test_sent_to = get_option( 'wpes_last_test_sent_to', reset( $wpes_recipients ) );
@@ -1228,7 +1230,7 @@ $wpes_dkim_identities  = [];
 				<div class="inside">
 					<input
 						type="submit" name="op"
-						value="<?php print  esc_attr__( 'Send sample mail', 'email-essentials' ); ?>"
+						value="<?php print esc_attr__( 'Send sample mail', 'email-essentials' ); ?>"
 						class="button-secondary action"/>
 				</div>
 

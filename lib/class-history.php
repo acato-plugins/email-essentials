@@ -183,7 +183,7 @@ class History {
 			return;
 		}
 
-		// check nonce
+		// Check nonce.
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], 'wpes_resend_email_' . (int) $_GET['email'] ) ) {
 			return;
 		}
@@ -244,6 +244,7 @@ class History {
 
 		foreach ( $parts as $part ) {
 			list( $headers, $content ) = explode( "\r\n\r\n", $part . "\r\n\r\n", 2 );
+
 			$headers = trim( $headers );
 			$content = trim( $content );
 			if ( empty( $headers ) || empty( $content ) ) {
@@ -257,6 +258,7 @@ class History {
 				$line = trim( $line );
 				if ( strpos( $line, ':' ) !== false ) {
 					list( $key, $value ) = explode( ':', $line, 2 );
+
 					$header_array[ trim( $key ) ] = trim( $value );
 				}
 			}
@@ -280,14 +282,19 @@ class History {
 					if ( $tmp_dir ) {
 						// Write the content to the temporary file.
 						wp_mkdir_p( $tmp_dir );
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents,WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 						file_put_contents( $tmp_dir . '/' . $filename, base64_decode( $content ) );
-						add_action( 'shutdown', function () use ( $tmp_dir, $filename ) {
-							// Delete the temporary file on shutdown.
-							if ( file_exists( $tmp_dir . '/' . $filename ) ) {
-								unlink( $tmp_dir . '/' . $filename );
-								@rmdir( $tmp_dir );
+						add_action(
+							'shutdown',
+							function () use ( $tmp_dir, $filename ) {
+								// Delete the temporary file on shutdown.
+								if ( file_exists( $tmp_dir . '/' . $filename ) ) {
+									wp_delete_file( $tmp_dir . '/' . $filename );
+									// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir,WordPress.PHP.NoSilencedErrors.Discouraged -- We don't care if it fails.
+									@rmdir( $tmp_dir );
+								}
 							}
-						} );
+						);
 					}
 					$attachments[] = $tmp_dir . '/' . $filename; // Store the path to the temporary file.
 				}
@@ -318,21 +325,21 @@ class History {
 	/**
 	 * Use print_r to dump the object and extract the data we need.
 	 *
-	 * @param mixed $object Object to inspect.
+	 * @param mixed $an_object Object to inspect.
 	 *
 	 * @return mixed
 	 */
-	private static function object_data( $object ) {
+	private static function object_data( $an_object ) {
 		ob_start();
-		$class = get_class( $object );
+		$class = get_class( $an_object );
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- How else are we supposed to get the info we need?.
-		print_r( $object );
-		$object = ob_get_clean();
-		$object = str_replace( $class . ' Object', 'Array', $object );
-		$object = str_replace( ':protected]', ']', $object );
-		$object = self::print_r_reverse( $object );
+		print_r( $an_object );
+		$an_object = ob_get_clean();
+		$an_object = str_replace( $class . ' Object', 'Array', $an_object );
+		$an_object = str_replace( ':protected]', ']', $an_object );
+		$an_object = self::print_r_reverse( $an_object );
 
-		return json_decode( wp_json_encode( $object ) );
+		return json_decode( wp_json_encode( $an_object ) );
 	}
 
 	/**

@@ -14,7 +14,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 global $current_user, $wpdb;
 
-
 // @phpcs:disable WordPress.Security.NonceVerification.Recommended
 $wpes_view_order_field = $_GET['_ofield'] ?? 'ID';
 
@@ -192,7 +191,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 								<td>
 									<?php
 									if ( History::MAIL_FAILED === (int) $wpes_view_email->status ) {
-										$resend_link = add_query_arg(
+										$wpes_resend_link = add_query_arg(
 											[
 												'nonce'  => wp_create_nonce( 'wpes_resend_email_' . $wpes_view_email->ID ),
 												'action' => 'resend-failed-email',
@@ -200,7 +199,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 											],
 										);
 										// If the email failed, then we show the debug info.
-										printf( '<a href="%s" class="button button-secondary wpes-email-view">' . esc_html__( 'Resend', 'email-essentials' ) . '</a>', esc_url( $resend_link ) );
+										printf( '<a href="%s" class="button button-secondary wpes-email-view">' . esc_html__( 'Resend', 'email-essentials' ) . '</a>', esc_url( $wpes_resend_link ) );
 									}
 									?>
 								</td>
@@ -244,6 +243,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 							$wpes_mailer->Subject = $wpes_view_email->subject;
 							// suffix '----' is to prevent errors like "Undefined array key 1".
 							list( $wpes_view_email->debug, $wpes_view_email->log ) = explode( '----', $wpes_view_email->debug . '----' );
+
 							$wpes_view_email->debug = json_decode( trim( $wpes_view_email->debug ) );
 							$wpes_view_email->log   = trim( $wpes_view_email->log );
 							if ( ! $wpes_view_email->debug ) {

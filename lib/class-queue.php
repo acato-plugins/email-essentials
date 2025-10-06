@@ -201,8 +201,11 @@ class Queue {
 					'wpes_mail_is_throttled',
 					[ true, $ip, $mails_recently_sent ],
 					'5.0.0',
-					'email_essentials_mail_is_throttled' ),
-				true, $ip, $mails_recently_sent
+					'email_essentials_mail_is_throttled'
+				),
+				true,
+				$ip,
+				$mails_recently_sent
 			);
 		}
 
@@ -272,7 +275,6 @@ class Queue {
 		}
 
 		return 3;
-
 	}
 
 	/**
@@ -358,6 +360,10 @@ class Queue {
 	 * @param array $mail_data A wp_mail data array.
 	 */
 	public function restore_attachment_data( $mail_data ) {
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		$tmp = wp_upload_dir();
 		$tmp = $tmp['basedir'];
 		$tmp = "$tmp/mail_queue_atts";
@@ -387,6 +393,10 @@ class Queue {
 		$mail_data['attachments'] = array_values( $mail_data['attachments'] );
 
 		return $mail_data['attachments'];
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 	}
 
 	/**
@@ -544,6 +554,6 @@ class Queue {
 	public static function get_queue_count() {
 		global $wpdb;
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE status = %d", Queue::FRESH ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE status = %d", self::FRESH ) );
 	}
 }

@@ -29,15 +29,15 @@ spl_autoload_register(
 		$n = __NAMESPACE__;
 
 		$class_map = [
-			$n . '\\Plugin'                => __DIR__ . '/lib/class.plugin.php',
-			$n . '\\Migrations'            => __DIR__ . '/lib/class.migrations.php',
-			$n . '\\IP'                    => __DIR__ . '/lib/class.ip.php',
-			$n . '\\History'               => __DIR__ . '/lib/class.history.php',
-			$n . '\\Queue'                 => __DIR__ . '/lib/class.queue.php',
-			$n . '\\Fake_Sender'           => __DIR__ . '/lib/class.wpes-phpmailer.php',
-			$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class.wpes-queue-list-table.php',
+			$n . '\\Plugin'                => __DIR__ . '/lib/class-plugin.php',
+			$n . '\\Migrations'            => __DIR__ . '/lib/class-migrations.php',
+			$n . '\\IP'                    => __DIR__ . '/lib/class-ip.php',
+			$n . '\\History'               => __DIR__ . '/lib/class-history.php',
+			$n . '\\Queue'                 => __DIR__ . '/lib/class-queue.php',
+			$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-wpes-phpmailer.php',
+			$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-wpes-queue-list-table.php',
 			$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-css-inliner.php',
-			$n . '\\CssVarEval'            => __DIR__ . '/lib/class.cssvareval.php',
+			$n . '\\CssVarEval'            => __DIR__ . '/lib/class-cssvareval.php',
 			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-csstoinlinestyles.php',
 		];
 
@@ -52,19 +52,22 @@ spl_autoload_register(
 
 		// Deprecation support.
 		$n         = 'WP_Email_Essentials';
-		$class_map = array_merge( $class_map, [
-			$n . '\\Plugin'                => __DIR__ . '/lib/deprecation.php',
-			$n . '\\Migrations'            => __DIR__ . '/lib/deprecation.php',
-			$n . '\\IP'                    => __DIR__ . '/lib/deprecation.php',
-			$n . '\\History'               => __DIR__ . '/lib/deprecation.php',
-			$n . '\\Queue'                 => __DIR__ . '/lib/deprecation.php',
-			$n . '\\Fake_Sender'           => __DIR__ . '/lib/deprecation.php',
-			$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/deprecation.php',
-			$n . '\\CSS_Inliner'           => __DIR__ . '/lib/deprecation.php',
-			$n . '\\CssVarEval'            => __DIR__ . '/lib/deprecation.php',
-			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/deprecation.php',
-			$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/deprecation.php',
-		] );
+		$class_map = array_merge(
+			$class_map,
+			[
+				$n . '\\Plugin'                => __DIR__ . '/lib/deprecation.php',
+				$n . '\\Migrations'            => __DIR__ . '/lib/deprecation.php',
+				$n . '\\IP'                    => __DIR__ . '/lib/deprecation.php',
+				$n . '\\History'               => __DIR__ . '/lib/deprecation.php',
+				$n . '\\Queue'                 => __DIR__ . '/lib/deprecation.php',
+				$n . '\\Fake_Sender'           => __DIR__ . '/lib/deprecation.php',
+				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/deprecation.php',
+				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/deprecation.php',
+				$n . '\\CssVarEval'            => __DIR__ . '/lib/deprecation.php',
+				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/deprecation.php',
+				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/deprecation.php',
+			]
+		);
 
 		if ( ! empty( $class_map[ $class_name ] ) && is_file( $class_map[ $class_name ] ) ) {
 			require_once $class_map[ $class_name ];

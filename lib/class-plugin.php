@@ -185,9 +185,12 @@ class Plugin {
 			2
 		);
 
-		add_action( 'after_setup_theme', function () {
-			self::mail_key_registrations();
-		} );
+		add_action(
+			'after_setup_theme',
+			function () {
+				self::mail_key_registrations();
+			}
+		);
 
 		// Maybe process settings.
 		add_action( 'init', [ self::class, 'save_admin_settings' ] );
@@ -767,7 +770,7 @@ class Plugin {
 		if ( ! $config['spf_lookup_enabled'] ) {
 			// we tried and failed less than a day ago.
 			// do not try again.
-			self::log_message( "SPF Check is disabled, test based on domain-name." );
+			self::log_message( 'SPF Check is disabled, test based on domain-name.' );
 
 			return self::this_email_matches_website_domain( $email );
 		}
@@ -782,7 +785,7 @@ class Plugin {
 		$sending_server = self::get_sending_ip();
 
 		$result = self::validate_ip_listed_in_spf( $sending_domain[1], $sending_server );
-		self::log_message( "SPF Check result: " . ( $result ? 'spf allows' : 'spf does not allow' ) );
+		self::log_message( 'SPF Check result: ' . ( $result ? 'spf allows' : 'spf does not allow' ) );
 
 		return $result;
 	}
@@ -1031,7 +1034,7 @@ class Plugin {
 		$transient_name = "dns_{$lookup}__TYPE{$filter}__cache";
 		$transient      = get_site_transient( $transient_name );
 		if ( ! $transient ) {
-			$transient = self::_dns_get_record( $lookup, $filter );
+			$transient = self::dns_get_record__internal( $lookup, $filter );
 			$ttl       = count( $transient ) > 0 && is_array( $transient[0] && isset( $transient[0]['ttl'] ) ) ? $transient[0]['ttl'] : 3600;
 			set_site_transient( $transient_name, $transient, $ttl );
 		}
@@ -1117,34 +1120,33 @@ class Plugin {
 	 *
 	 * @return array
 	 * @see \dns_get_record()
-	 *
 	 */
-	private static function _dns_get_record( $hostname, $type = DNS_ALL ) {
-		$return = [];
-
+	private static function dns_get_record__internal( $hostname, $type = DNS_ALL ) {
 		if ( DNS_ANY === $type ) {
-			$returnA = self::_dns_get_record_cfdoh( $hostname, DNS_A );
+			$return_a4 = self::dns_get_record__internal_cfdoh( $hostname, DNS_A );
 			try {
-				$returnAAAA = self::_dns_get_record_cfdoh( $hostname, DNS_AAAA );
+				$return_a6 = self::dns_get_record__internal_cfdoh( $hostname, DNS_AAAA );
 			} catch ( \Exception $e ) {
-				error_log( json_encode( $e ) );
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( wp_json_encode( $e ) );
 			}
-			$return = array_merge( (array) $returnA, (array) ( $returnAAAA ?? [] ) );
+			$return = array_merge( (array) $return_a4, (array) ( $return_a6 ?? [] ) );
 		} else {
-			$return = self::_dns_get_record_cfdoh( $hostname, $type );
+			$return = self::dns_get_record__internal_cfdoh( $hostname, $type );
 		}
 
 		// Slow dns lookup, will crash on LocalWP, so we check if not disabled in php.ini, and if not disabled, we check if disabled in options.
 		if ( ! $return && function_exists( 'dns_get_record' ) && ! get_option( 'disable_dns_get_record', false ) ) {
 			// Slow dns lookup.
 			if ( DNS_ANY === $type ) {
-				$returnA = dns_get_record( $hostname, DNS_A );
+				$return_a4 = dns_get_record( $hostname, DNS_A );
 				try {
-					$returnAAAA = dns_get_record( $hostname, DNS_AAAA );
+					$return_a6 = dns_get_record( $hostname, DNS_AAAA );
 				} catch ( \Exception $e ) {
-					error_log( json_encode( $e ) );
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( wp_json_encode( $e ) );
 				}
-				$return = array_merge( (array) $returnA, (array) ( $returnAAAA ?? [] ) );
+				$return = array_merge( (array) $return_a4, (array) ( $return_a6 ?? [] ) );
 			} else {
 				$return = dns_get_record( $hostname, $type );
 			}
@@ -1157,11 +1159,11 @@ class Plugin {
 	 * Get DNS record using Cloudflare DoH.
 	 *
 	 * @param string $hostname The hostname to lookup.
-	 * @param int    $type     The type of record to lookup. Uses DNS_* constants, @see \dns_get_record()
+	 * @param int    $type     The type of record to lookup. Uses DNS_* constants, @see \dns_get_record() .
 	 *
 	 * @return array
 	 */
-	private static function _dns_get_record_cfdoh( $hostname, $type = DNS_ANY ) {
+	private static function dns_get_record__internal_cfdoh( $hostname, $type = DNS_ANY ) {
 
 		$is_wildcard          = 0 === strpos( $hostname, '*.' );
 		$wildcard_hostname    = explode( '.', $hostname ?? '' ) ?: [];
@@ -1193,8 +1195,8 @@ class Plugin {
 
 		if ( 'ANY' === $cf_type ) {
 			$results = [];
-			foreach ( array_keys( $php_to_cf_type ) as $DNS_TYPE ) {
-				$results = array_merge( $results, dns_get_record( $hostname, $DNS_TYPE ) ?: [] );
+			foreach ( array_keys( $php_to_cf_type ) as $dns_type ) {
+				$results = array_merge( $results, dns_get_record( $hostname, $dns_type ) ?: [] );
 			}
 
 			return $results;
@@ -1211,19 +1213,19 @@ class Plugin {
 			]
 		);
 		if ( is_wp_error( $result ) ) {
-			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
+			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
 		$result = wp_remote_retrieve_body( $result );
 		if ( ! $result ) {
-			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
+			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
 		$result = json_decode( $result, true );
 		if ( ! $result ) {
-			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
+			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
 		$answer = $result['Answer'] ?? [];
 		if ( ! $answer ) {
-			return $is_wildcard ? [] : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
+			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
 		$return = [];
 		foreach ( $answer as $entry ) {
@@ -1239,7 +1241,7 @@ class Plugin {
 			$return_type           = strtolower( $return_type );
 			$entry[ $return_type ] = trim( $entry['data'] ?? '' );
 			$quote                 = substr( $entry['data'], 0, 1 );
-			if ( $quote === '"' ) {
+			if ( '"' === $quote ) {
 				$entry[ $return_type ] = str_replace( "$quote $quote", '', $entry[ $return_type ] );
 				$entry[ $return_type ] = trim( $entry[ $return_type ], $quote );
 			}
@@ -1251,7 +1253,7 @@ class Plugin {
 			$return[] = $entry;
 		}
 
-		return $return || $is_wildcard ? $return : self::_dns_get_record_cfdoh( $wildcard_hostname, $type );
+		return $return || $is_wildcard ? $return : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 	}
 
 	/**
@@ -1347,7 +1349,7 @@ class Plugin {
 
 			$mailer->Body = self::maybe_convert_to_html( $mailer->Body, $mailer->Subject, $mailer, $check_encoding_result ?: 'utf-8' );
 
-			$css = Plugin::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
+			$css = self::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
 			$css = apply_filters_ref_array( 'email_essentials_css', [ $css, &$mailer ] );
 
 			if ( $config['css_inliner'] ) {
@@ -1557,30 +1559,45 @@ class Plugin {
 		// you can define a file  wpes-email-template.php  in your theme to define the filters.
 		locate_template( [ 'wpes-email-template.php' ], true );
 
-		$subject = Plugin::apply_filters_deprecated( 'wpes_subject', [
-			$subject,
-			&$mailer,
-		], '5.0.0', 'email_essentials_subject' );
+		$subject = self::apply_filters_deprecated(
+			'wpes_subject',
+			[
+				$subject,
+				&$mailer,
+			],
+			'5.0.0',
+			'email_essentials_subject'
+		);
 		$subject = apply_filters_ref_array( 'email_essentials_subject', [ $subject, &$mailer ] );
 
 		$head = '';
 
 		if ( self::get_config()['is_html'] ) {
 
-			$css = Plugin::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
+			$css = self::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
 			$css = apply_filters_ref_array( 'email_essentials_css', [ $css, &$mailer ] );
 
 			$head = '<title>' . $subject . '</title><style type="text/css">' . $css . '</style>';
-			$head = Plugin::apply_filters_deprecated( 'wpes_head', [
-				$head,
-				&$mailer,
-			], '5.0.0', 'email_essentials_head' );
+			$head = self::apply_filters_deprecated(
+				'wpes_head',
+				[
+					$head,
+					&$mailer,
+				],
+				'5.0.0',
+				'email_essentials_head'
+			);
 			$head = apply_filters_ref_array( 'email_essentials_head', [ $head, &$mailer ] );
 
-			$should_be_html = Plugin::apply_filters_deprecated( 'wpes_body', [
-				$should_be_html,
-				&$mailer,
-			], '5.0.0', 'email_essentials_body' );
+			$should_be_html = self::apply_filters_deprecated(
+				'wpes_body',
+				[
+					$should_be_html,
+					&$mailer,
+				],
+				'5.0.0',
+				'email_essentials_body'
+			);
 			$should_be_html = apply_filters_ref_array( 'email_essentials_body', [ $should_be_html, &$mailer ] );
 			$should_be_html = htmlspecialchars_decode( htmlentities( $should_be_html ) );
 
@@ -1695,11 +1712,19 @@ class Plugin {
 			'make_from_valid'      => 'default',
 		];
 
-		$defaults = apply_filters( 'email_essentials_defaults', Plugin::apply_filters_deprecated( 'wpes_defaults', [ $defaults ], '5.0.0', 'email_essentials_defaults' ), $defaults );
+		$defaults = apply_filters(
+			'email_essentials_defaults',
+			self::apply_filters_deprecated( 'wpes_defaults', [ $defaults ], '5.0.0', 'email_essentials_defaults' ),
+			$defaults
+		);
 
 		$settings = get_option( 'wp-email-essentials', $defaults );
 		if ( ! $raw ) {
-			$settings = apply_filters( 'email_essentials_settings', Plugin::apply_filters_deprecated( 'wpes_settings', [ $settings ], '5.0.0', 'email_essentials_settings' ), $settings );
+			$settings = apply_filters(
+				'email_essentials_settings',
+				self::apply_filters_deprecated( 'wpes_settings', [ $settings ], '5.0.0', 'email_essentials_settings' ),
+				$settings
+			);
 			if ( ! is_array( $settings ) ) {
 				$settings = $defaults;
 			}
@@ -1802,7 +1827,7 @@ class Plugin {
 		$trace  = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 		$caller = $trace[1];
 		if (
-			'class.migrations.php' === basename( $caller['file'] ) &&
+			'class-migrations.php' === basename( $caller['file'] ) &&
 			'migrate_from_' === substr( $caller['function'], 0, 13 ) &&
 			Migrations::class === $caller['class']
 		) {
@@ -1873,26 +1898,23 @@ class Plugin {
 	/**
 	 * Split a comma separated list of RFC encoded email addresses into an array.
 	 *
-	 * @param string $string Comma separated list of email addresses.
+	 * @param string $rfc_email_string Comma separated list of email addresses.
 	 *
 	 * @return array
 	 */
-	public static function rfc_explode( $string ) {
+	public static function rfc_explode( $rfc_email_string ) {
 		// safequard escaped quotes.
-		$string = str_replace( '\\"', 'ESCAPEDQUOTE', $string );
+		$rfc_email_string = str_replace( '\\"', 'ESCAPEDQUOTE', $rfc_email_string );
 		// get chunks.
 		$exploded = [];
-		$i        = 0;
 		// this regexp will match any comma + a string behind it.
 		// therefore, to fetch all elements, we need a dummy element at the end that will be ignored.
-		$string .= ', dummy';
-		while ( trim( $string ) && preg_match( '/(,)(([^"]|"[^"]*")*$)/', $string, $match ) ) {
-			$i++;
-
-			$matched_rest    = $match[0];
-			$unmatched_first = str_replace( $matched_rest, '', $string );
-			$string          = trim( $matched_rest, ', ' );
-			$exploded[]      = str_replace( 'ESCAPEDQUOTE', '\\"', $unmatched_first );
+		$rfc_email_string .= ', dummy';
+		while ( trim( $rfc_email_string ) && preg_match( '/(,)(([^"]|"[^"]*")*$)/', $rfc_email_string, $match ) ) {
+			$matched_rest     = $match[0];
+			$unmatched_first  = str_replace( $matched_rest, '', $rfc_email_string );
+			$rfc_email_string = trim( $matched_rest, ', ' );
+			$exploded[]       = str_replace( 'ESCAPEDQUOTE', '\\"', $unmatched_first );
 		}
 
 		return array_map( 'trim', $exploded );
@@ -1947,7 +1969,7 @@ class Plugin {
 		 */
 		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--settings' ) && isset( $_GET['page'] ) && 'wp-email-essentials' === $_GET['page'] && $_POST && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] ) {
 			switch ( $_POST['op'] ) {
-				case  __( 'Save settings', 'email-essentials' ):
+				case __( 'Save settings', 'email-essentials' ):
 					$config  = self::get_config();
 					$host    = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
 					$host    = preg_replace( '/^www\d*\./', '', $host );
@@ -1959,7 +1981,7 @@ class Plugin {
 					set_transient( 'wpes_message', __( 'Settings saved.', 'email-essentials' ), 5 );
 					wp_safe_redirect( remove_query_arg( 'wpes-nonce' ) );
 					exit;
-				case  __( 'Send sample mail', 'email-essentials' ):
+				case __( 'Send sample mail', 'email-essentials' ):
 					ob_start();
 					self::$debug     = true;
 					$send_email_to   = $_POST['send-test-email-to'] ?? false;
@@ -2355,7 +2377,7 @@ Item 2
 			self::set_config( $rawset, true );
 		}
 
-		self::render_deprecation_notices( $onpage );
+		self::render_deprecation_notices();
 	}
 
 	/**
@@ -2457,12 +2479,12 @@ Item 2
 		if ( is_multisite() ) {
 			$admin_emails[] = get_site_option( 'admin_email' );
 		}
-		self::log_message( "Detected admin-emails; " . implode( ', ', $admin_emails ) );
+		self::log_message( 'Detected admin-emails; ' . implode( ', ', $admin_emails ) );
 
 		// make sure we have a list of emails, not a single email.
 		if ( ! is_array( $email['to'] ) ) {
 			$email['to'] = self::rfc_explode( $email['to'] );
-			self::log_message( 'Email to is not an array, but a string. RFC Exploding to ' . json_encode( $email['to'], 64 ) );
+			self::log_message( 'Email to is not an array, but a string. RFC Exploding to ' . wp_json_encode( $email['to'], 64 ) );
 		}
 
 		// find the admin address.
@@ -2471,14 +2493,14 @@ Item 2
 			$email['to'][ $i ] = self::rfc_recode( $email['to'][ $i ] );
 
 			$decoded = self::rfc_decode( $email_address );
-			self::log_message( "Found a recipient ($i): " . json_encode( $decoded, 64 ) );
+			self::log_message( "Found a recipient ($i): " . wp_json_encode( $decoded, 64 ) );
 			if ( in_array( $decoded['email'], $admin_emails, true ) ) {
-				self::log_message( "Found email is an admin email." );
+				self::log_message( 'Found email is an admin email.' );
 				$found_mail_item_number = $i;
 			}
 		}
 		if ( -1 === $found_mail_item_number ) {
-			self::log_message( "No admin email found, no changes made. Continuing sending the email." );
+			self::log_message( 'No admin email found, no changes made. Continuing sending the email.' );
 
 			// not going to an admin.
 			return $email;
@@ -2504,11 +2526,11 @@ Item 2
 							$the_admin['name'] = $to['name'];
 						}
 						$to = self::rfc_encode( $the_admin );
-						self::log_message( "Changed the recipient to " . $to );
+						self::log_message( 'Changed the recipient to ' . $to );
 					} else {
 						// extra.
 						$email['to'][] = self::rfc_encode( $the_admin );
-						self::log_message( "Added an extra recipient " . self::rfc_encode( $the_admin ) );
+						self::log_message( 'Added an extra recipient ' . self::rfc_encode( $the_admin ) );
 					}
 				}
 
@@ -2538,11 +2560,11 @@ Item 2
 						$the_admin['name'] = $to['name'];
 					}
 					$to = self::rfc_encode( $the_admin );
-					self::log_message( "Changed the recipient to " . $to );
+					self::log_message( 'Changed the recipient to ' . $to );
 				} else {
 					// extra.
 					$email['to'][] = self::rfc_encode( $the_admin );
-					self::log_message( "Added an extra recipient " . self::rfc_encode( $the_admin ) );
+					self::log_message( 'Added an extra recipient ' . self::rfc_encode( $the_admin ) );
 				}
 			}
 
@@ -2823,8 +2845,9 @@ Item 2
 		}
 
 		static $fp;
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_read_fopen
-		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
 		if ( file_exists( __DIR__ . '/../log' ) && is_writable( __DIR__ . '/../log' ) ) {
 			if ( ! $fp ) {
 				$fp = fopen( __DIR__ . '/../log', 'a' );
@@ -2834,8 +2857,9 @@ Item 2
 				fwrite( $fp, date( 'r' ) . ' WP_Email_Essentials: ' . $text . "\n" );
 			}
 		}
-		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_read_fopen
-		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+		// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
 	}
 
 	/**
@@ -2845,6 +2869,9 @@ Item 2
 		$host = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no form processing, just checking...
 		if ( 'options-general.php' === basename( $_SERVER['PHP_SELF'] ) && ! ( $_GET['page'] ?? '' ) ) {
+			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen
+			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd
+			// phpcs:disable Generic.WhiteSpace.ScopeIndent.IncorrectExact
 			?>
 			<script>
 				jQuery("#admin_email,#new_admin_email").after('<p class="description"><?php
@@ -2853,6 +2880,9 @@ Item 2
 					?></p>');
 			</script>
 			<?php
+			// phpcs:enable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen
+			// phpcs:enable Squiz.PHP.EmbeddedPhp.ContentAfterEnd
+			// phpcs:enable Generic.WhiteSpace.ScopeIndent.IncorrectExact
 		}
 
 		$config = self::get_config();
@@ -3105,7 +3135,7 @@ Item 2
 	}
 
 	/**
-	 * start logging.
+	 * Start logging.
 	 *
 	 * @param mixed $pass_thru The value to pass through.
 	 */
@@ -3116,7 +3146,7 @@ Item 2
 	}
 
 	/**
-	 * log a message.
+	 * Log a message.
 	 *
 	 * @param string $message The message to log.
 	 */
@@ -3125,7 +3155,7 @@ Item 2
 	}
 
 	/**
-	 * get the log.
+	 * Get the log.
 	 */
 	public static function get_log() {
 		return $GLOBALS['wpes_log'];
@@ -3157,7 +3187,7 @@ Item 2
 	 * @param string $replacement Optional. The class or function that should have been called.
 	 *                            Default empty string.
 	 */
-	public static function _deprecated_class( $class_name, $version, $replacement = '' ) {
+	public static function _deprecated_class( $class_name, $version, $replacement = '' ) { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore -- WordPress' own convention.
 		if ( function_exists( '_deprecated_class' ) ) {
 			// Use the WordPress function if available.
 			_deprecated_class( $class_name, $version, $replacement );
@@ -3175,16 +3205,27 @@ Item 2
 	 * @param string $version       The version of WordPress that deprecated the function.
 	 * @param string $replacement   Optional. The function that should have been called. Default empty string.
 	 */
-	public static function _deprecated_function( $function_name, $version, $replacement = '' ) {
+	public static function _deprecated_function( $function_name, $version, $replacement = '' ) { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore -- WordPress' own convention.
 		if ( function_exists( '_deprecated_function' ) ) {
 			// Use the WordPress function if available.
-			_deprecated_function( $function_name, $version, $replacement );
+			_deprecated_function( $function_name, $version, $replacement ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		$tag = 'wpes_deprecated_functions_' . md5( $function_name );
 
 		update_option( $tag, [ time(), $function_name, $version, $replacement ] );
 	}
 
+	/**
+	 * Wrapper for deprecated filters, so we can show this in an admin notice.
+	 *
+	 * @param string $hook_name   The name of the filter hook.
+	 * @param array  $args        The filter arguments.
+	 * @param string $version     The version of WordPress that deprecated the function.
+	 * @param string $replacement Optional. The function that should have been called. Default empty string.
+	 * @param string $message     Optional. A message regarding the deprecation. Default empty string.
+	 *
+	 * @return mixed
+	 */
 	public static function apply_filters_deprecated( $hook_name, $args, $version, $replacement = '', $message = '' ) {
 		if ( has_filter( $hook_name ) ) {
 			$tag = 'wpes_deprecated_filters_' . md5( $hook_name );
@@ -3193,21 +3234,19 @@ Item 2
 
 			if ( function_exists( 'apply_filters_deprecated' ) ) {
 				// Use the WordPress function if available.
-				return apply_filters_deprecated( $hook_name, $args, $version, $replacement, $message );
+				return apply_filters_deprecated( $hook_name, $args, $version, $replacement, $message ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			}
 		}
 
-		return apply_filters_ref_array( $hook_name, $args );
+		return apply_filters_ref_array( $hook_name, $args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 	}
 
 	/**
 	 * Render Deprecation Notices.
 	 *
-	 * @param bool $on_wpes_page Whether we are on the WPES admin page.
-	 *
 	 * @return string
 	 */
-	public static function render_deprecation_notices( $on_wpes_page ) {
+	public static function render_deprecation_notices() {
 		// List all options that start with 'wpes_deprecated_classes_' or 'wpes_deprecated_functions_'.
 		global $wpdb;
 		$options   = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'wpes_deprecated_%'" );
@@ -3226,6 +3265,7 @@ Item 2
 
 			// Get the time, version and replacement.
 			list( $time, $foc, $version, $replacement ) = $option_value;
+
 			$last_seen                  = human_time_diff( $time, time() );
 			$more_recent_than_dismissed = ! $dismissed || $time > $dismissed;
 			if ( ! $more_recent_than_dismissed ) {
@@ -3255,7 +3295,7 @@ Item 2
 		}
 		$notices = implode( '<br />', $notices );
 
-		printf( '<div class="notice notice-warning is-dismissible wpes_deprecation_notice_dismissible"><p>%s</p></div>', $notices );
+		print wp_kses_post( sprintf( '<div class="notice notice-warning is-dismissible wpes_deprecation_notice_dismissible"><p>%s</p></div>', $notices ) );
 
 		add_action( 'admin_footer', [ self::class, 'dismiss_deprecation_notice_js' ] );
 	}
@@ -3287,16 +3327,36 @@ Item 2
 		<?php
 	}
 
+	/**
+	 * IP trace steps.
+	 *
+	 * @var array
+	 */
 	private static $ip_trace = [];
 
+	/**
+	 * Start an IP trace.
+	 *
+	 * This is used to trace DNS lookups.
+	 */
 	public static function start_ip_trace() {
 		self::$ip_trace = [];
 	}
 
+	/**
+	 * Add a step to the IP trace.
+	 *
+	 * @param string $value The value to add.
+	 */
 	public static function ip_trace_step( $value ) {
 		self::$ip_trace[] = $value;
 	}
 
+	/**
+	 * Get the IP trace.
+	 *
+	 * @return array
+	 */
 	public static function get_ip_trace() {
 		return self::$ip_trace;
 	}
@@ -3319,7 +3379,8 @@ Item 2
 		}
 
 		// this is not localhost, but if it resolves, we can return a "maybe".
-		if ( ( $ip = self::dns_get_record( $wpes_smtp_host, DNS_A | DNS_AAAA, true ) ) && filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+		$ip = self::dns_get_record( $wpes_smtp_host, DNS_A | DNS_AAAA, true );
+		if ( $ip && filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 			// this is not localhost, but it resolves to a valid IP address.
 			// The SPF check should also use that IP address for validation.
 			return 'maybe';
@@ -3329,6 +3390,13 @@ Item 2
 		return 'nope';
 	}
 
+	/**
+	 * Check if a hostname resolves to localhost.
+	 *
+	 * @param string $host The hostname to check.
+	 *
+	 * @return bool
+	 */
 	public static function this_resolves_to_localhost( $host ) {
 		$host = trim( $host );
 		if ( empty( $host ) ) {
