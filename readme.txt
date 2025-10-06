@@ -1,11 +1,12 @@
 === Email Essentials ===
 Contributors: acato
-Donate link: https://acato.nl/donate
-Tags: email, smtp, dkim, smime, debugging, history, html, css, outgoing, deliverability
+Donate link: https://acato.nl
+Tags: email, smtp, dkim, smime, deliverability
+More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.0
-Tested up to: 6.5
-Requires PHP: 7.2
-Stable tag: 6.0.0
+Tested up to: 6.8.3
+Requires PHP: 7.4
+Stable tag: 5.4.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

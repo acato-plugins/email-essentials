@@ -33,7 +33,6 @@
 		They are not intended as advice about which sniffs to exclude.
 		-->
 
-		<exclude name="WordPress.WP.I18n.MissingTranslatorsComment"/>
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
@@ -75,7 +74,7 @@
 	the wiki:
 	https://github.com/WordPress/WordPress-Coding-Standards/wiki/Customizable-sniff-properties
 	-->
-	<config name="minimum_supported_wp_version" value="4.9"/>
+	<config name="minimum_supported_wp_version" value="5.0"/>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>

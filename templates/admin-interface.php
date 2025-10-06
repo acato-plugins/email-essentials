@@ -916,7 +916,10 @@ $wpes_dkim_identities  = [];
 						<?php if ( Plugin::path_is_in_web_root( $wpes_config['dkim_certificate_folder'] ) ) { ?>
 							<div class="wpes-notice--error on-enable-dkim">
 								<strong class="title">
-									<?php print wp_kses_post( sprintf( __( 'It is highly advised to pick a folder path <u>outside</u> your website, for example: <code>%s</code> to prevent stealing your identity.', 'email-essentials' ), Plugin::suggested_safe_path_for( '.dkim' ) ) ); ?>
+									<?php
+									// translators: %s: a path.
+									print wp_kses_post( sprintf( __( 'It is highly advised to pick a folder path <u>outside</u> your website, for example: <code>%s</code> to prevent stealing your identity.', 'email-essentials' ), Plugin::suggested_safe_path_for( '.dkim' ) ) );
+									?>
 								</strong>
 							</div>
 						<?php } ?>
@@ -932,10 +935,13 @@ $wpes_dkim_identities  = [];
 								<div class="wpes-notice--error on-enable-dkim">
 									<strong class="title">
 										<?php
+										// translators: %s: a path.
 										print wp_kses_post( sprintf( __( 'Set folder <code>%s</code> not found.', 'email-essentials' ), $wpes_config['dkimfolder'] ) );
 										if ( $wpes_dkim_certificate_folder !== $wpes_config['dkimfolder'] ) {
+											// translators: %s: a path.
 											print ' ' . wp_kses_post( sprintf( __( 'Expanded path: <code>%s</code>', 'email-essentials' ), $wpes_dkim_certificate_folder ) );
 										}
+										// translators: %s: a path.
 										print ' ' . wp_kses_post( sprintf( __( 'Evaluated path: <code>%s</code>', 'email-essentials' ), realpath( $wpes_dkim_certificate_folder ) ) );
 										?>
 									</strong>

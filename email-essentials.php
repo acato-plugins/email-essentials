@@ -15,8 +15,8 @@ namespace Acato\Email_Essentials;
  * Author URI: https://acato.nl
  * Version: 5.4.7
  * Requires PHP: 7.4
- * Requires at least: 4.8.3
- * Tested up to: 6.8.2
+ * Requires at least: 5.0
+ * Tested up to: 6.8.3
  * Text Domain: email-essentials
  * Domain Path: /languages
  * License: GPLv2 or later

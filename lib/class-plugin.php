@@ -2738,11 +2738,16 @@ Item 2
 		// @phpcs:disable WordPress.WP.I18n.MissingArgDomain
 		// WordPress strings, do NOT use own text-domain here, this construction is here because these are WP translated strings.
 		$keys = [
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
 			sprintf( _x( '[%s] New User Registration', 'translators: ignore this.' ), $blogname ) => 'new_user_registration_admin_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
 			sprintf( _x( '[%s] Password Reset', 'translators: ignore this.' ), $blogname )        => 'password_reset_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
 			sprintf( _x( '[%s] Password Changed', 'translators: ignore this.' ), $blogname )      => 'password_changed_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
 			sprintf( _x( '[%s] Password Lost/Changed', 'translators: ignore this.' ), $blogname ) => 'password_lost_changed_email',
-			self::dummy_subject()                                                                 => 'email_essentials_test_email_body',
+
+			self::dummy_subject() => 'email_essentials_test_email_body',
 		];
 		// @phpcs:enable WordPress.WP.I18n.MissingArgDomain
 
