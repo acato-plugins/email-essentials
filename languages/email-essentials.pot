@@ -1,17 +1,17 @@
 # Copyright (C) 2025 Remon Pel <remon@acato.nl>
-# This file is distributed under the same license as the Email Essentials plugin.
+# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Email Essentials 5.4.6\n"
+"Project-Id-Version: Email Essentials 5.4.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/email-essentials\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-27T14:04:50+00:00\n"
+"POT-Creation-Date: 2025-10-06T08:27:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: email-essentials\n"
 
 #. Plugin Name of the plugin
@@ -47,210 +47,224 @@ msgstr ""
 msgid "Email History"
 msgstr ""
 
-#: lib/class.plugin.php:400
+#: lib/class.plugin.php:382
 msgid "anonymous"
 msgstr ""
 
-#: lib/class.plugin.php:1465
-#: lib/class.plugin.php:1990
+#: lib/class.plugin.php:1437
+#: lib/class.plugin.php:1962
 #: templates/admin-interface.php:48
 #: templates/admin-interface.php:1231
 msgid "Send sample mail"
 msgstr ""
 
-#: lib/class.plugin.php:1500
+#: lib/class.plugin.php:1472
 msgid "Print debug output of sample mail"
 msgstr ""
 
-#: lib/class.plugin.php:1502
+#: lib/class.plugin.php:1474
 msgid "Dump of PHP Mailer object"
 msgstr ""
 
-#: lib/class.plugin.php:1978
-#: lib/class.plugin.php:2060
-#: lib/class.plugin.php:2093
+#: lib/class.plugin.php:1950
+#: lib/class.plugin.php:2032
+#: lib/class.plugin.php:2065
 #: templates/admin-admins.php:37
 #: templates/admin-interface.php:45
 #: templates/admin-moderators.php:44
 msgid "Save settings"
 msgstr ""
 
-#: lib/class.plugin.php:1987
+#: lib/class.plugin.php:1959
 msgid "Settings saved."
 msgstr ""
 
-#: lib/class.plugin.php:1999
+#: lib/class.plugin.php:1971
 msgid "No email address to send to."
 msgstr ""
 
-#: lib/class.plugin.php:2006
+#: lib/class.plugin.php:1978
 msgid "No email address to send from."
 msgstr ""
 
 #. translators: %s is the email address.
-#: lib/class.plugin.php:2021
+#: lib/class.plugin.php:1993
+#, php-format
 msgid "Mail sent to %s"
 msgstr ""
 
 #. translators: %s is the email address.
-#: lib/class.plugin.php:2024
+#: lib/class.plugin.php:1996
+#, php-format
 msgid "Mail NOT sent to %s"
 msgstr ""
 
-#: lib/class.plugin.php:2037
+#: lib/class.plugin.php:2009
 msgid "Sample email subject"
 msgstr ""
 
-#: lib/class.plugin.php:2077
+#: lib/class.plugin.php:2049
 msgid "Alternative Admins list saved."
 msgstr ""
 
-#: lib/class.plugin.php:2087
+#: lib/class.plugin.php:2059
 msgid "Subject-RegExp list saved."
 msgstr ""
 
-#: lib/class.plugin.php:2117
+#: lib/class.plugin.php:2089
 msgid "Alternative Moderators list saved."
 msgstr ""
 
-#: lib/class.plugin.php:2136
-#: lib/class.plugin.php:2137
+#: lib/class.plugin.php:2108
+#: lib/class.plugin.php:2109
 #: templates/admin-admins.php:20
 #: templates/admin-interface.php:91
 msgid "Alternative Admins"
 msgstr ""
 
-#: lib/class.plugin.php:2148
-#: lib/class.plugin.php:2149
+#: lib/class.plugin.php:2120
+#: lib/class.plugin.php:2121
 #: templates/admin-moderators.php:28
 msgid "Alternative Moderators"
 msgstr ""
 
-#: lib/class.plugin.php:2240
+#: lib/class.plugin.php:2212
 msgid "Test-email"
 msgstr ""
 
 #. translators: %s: Plugin name.
-#: lib/class.plugin.php:2316
+#: lib/class.plugin.php:2288
+#, php-format
 msgid "%s is not yet configured. Please fill out the form below."
 msgstr ""
 
 #. translators: %1$s: Plugin name, %2$s: settings URL.
-#: lib/class.plugin.php:2321
+#: lib/class.plugin.php:2293
+#, php-format
 msgid "%1$s is not yet configured. Please go <a href=\"%2$s\">here</a>."
 msgstr ""
 
 #. translators: %s: a file path.
-#: lib/class.plugin.php:2332
+#: lib/class.plugin.php:2304
+#, php-format
 msgid "The S/MIME certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr ""
 
-#: lib/class.plugin.php:2338
+#: lib/class.plugin.php:2310
 msgid "The openssl package for PHP is not installed, incomplete or broken. Please contact your hosting provider. S/MIME signing is NOT available."
 msgstr ""
 
-#: lib/class.plugin.php:2344
+#: lib/class.plugin.php:2316
 msgid "Services like MandrillApp or SparkPostMail will break S/MIME signing. Please use a different SMTP-service if signing is required."
 msgstr ""
 
 #. translators: %s: email address.
-#: lib/class.plugin.php:2357
+#: lib/class.plugin.php:2329
+#, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. The required certificate is supplied with this plugin. Please copy it to the correct folder."
 msgstr ""
 
 #. translators: %s: email address.
-#: lib/class.plugin.php:2362
+#: lib/class.plugin.php:2334
+#, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. Start: <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">here</a>."
 msgstr ""
 
 #. translators: %s: a file path.
-#: lib/class.plugin.php:2374
+#: lib/class.plugin.php:2346
+#, php-format
 msgid "The DKIM certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr ""
 
-#: lib/class.plugin.php:2712
+#: lib/class.plugin.php:2684
 msgctxt "mail key"
 msgid "Email after automatic update (debug)"
 msgstr ""
 
-#: lib/class.plugin.php:2713
+#: lib/class.plugin.php:2685
 msgctxt "mail key"
 msgid "Email after automatic update"
 msgstr ""
 
-#: lib/class.plugin.php:2714
+#: lib/class.plugin.php:2686
 msgctxt "mail key"
 msgid "Email after website crash"
 msgstr ""
 
-#: lib/class.plugin.php:2719
+#: lib/class.plugin.php:2693
 msgctxt "mail key"
 msgid "Email after new user registered"
 msgstr ""
 
-#: lib/class.plugin.php:2720
+#: lib/class.plugin.php:2694
 msgctxt "mail key"
 msgid "Email notification after user requests password reset"
 msgstr ""
 
-#: lib/class.plugin.php:2721
+#: lib/class.plugin.php:2695
 msgctxt "mail key"
 msgid "Email notification after user reset their password"
 msgstr ""
 
-#: lib/class.plugin.php:2722
+#: lib/class.plugin.php:2696
 msgctxt "mail key"
 msgid "Email notification after user changed their password"
 msgstr ""
 
-#: lib/class.plugin.php:2723
+#: lib/class.plugin.php:2697
 msgctxt "mail key"
-msgid "Email test from WP Email Essentials"
+msgid "Email test from Email Essentials"
 msgstr ""
 
 #. translators: %s: a URL.
-#: lib/class.plugin.php:2878
+#: lib/class.plugin.php:2852
+#, php-format
 msgid "You can configure alternative administrators <a href=\"%s\">here</a>."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: website hostname.
-#: lib/class.plugin.php:2891
+#: lib/class.plugin.php:2865
+#, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"noreply\">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: email address.
-#: lib/class.plugin.php:2895
+#: lib/class.plugin.php:2869
+#, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"default\">%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class.plugin.php:2899
+#: lib/class.plugin.php:2873
+#, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"at-\">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class.plugin.php:2903
+#: lib/class.plugin.php:2877
+#, php-format
 msgid "You can fix this here, or you can let <a href=\"%1$s\" target=\"_blank\">%2$s</a> fix this automatically upon sending the email."
 msgstr ""
 
 #. translators: %1$s: type (class/function/filter), %2$s: function/class/filter name, %3$s: time since last seen, %4$s: version, %5$s: replacement.
-#: lib/class.plugin.php:3264
+#: lib/class.plugin.php:3238
+#, php-format
 msgid "Deprecated <strong>%1$s</strong> <code>%2$s</code> was seen %3$s ago. Replacement since version <strong>%4$s</strong> is <code>%5$s</code>."
 msgstr ""
 
-#: lib/class.plugin.php:3269
+#: lib/class.plugin.php:3243
 msgid "unavailable"
 msgstr ""
 
-#: lib/class.plugin.php:3275
+#: lib/class.plugin.php:3249
 msgid "Email Essentials detected the use of deprecated functions or classes"
 msgstr ""
 
-#: lib/class.plugin.php:3278
+#: lib/class.plugin.php:3252
 msgid "Debug Logging is enabled in your site, please check the log for more information."
 msgstr ""
 
-#: lib/class.plugin.php:3280
+#: lib/class.plugin.php:3254
 msgid "Please enable debug logging in your site to see more information about these deprecated functions/classes/filters."
 msgstr ""
 
@@ -340,6 +354,7 @@ msgstr ""
 
 #. translators: %s: the admin email address.
 #: templates/admin-admins.php:48
+#, php-format
 msgid "Outgoing emails to the site-administrator ( %s )"
 msgstr ""
 
@@ -366,11 +381,13 @@ msgstr ""
 
 #. translators: %1$s: the regexp barrier "/" .
 #: templates/admin-admins.php:103
+#, php-format
 msgid "You must include the boundaries, so start with %1$s and end with %1$s."
 msgstr ""
 
 #. translators: %1$s: the flag for case-insensitive matching, %2$s: the example of a regular expression.
 #: templates/admin-admins.php:108
+#, php-format
 msgid "You can add the %1$s flag to create a case-insensitive match (like so: %2$s)."
 msgstr ""
 
@@ -546,6 +563,7 @@ msgstr ""
 
 #. translators: %s: hostname.
 #: templates/admin-interface.php:115
+#, php-format
 msgid "Out of the box, WordPress will use name \"WordPress\" and email \"wordpress@%s\" as default sender. This is far from optimal. Your first step is therefore to set an appropriate name and email address."
 msgstr ""
 
@@ -763,11 +781,13 @@ msgstr ""
 
 #. translators: %s: the hostname of the website.
 #: templates/admin-interface.php:521
+#, php-format
 msgid "Rewrite email@addre.ss to email-at-addre-dot-ss@%s"
 msgstr ""
 
 #. translators: %s: the hostname of the website.
 #: templates/admin-interface.php:528
+#, php-format
 msgid "Rewrite email@addre.ss to noreply@%s"
 msgstr ""
 
@@ -777,6 +797,7 @@ msgstr ""
 
 #. translators: %s: the default sender email address.
 #: templates/admin-interface.php:540
+#, php-format
 msgid "Rewrite email@addre.ss to %s"
 msgstr ""
 
@@ -820,12 +841,14 @@ msgstr ""
 #. translators: %1$d: the maximum number of emails per time window, %2$d: the time window in seconds.
 #: templates/admin-interface.php:606
 #: templates/admin-queue.php:32
+#, php-format
 msgid "Once activated, when more than %1$d emails are sent within %2$d seconds from the same IP-address, all other emails will be held until released."
 msgstr ""
 
 #. translators: %d: the number of emails per minute.
 #: templates/admin-interface.php:611
 #: templates/admin-queue.php:34
+#, php-format
 msgid "Emails will be sent in batches of %d per minute, the trigger is a hit on the website, the admin panel or the cron (wp-cron.php)."
 msgstr ""
 
@@ -859,6 +882,7 @@ msgstr ""
 
 #. translators: %s: a content-encoding, like UTF-8.
 #: templates/admin-interface.php:676
+#, php-format
 msgctxt "E.g.: From: UTF-8"
 msgid "From: %s"
 msgstr ""
@@ -902,24 +926,28 @@ msgstr ""
 #. translators: %s: a path.
 #: templates/admin-interface.php:766
 #: templates/admin-interface.php:917
+#, php-format
 msgid "It is highly advised to pick a folder path <u>outside</u> your website, for example: <code>%s</code> to prevent stealing your identity."
 msgstr ""
 
 #. translators: %s: a path.
 #: templates/admin-interface.php:786
 #: templates/admin-interface.php:933
+#, php-format
 msgid "Set folder <code>%s</code> not found."
 msgstr ""
 
 #. translators: %s: a path.
 #: templates/admin-interface.php:789
 #: templates/admin-interface.php:935
+#, php-format
 msgid "Expanded path: <code>%s</code>"
 msgstr ""
 
 #. translators: %s: a path.
 #: templates/admin-interface.php:792
 #: templates/admin-interface.php:937
+#, php-format
 msgid "Evaluated path: <code>%s</code>"
 msgstr ""
 
@@ -954,6 +982,7 @@ msgstr ""
 
 #. translators: %s: a list of S/MIME identities.
 #: templates/admin-interface.php:870
+#, php-format
 msgid "Found S/MIME identities for the following senders: <code>%s</code>"
 msgstr ""
 
@@ -1018,16 +1047,19 @@ msgstr ""
 
 #. translators: %1$s and %2$s are sample content lines to be removed from the key.
 #: templates/admin-interface.php:1068
+#, php-format
 msgid "Remove the lines \"%1$s\" and \"%2$s\" and place the rest of the content on a single line."
 msgstr ""
 
 #. translators: %s: a URL: to a testing site.
 #: templates/admin-interface.php:1074
+#, php-format
 msgid "Test your settings with <a href=\"%s\" target=\"_blank\">DMARC Analyser</a> (unaffiliated)"
 msgstr ""
 
 #. translators: %s: a list of domains.
 #: templates/admin-interface.php:1085
+#, php-format
 msgid "Found DKIM certificates for the following sender-domains: %s"
 msgstr ""
 
@@ -1113,6 +1145,7 @@ msgstr ""
 
 #. translators: %s: a special token.
 #: templates/admin-moderators.php:61
+#, php-format
 msgctxt "A blackhole special token is allowed..."
 msgid "%s is allowed to disable sending the email."
 msgstr ""
@@ -1143,11 +1176,13 @@ msgstr ""
 
 #. translators: %s: post-type.
 #: templates/admin-moderators.php:97
+#, php-format
 msgid "default: owner of %s"
 msgstr ""
 
 #. translators: %1$s: email type like notification or request, %2$s: comment type like comment or pingback, %3$s: post_type .
 #: templates/admin-moderators.php:105
+#, php-format
 msgid "<em>%1$s</em> to author on <em>%2$s</em> on <em>%3$s</em>"
 msgstr ""
 

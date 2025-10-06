@@ -102,7 +102,7 @@ class Plugin {
 		add_action(
 			'plugins_loaded',
 			function () {
-				load_plugin_textdomain( 'email-essentials', false, plugin_basename( dirname( __DIR__ ) ) . '/lang' );
+				load_plugin_textdomain( 'email-essentials', false, plugin_basename( dirname( __DIR__ ) ) . '/languages' );
 			}
 		);
 		add_action(
@@ -2694,7 +2694,7 @@ Item 2
 			'password_lost_changed_email'       => _x( 'Email notification after user requests password reset', 'mail key', 'email-essentials' ),
 			'password_reset_email'              => _x( 'Email notification after user reset their password', 'mail key', 'email-essentials' ),
 			'password_changed_email'            => _x( 'Email notification after user changed their password', 'mail key', 'email-essentials' ),
-			'email_essentials_test_email_body'  => _x( 'Email test from WP Email Essentials', 'mail key', 'email-essentials' ),
+			'email_essentials_test_email_body'  => _x( 'Email test from Email Essentials', 'mail key', 'email-essentials' ),
 		];
 
 		return array_merge( $wp_filters, $unsupported_wp_filters );

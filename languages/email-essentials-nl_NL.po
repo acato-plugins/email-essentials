@@ -26,201 +26,196 @@ msgstr ""
 msgid "Email History"
 msgstr "E-mail Historie"
 
-#: lib/class.plugin.php:400
+#: lib/class.plugin.php:382
 msgid "anonymous"
 msgstr "anoniem"
 
-#: lib/class.plugin.php:1465
-#: lib/class.plugin.php:1990
+#: lib/class.plugin.php:1437
+#: lib/class.plugin.php:1962
 #: templates/admin-interface.php:48
 #: templates/admin-interface.php:1231
 msgid "Send sample mail"
 msgstr "Verstuur test-e-mail"
 
-#: lib/class.plugin.php:1500
+#: lib/class.plugin.php:1472
 msgid "Print debug output of sample mail"
 msgstr "Geef debug informatie over verzonden test-e-mail"
 
-#: lib/class.plugin.php:1502
+#: lib/class.plugin.php:1474
 msgid "Dump of PHP Mailer object"
 msgstr "Dump van het PHP Mailer object"
 
-#: lib/class.plugin.php:1978
-#: lib/class.plugin.php:2060
-#: lib/class.plugin.php:2093
+#: lib/class.plugin.php:1950
+#: lib/class.plugin.php:2032
+#: lib/class.plugin.php:2065
 #: templates/admin-admins.php:37
 #: templates/admin-interface.php:45
 #: templates/admin-moderators.php:44
 msgid "Save settings"
 msgstr "Instellingen opslaan"
 
-#: lib/class.plugin.php:1987
+#: lib/class.plugin.php:1959
 msgid "Settings saved."
 msgstr "Instellingen opgeslagen."
 
-#: lib/class.plugin.php:1999
+#: lib/class.plugin.php:1971
 msgid "No email address to send to."
 msgstr "Geen e-mail adres om aan te verzenden."
 
-#: lib/class.plugin.php:2006
+#: lib/class.plugin.php:1978
 msgid "No email address to send from."
 msgstr "Geen email adres beschikbaar als afzender."
 
 #. translators: %s is the email address.
-#: lib/class.plugin.php:2021
+#: lib/class.plugin.php:1993
 #, php-format
 msgid "Mail sent to %s"
 msgstr "Mail verzonden naar %s"
 
 #. translators: %s is the email address.
-#: lib/class.plugin.php:2024
+#: lib/class.plugin.php:1996
 #, php-format
 msgid "Mail NOT sent to %s"
 msgstr "Mail NIET verzonden naar %s"
 
-#: lib/class.plugin.php:2037
+#: lib/class.plugin.php:2009
 msgid "Sample email subject"
 msgstr "Voorbeeld e-mail onderwerp"
 
-#: lib/class.plugin.php:2077
+#: lib/class.plugin.php:2049
 msgid "Alternative Admins list saved."
 msgstr "Lijst van alternatieve adressen opgeslagen."
 
-#: lib/class.plugin.php:2087
+#: lib/class.plugin.php:2059
 msgid "Subject-RegExp list saved."
 msgstr "Onderwerp-RegExp lijst opgeslagen."
 
-#: lib/class.plugin.php:2117
+#: lib/class.plugin.php:2089
 msgid "Alternative Moderators list saved."
 msgstr "Lijst van alternatieve moderators opgeslagen."
 
-#: lib/class.plugin.php:2136
-#: lib/class.plugin.php:2137
+#: lib/class.plugin.php:2108
+#: lib/class.plugin.php:2109
 #: templates/admin-admins.php:20
 #: templates/admin-interface.php:91
 msgid "Alternative Admins"
 msgstr "Alternatieve Administrator-adressen"
 
-#: lib/class.plugin.php:2148
-#: lib/class.plugin.php:2149
+#: lib/class.plugin.php:2120
+#: lib/class.plugin.php:2121
 #: templates/admin-moderators.php:28
 msgid "Alternative Moderators"
 msgstr "Alternatieve moderators"
 
-#: lib/class.plugin.php:2240
+#: lib/class.plugin.php:2212
 msgid "Test-email"
 msgstr "Test-e-mail"
 
 #. translators: %s: Plugin name.
-#: lib/class.plugin.php:2316
+#: lib/class.plugin.php:2288
 #, php-format
 msgid "%s is not yet configured. Please fill out the form below."
 msgstr "%s is nog niet geconfigureerd. Vul aub onderstaande instellingen in."
 
 #. translators: %1$s: Plugin name, %2$s: settings URL.
-#: lib/class.plugin.php:2321
+#: lib/class.plugin.php:2293
 #, php-format
 msgid "%1$s is not yet configured. Please go <a href=\"%2$s\">here</a>."
 msgstr "%1$s is nog niet geconfigureerd, ga a.u.b. naar <a href=\"%2$s\">deze pagina</a>."
 
 #. translators: %s: a file path.
-#: lib/class.plugin.php:2332
+#: lib/class.plugin.php:2304
 #, php-format
 msgid "The S/MIME certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr "Het gekozen S/MIME certificaat pad is gesitueerd binnen de website. Dit is Extreem onveilig. Kies a.u.b. een andere locatie welke niet binnen de website-basis %s ligt."
 
-#: lib/class.plugin.php:2338
+#: lib/class.plugin.php:2310
 msgid "The openssl package for PHP is not installed, incomplete or broken. Please contact your hosting provider. S/MIME signing is NOT available."
 msgstr "Het pakket openssl voor PHP is niet geïnstalleerd, is incompleet of stuk. Neem contact op met je hosting aanbieder. S/MIME ondertekening is NIET beschikbaar."
 
-#: lib/class.plugin.php:2344
+#: lib/class.plugin.php:2316
 msgid "Services like MandrillApp or SparkPostMail will break S/MIME signing. Please use a different SMTP-service if signing is required."
 msgstr "Diensten als MandrillApp of SparkPostMail werken niet goed samen met S/MIME ondertekening. Gebruik een andere SMTP-dienst indien digitale ondertekening vereist is."
 
 #. translators: %s: email address.
-#: lib/class.plugin.php:2357
+#: lib/class.plugin.php:2329
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. The required certificate is supplied with this plugin. Please copy it to the correct folder."
 msgstr "Er is geen certificaat voor het standaard afzender adres <code>%s</code>. Het vereiste certificaat is meegeleverd met deze plugin, kopieer het a.u.b. naar de juiste map."
 
 #. translators: %s: email address.
-#: lib/class.plugin.php:2362
+#: lib/class.plugin.php:2334
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. Start: <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">here</a>."
 msgstr "Er is geen certificaat voor het standaard afzender adres <code>%s</code>. Begin <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">hier</a> met de aanvraag van een S/MIME certificaat."
 
 #. translators: %s: a file path.
-#: lib/class.plugin.php:2374
+#: lib/class.plugin.php:2346
 #, php-format
 msgid "The DKIM certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr "Het gekozen DKIM certificaat pad is gesitueerd binnen de website. Dit is Extreem onveilig. Kies a.u.b. een andere locatie welke niet binnen de website-basis %s ligt."
 
-#: lib/class.plugin.php:2712
+#: lib/class.plugin.php:2684
 msgctxt "mail key"
 msgid "Email after automatic update (debug)"
 msgstr "E-mail na automatische update (debug)"
 
-#: lib/class.plugin.php:2713
+#: lib/class.plugin.php:2685
 msgctxt "mail key"
 msgid "Email after automatic update"
 msgstr "E-mail na automatische update"
 
-#: lib/class.plugin.php:2714
+#: lib/class.plugin.php:2686
 msgctxt "mail key"
 msgid "Email after website crash"
 msgstr "E-mail wanneer de website crasht"
 
-#: lib/class.plugin.php:2719
+#: lib/class.plugin.php:2693
 msgctxt "mail key"
 msgid "Email after new user registered"
 msgstr "E-mail wanneer een nieuwe gebruiker is geregistreerd"
 
-#: lib/class.plugin.php:2720
+#: lib/class.plugin.php:2694
 msgctxt "mail key"
 msgid "Email notification after user requests password reset"
 msgstr "E-mail notificatie nadat een gebruiker een wachtwoord reset vraagt"
 
-#: lib/class.plugin.php:2721
+#: lib/class.plugin.php:2695
 msgctxt "mail key"
 msgid "Email notification after user reset their password"
 msgstr "E-mail notificatie nadat een gebruiker hun wachtwoord heeft gereset"
 
-#: lib/class.plugin.php:2722
+#: lib/class.plugin.php:2696
 msgctxt "mail key"
 msgid "Email notification after user changed their password"
 msgstr "E-mail notificatie nadat een gebruiker hun wachtwoord veranderd heeft"
 
-#: lib/class.plugin.php:2723
-msgctxt "mail key"
-msgid "Email test from WP Email Essentials"
-msgstr "E-mail test vanuit WP Email Essentials"
-
 #. translators: %s: a URL.
-#: lib/class.plugin.php:2878
+#: lib/class.plugin.php:2852
 #, php-format
 msgid "You can configure alternative administrators <a href=\"%s\">here</a>."
 msgstr "Je kunt alternatieve ontvangers <a href=\"%s\">hier</a> instellen."
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: website hostname.
-#: lib/class.plugin.php:2891
+#: lib/class.plugin.php:2865
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"noreply\">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"noreply\">noreply@%3$s</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: email address.
-#: lib/class.plugin.php:2895
+#: lib/class.plugin.php:2869
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"default\">%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"default\">%3$s</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class.plugin.php:2899
+#: lib/class.plugin.php:2873
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"at-\">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"at-\">example-email-at-youtserver-dot-com</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class.plugin.php:2903
+#: lib/class.plugin.php:2877
 #, php-format
 msgid "You can fix this here, or you can let <a href=\"%1$s\" target=\"_blank\">%2$s</a> fix this automatically upon sending the email."
 msgstr "Dit kun je hier oplossen, of je kunt <a href=\"%1$s\" target=\"_blank\">%2$s</a> het automatisch laten oplossen bij het verzenden van de e-mail."
@@ -1167,23 +1162,24 @@ msgid "Emails"
 msgstr "E-mails"
 
 #. translators: %1$s: type (class/function/filter), %2$s: function/class/filter name, %3$s: time since last seen, %4$s: version, %5$s: replacement.
-#: lib/class.plugin.php:3264
+#: lib/class.plugin.php:3238
+#, php-format
 msgid "Deprecated <strong>%1$s</strong> <code>%2$s</code> was seen %3$s ago. Replacement since version <strong>%4$s</strong> is <code>%5$s</code>."
 msgstr "Verouderd gebruik van <strong>%1$s</strong> <code>%2$s</code> is gezien %3$s geleden. Vervanging sinds versie <strong>%4$s</strong> is <code>%5$s</code>."
 
-#: lib/class.plugin.php:3269
+#: lib/class.plugin.php:3243
 msgid "unavailable"
 msgstr "niet beschikbaar"
 
-#: lib/class.plugin.php:3275
+#: lib/class.plugin.php:3249
 msgid "Email Essentials detected the use of deprecated functions or classes"
 msgstr "E-mail Essentials heeft het gebruik van verouderde functions of classes gedetecteerd"
 
-#: lib/class.plugin.php:3278
+#: lib/class.plugin.php:3252
 msgid "Debug Logging is enabled in your site, please check the log for more information."
 msgstr "Debug Logging is ingeschakeld op je website, controleer de log voor meer informatie."
 
-#: lib/class.plugin.php:3280
+#: lib/class.plugin.php:3254
 msgid "Please enable debug logging in your site to see more information about these deprecated functions/classes/filters."
 msgstr "Zet de debug logging aan op je website om meer informatie te zien over deze verouderde functions/classes/filters."
 
@@ -1198,3 +1194,8 @@ msgstr "Beta functie"
 #: templates/admin-interface.php:584
 msgid "It works but not without flaws."
 msgstr "Het werkt, maar niet zonder nukken."
+
+#: lib/class.plugin.php:2697
+msgctxt "mail key"
+msgid "Email test from Email Essentials"
+msgstr "E-mail test van E-mail Essentials"

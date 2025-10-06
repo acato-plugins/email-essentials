@@ -77,8 +77,15 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 
 == Screenshots ==
 
-1. Email Essentials settings page.
-2. Outgoing email history with re-send option.
+1. Email Essentials settings page 1/4.
+2. Email Essentials settings page 2/4.
+3. Email Essentials settings page 3/4.
+4. Email Essentials settings page 4/4.
+5. Alternative administrators page 1/2.
+6. Alternative administrators page 2/2.
+7. Alternative moderators.
+8. Email History overview.
+9. Email History detail views.
 
 == WordPress Filters ==
 
@@ -88,7 +95,7 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 * `email_essentials_head` — Filter HEAD section of HTML email.
 * `email_essentials_css` — Filter CSS for the email.
 * `email_essentials_subject` — Filter email subject.
-* `email_essentials_ip_services` — Define custom IP services for accuarely determining the sender's IP address.
+* `email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
 
 == Changelog ==
 

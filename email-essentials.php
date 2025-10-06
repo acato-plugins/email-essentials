@@ -18,6 +18,9 @@ namespace Acato\Email_Essentials;
  * Requires at least: 4.8.3
  * Tested up to: 6.8.2
  * Text Domain: email-essentials
+ * Domain Path: /languages
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 spl_autoload_register(
