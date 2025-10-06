@@ -41,7 +41,7 @@ if ( ! get_option( 'moderation_notify' ) ) {
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
 				<input
-					type="submit" name="op" value="<?php print esc_attr_e( 'Save settings', 'email-essentials' ); ?>"
+					type="submit" name="op" value="<?php esc_attr_e( 'Save settings', 'email-essentials' ); ?>"
 					class="button-primary action"/>
 			</div>
 		</div>
