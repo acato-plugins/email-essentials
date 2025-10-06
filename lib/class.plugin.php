@@ -2687,12 +2687,14 @@ Item 2
 		];
 
 		// unsupported until added, @see wp_mail_key.patch, matched by subject, @see self::mail_subject_database.
+		// patch is not applied automatically, it is completely optional.
+		// email_essentials_test_email_body is in this list on purpose, to test the subject-matching.
 		$unsupported_wp_filters = [
 			'new_user_registration_admin_email' => _x( 'Email after new user registered', 'mail key', 'email-essentials' ),
 			'password_lost_changed_email'       => _x( 'Email notification after user requests password reset', 'mail key', 'email-essentials' ),
 			'password_reset_email'              => _x( 'Email notification after user reset their password', 'mail key', 'email-essentials' ),
 			'password_changed_email'            => _x( 'Email notification after user changed their password', 'mail key', 'email-essentials' ),
-			'wpes_email_test'                   => _x( 'Email test from WP Email Essentials', 'mail key', 'email-essentials' ),
+			'email_essentials_test_email_body'  => _x( 'Email test from WP Email Essentials', 'mail key', 'email-essentials' ),
 		];
 
 		return array_merge( $wp_filters, $unsupported_wp_filters );
@@ -2718,7 +2720,7 @@ Item 2
 			sprintf( _x( '[%s] Password Reset', 'translators: ignore this.' ), $blogname )        => 'password_reset_email',
 			sprintf( _x( '[%s] Password Changed', 'translators: ignore this.' ), $blogname )      => 'password_changed_email',
 			sprintf( _x( '[%s] Password Lost/Changed', 'translators: ignore this.' ), $blogname ) => 'password_lost_changed_email',
-			self::dummy_subject()                                                                 => 'wpes_email_test',
+			self::dummy_subject()                                                                 => 'email_essentials_test_email_body',
 		];
 		// @phpcs:enable WordPress.WP.I18n.MissingArgDomain
 
