@@ -4,7 +4,7 @@ Donate link: https://acato.nl
 Tags: email, smtp, dkim, smime, deliverability
 More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.0
-Tested up to: 6.8.3
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 5.4.7
 License: GPLv2 or later

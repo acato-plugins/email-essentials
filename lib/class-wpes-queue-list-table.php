@@ -118,6 +118,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	private function table_data() {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wpes_queue ORDER BY id DESC", ARRAY_A );
 	}
 
@@ -203,6 +204,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	 */
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
@@ -211,11 +213,20 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	 */
 	public function process_bulk_action() {
 		// security check!
-		if ( ! empty( $_POST['wpes-nonce'] ) && ! wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--queue' ) ) {
+		$the_nonce = Plugin::get_post_data( 'wpes-nonce' );
+
+		// No nonce? No bulk action for you.
+		if ( ! $the_nonce ) {
+			return;
+		}
+
+		// We have a nonce, but it is invalid.
+		if ( $the_nonce && ! wp_verify_nonce( $the_nonce, 'wp-email-essentials--queue' ) ) {
 			wp_die( 'Nope! Security check failed!' );
 		}
 
 		$action = $this->current_action();
+		$ids = Plugin::get_post_data( 'item', 'intval' ) ?: [];
 
 		switch ( $action ) {
 
@@ -224,7 +235,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 				exit;
 
 			case 'release':
-				foreach ( array_map( 'intval', $_POST['item'] ) as $id ) {
+				foreach ( $ids as $id ) {
 					if ( Queue::is_status( $id, Queue::BLOCK ) ) {
 						self::set_status( $id, Queue::FRESH );
 					}
@@ -233,7 +244,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 				exit;
 
 			case 'retry':
-				foreach ( array_map( 'intval', $_POST['item'] ) as $id ) {
+				foreach ( $ids as $id ) {
 					if ( Queue::is_status( $id, Queue::STALE ) || Queue::is_status( $id, Queue::SENDING ) ) {
 						self::set_status( $id, Queue::FRESH );
 					}
@@ -242,7 +253,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 				exit;
 
 			case 'resend':
-				foreach ( array_map( 'intval', $_POST['item'] ) as $id ) {
+				foreach ( $ids as $id ) {
 					if ( Queue::is_status( $id, Queue::SENT ) ) {
 						self::set_status( $id, Queue::FRESH );
 					}
@@ -251,14 +262,13 @@ class WPES_Queue_List_Table extends WP_List_Table {
 				exit;
 
 			case 'send-now':
-				foreach ( array_map( 'intval', $_POST['item'] ) as $id ) {
+				foreach ( $ids as $id ) {
 					if ( Queue::is_status( $id, Queue::FRESH ) ) {
 						Queue::send_now( $id );
 					}
 				}
 				wp_safe_redirect( remove_query_arg( 'wpes-action' ) );
 				exit;
-
 		}
 	}
 
@@ -276,16 +286,16 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		$order   = 'desc';
 
 		// If orderby is set, use this as the sort column.
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Not a form.
-		if ( ! empty( $_GET['orderby'] ) ) {
-			$orderby = $_GET['orderby'];
+		$_orderby = Plugin::get_get_data( 'orderby' );
+		if ( ! empty( $_orderby ) ) {
+			$orderby = $_orderby;
 		}
 
 		// If order is set use this as the order.
-		if ( ! empty( $_GET['order'] ) ) {
-			$order = $_GET['order'];
+		$_order = Plugin::get_get_data( 'order' );
+		if ( ! empty( $_order ) ) {
+			$order = $_order;
 		}
-		// phpcs:enable ignore WordPress.Security.NonceVerification.Recommended -- Not a form.
 
 		$result = strnatcasecmp( $a[ $orderby ], $b[ $orderby ] );
 

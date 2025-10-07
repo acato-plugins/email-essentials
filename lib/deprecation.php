@@ -758,9 +758,9 @@ class Fake_Sender extends \Acato\Email_Essentials\Fake_Sender {
 	}
 }
 
-class WPES_PHPMailer extends \Acato\Email_Essentials\WPES_PHPMailer {
+class WPES_PHPMailer extends \Acato\Email_Essentials\EEMailer {
 	public function __construct( $exceptions = null ) {
-		\Acato\Email_Essentials\Plugin::_deprecated_class( 'WP_Email_Essentials\\WPES_PHPMailer', '5.0.0', 'Acato\\Email_Essentials\\WPES_PHPMailer' );
+		\Acato\Email_Essentials\Plugin::_deprecated_class( 'WP_Email_Essentials\\EEMailer', '5.0.0', 'Acato\\Email_Essentials\\EEMailer' );
 
 		parent::__construct( $exceptions );
 	}

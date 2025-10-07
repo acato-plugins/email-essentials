@@ -3,6 +3,7 @@
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- this is a tool, WordPress not available here.
 
 $domain   = $argv[1] ?? 'somedomain.com';
+// phpcs:ignore WordPress.WP.AlternativeFunctions.rand_rand -- We do not have WordPress here.
 $selector = 'website-' . substr( md5( random_bytes( 32 ) ), rand( 0, 24 ), 7 );
 
 $key = openssl_pkey_new(

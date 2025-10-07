@@ -100,12 +100,6 @@ class Plugin {
 		add_action( 'wp_ajax_nopriv_wpes_get_ip', [ self::class, 'ajax_get_ip' ] );
 
 		add_action(
-			'plugins_loaded',
-			function () {
-				load_plugin_textdomain( 'email-essentials', false, plugin_basename( dirname( __DIR__ ) ) . '/languages' );
-			}
-		);
-		add_action(
 			'admin_enqueue_scripts',
 			function () {
 				wp_register_style( 'email-essentials', plugins_url( 'public/styles/wpes-admin.css', __DIR__ ), [], filemtime( __DIR__ . '/../public/styles/wpes-admin.css' ), 'all' );
@@ -223,12 +217,12 @@ class Plugin {
 
 		// TAKEN FROM wp-includes/pluggable.php.
 		// Changed class name, so we can overload the Send method.
-		if ( ! ( $phpmailer instanceof WPES_PHPMailer ) ) {
+		if ( ! ( $phpmailer instanceof EEMailer ) ) {
 			require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 			require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
 			require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 			// @phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Give me a different way to do this, and I will gladly refactor.
-			$phpmailer = new WPES_PHPMailer( true );
+			$phpmailer = new EEMailer( true );
 
 			$phpmailer::$validator = static function ( $email ) {
 				return (bool) is_email( $email );
@@ -425,15 +419,20 @@ class Plugin {
 			'HTTP_X_FORWARDED_FOR'  => 'HTTP:X-FORWARDED-FOR',
 			'REMOTE_ADDR'           => false,
 		];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- we will sanitize below.
+		$return_value = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '::1' );
 		foreach ( $possibilities as $option => $htaccess_variable ) {
-			if ( isset( $_SERVER[ $option ] ) && trim( $_SERVER[ $option ] ) ) {
-				$ip = explode( ',', $_SERVER[ $option ] );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- we will sanitize below.
+			$option_value = trim( wp_unslash( $_SERVER[ $option ] ?? '' ) );
+			if ( ! empty( $option_value ) ) {
+				$ip = explode( ',', $option_value );
 
-				return $return_htaccess_variable ? $htaccess_variable : end( $ip );
+				$return_value = $return_htaccess_variable ? $htaccess_variable : end( $ip );
+				break;
 			}
 		}
 
-		return $_SERVER['REMOTE_ADDR'];
+		return filter_var( $return_value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4 );
 	}
 
 	/**
@@ -841,7 +840,8 @@ class Plugin {
 					$ipv4_service,
 					[
 						'httpversion' => '1.1',
-						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
+						// Sending only the base URL of the website for privacy reasons; not sending the real referrer.
+						'referer'     => get_bloginfo( 'url' ),
 						'user-agent'  => sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
 					]
 				)
@@ -856,7 +856,8 @@ class Plugin {
 					$dual_stack_service,
 					[
 						'httpversion' => '1.1',
-						'referer'     => $_SERVER['HTTP_REFERER'] ?? get_bloginfo( 'url' ),
+						// Sending only the base URL of the website for privacy reasons; not sending the real referrer.
+						'referer'     => get_bloginfo( 'url' ),
 						'user-agent'  => sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
 					]
 				)
@@ -878,12 +879,13 @@ class Plugin {
 
 		// If all else fails, use the configured server address.
 		if ( ! $ip ) {
-			$ip = $_SERVER['SERVER_ADDR'];
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- we will sanitize below.
+			$ip = wp_unslash( $_SERVER['SERVER_ADDR'] ?? '::1' );
 		}
 
 		$sending_ip[ $ipkey ] = $ip;
 
-		return $sending_ip[ $ipkey ];
+		return filter_var( $sending_ip[ $ipkey ], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4 );
 	}
 
 	/**
@@ -1277,7 +1279,7 @@ class Plugin {
 	/**
 	 * Implementation of action  wp_mailer_init .
 	 *
-	 * @param WPES_PHPMailer $mailer The PHPMailer object, either PHPMailer or PHPMailer\PHPMailer\PHPMailer ... Thank you WordPress...
+	 * @param EEMailer $mailer The PHPMailer object, either PHPMailer or PHPMailer\PHPMailer\PHPMailer ... Thank you WordPress...
 	 */
 	public static function action_phpmailer_init( &$mailer ) {
 		// @phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1436,7 +1438,10 @@ class Plugin {
 		}
 
 		// Check if this is a debug request;.
-		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--settings' ) && $_POST && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] && __( 'Send sample mail', 'email-essentials' ) === $_POST['op'] ) {
+		$the_nonce = self::get_post_data( 'wpes-nonce' );
+		$form_id   = self::get_post_data( 'form_id' );
+		$op        = self::get_post_data( 'op' );
+		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && $_POST && 'wp-email-essentials' === $form_id && __( 'Send sample mail', 'email-essentials' ) === $op ) {
 			$mailer->Timeout   = 5;
 			$mailer->SMTPDebug = 2;
 		}
@@ -1471,7 +1476,7 @@ class Plugin {
 
 		// DEBUG output .
 		// @phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--settings' ) && $_POST && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] && __( 'Print debug output of sample mail', 'email-essentials' ) === $_POST['op'] ) {
+		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && 'wp-email-essentials' === $form_id && __( 'Print debug output of sample mail', 'email-essentials' ) === $op ) {
 			$mailer->SMTPDebug = true;
 			print '<h2>' . esc_html__( 'Dump of PHP Mailer object', 'email-essentials' ) . '</h2><pre>';
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
@@ -1505,10 +1510,10 @@ class Plugin {
 	/**
 	 * Convert a body to HTML, if not already HTML.
 	 *
-	 * @param string         $might_be_text The email body that might be text, might be HTML.
-	 * @param string         $subject       The subject.
-	 * @param WPES_PHPMailer $mailer        The PHP_Mailer object.
-	 * @param string         $charset       A charset.
+	 * @param string   $might_be_text The email body that might be text, might be HTML.
+	 * @param string   $subject       The subject.
+	 * @param EEMailer $mailer        The PHP_Mailer object.
+	 * @param string   $charset       A charset.
 	 *
 	 * @return mixed|string
 	 */
@@ -1546,10 +1551,10 @@ class Plugin {
 	/**
 	 * Build HTML for sending the email.
 	 *
-	 * @param WPES_PHPMailer $mailer         The mailer object.
-	 * @param string         $subject        The subject.
-	 * @param string         $should_be_html The email body which now should be HTML.
-	 * @param string         $charset        The charset.
+	 * @param EEMailer $mailer         The mailer object.
+	 * @param string   $subject        The subject.
+	 * @param string   $should_be_html The email body which now should be HTML.
+	 * @param string   $charset        The charset.
 	 *
 	 * @return string
 	 */
@@ -1963,29 +1968,34 @@ class Plugin {
 	 * Process settings when POSTed.
 	 */
 	public static function save_admin_settings() {
-		$html = null;
+		$html      = null;
+		$the_nonce = self::get_post_data( 'wpes-nonce' );
+		$form_id   = self::get_post_data( 'form_id' );
+		$op        = self::get_post_data( 'op' );
+		$page      = self::get_get_data( 'page' );
 		/**
 		 * Save options for "Settings" pane..
 		 */
-		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--settings' ) && isset( $_GET['page'] ) && 'wp-email-essentials' === $_GET['page'] && $_POST && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] ) {
-			switch ( $_POST['op'] ) {
+		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && 'wp-email-essentials' === $page && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] ) {
+			switch ( $op ) {
 				case __( 'Save settings', 'email-essentials' ):
-					$config  = self::get_config();
-					$host    = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
-					$host    = preg_replace( '/^www\d*\./', '', $host );
-					$defmail = self::wp_mail_from( $_POST['settings']['from_email'] );
-					if ( 'default' === $_POST['settings']['make_from_valid'] && ! self::i_am_allowed_to_send_in_name_of( $defmail ) ) {
-						$_POST['settings']['make_from_valid'] = 'noreply';
+					$config     = self::get_config();
+					$new_config = self::get_post_data( 'settings', 'trim' ) ?: [];
+					$host       = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
+					$host       = preg_replace( '/^www\d*\./', '', $host );
+					$defmail    = self::wp_mail_from( $new_config['from_email'] ?? '' );
+					if ( 'default' === ( $new_config['make_from_valid'] ?? '' ) && ! self::i_am_allowed_to_send_in_name_of( $defmail ) ) {
+						$new_config['make_from_valid'] = 'noreply';
 					}
-					self::set_config( $_POST['settings'] );
+					self::set_config( $new_config );
 					set_transient( 'wpes_message', __( 'Settings saved.', 'email-essentials' ), 5 );
 					wp_safe_redirect( remove_query_arg( 'wpes-nonce' ) );
 					exit;
 				case __( 'Send sample mail', 'email-essentials' ):
 					ob_start();
 					self::$debug     = true;
-					$send_email_to   = $_POST['send-test-email-to'] ?? false;
-					$send_email_from = $_POST['send-test-email-from'] ?? false;
+					$send_email_to   = self::get_post_data( 'send-test-email-to' );
+					$send_email_from = self::get_post_data( 'send-test-email-from' );
 					if ( ! $send_email_to || ! is_email( $send_email_to ) ) {
 						$send_email_to = get_option( 'admin_email', false );
 					}
@@ -2025,8 +2035,8 @@ class Plugin {
 		 * Iframe content to show a sample email.
 		 */
 		// @phpcs:ignore WordPress.Security.NonceVerification.Missing -- not processing form content.
-		if ( isset( $_GET['page'] ) && 'wp-email-essentials' === $_GET['page'] && isset( $_GET['iframe'] ) && 'content' === $_GET['iframe'] ) {
-			$mailer          = new WPES_PHPMailer();
+		if ( 'wp-email-essentials' === $page && 'content' === self::get_get_data( 'iframe' ) ) {
+			$mailer          = new EEMailer();
 			$config          = self::get_config();
 			$subject         = __( 'Sample email subject', 'email-essentials' );
 			$mailer->Subject = $subject; // @phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer, sorry.
@@ -2051,8 +2061,9 @@ class Plugin {
 		/**
 		 * Save options for "alternative admins" panel
 		 */
-		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--admins' ) && isset( $_GET['page'] ) && 'wpes-admins' === $_GET['page'] && $_POST && isset( $_POST['form_id'] ) && 'wpes-admins' === $_POST['form_id'] && __( 'Save settings', 'email-essentials' ) === $_POST['op'] ) {
-			$keys = $_POST['settings']['keys'];
+		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--admins' ) && 'wpes-admins' === $page && 'wpes-admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
+			$keys = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
 			$keys = array_filter(
 				$keys,
 				function ( $el ) {
@@ -2069,9 +2080,10 @@ class Plugin {
 			);
 			update_option( 'mail_key_admins', $keys );
 			self::$message = __( 'Alternative Admins list saved.', 'email-essentials' );
-			$regexps       = $_POST['settings']['regexp'];
-			$list          = [];
-			$__regex       = '/^\/[\s\S]+\/$/';
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
+			$regexps = self::get_post_data( [ 'settings', 'regexp' ], 'trim' ) ?: [];
+			$list    = [];
+			$__regex = '/^\/[\s\S]+\/$/';
 			foreach ( $regexps as $entry ) {
 				if ( preg_match( $__regex, $entry['regexp'] ) ) {
 					$list[ $entry['regexp'] ] = $entry['key'];
@@ -2084,10 +2096,13 @@ class Plugin {
 		/**
 		 * Save options for "Moderators" panel.
 		 */
-		if ( wp_verify_nonce( $_POST['wpes-nonce'] ?? false, 'wp-email-essentials--moderators' ) && isset( $_GET['page'] ) && 'wpes-moderators' === $_GET['page'] && $_POST && isset( $_POST['form_id'] ) && 'wpes-moderators' === $_POST['form_id'] && __( 'Save settings', 'email-essentials' ) === $_POST['op'] ) {
-			foreach ( $_POST['settings']['keys'] as $recipient => $_keys ) {
-				foreach ( $_keys as $post_type => $keys ) {
-					$_POST['settings']['keys'][ $recipient ][ $post_type ] = array_filter(
+		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--moderators' ) && 'wpes-moderators' === $page && 'wpes-moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
+			$new_data = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
+			foreach ( $new_data as &$_keys ) {
+				foreach ( $_keys as &$keys ) {
+					// this is where we sanitize the input.
+					$keys = array_filter(
 						$keys,
 						function ( $el ) {
 							$els = explode( ',', $el );
@@ -2107,7 +2122,8 @@ class Plugin {
 					);
 				}
 			}
-			update_option( 'mail_key_moderators', $_POST['settings']['keys'] );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared above
+			update_option( 'mail_key_moderators', wp_unslash( $new_data ) );
 			self::$message = __( 'Alternative Moderators list saved.', 'email-essentials' );
 		}
 	}
@@ -2275,8 +2291,8 @@ Item 2
 	/**
 	 * For display purposes: fetch an ambedded image based on the CID and show it.
 	 *
-	 * @param string         $html   The HTML of the email.
-	 * @param WPES_PHPMailer $mailer The PHP_Mailer object.
+	 * @param string   $html   The HTML of the email.
+	 * @param EEMailer $mailer The PHP_Mailer object.
 	 *
 	 * @return string
 	 */
@@ -2871,9 +2887,10 @@ Item 2
 	 * Inject elements in existing admin panels.
 	 */
 	public static function maybe_inject_admin_settings() {
+		global $pagenow;
 		$host = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no form processing, just checking...
-		if ( 'options-general.php' === basename( $_SERVER['PHP_SELF'] ) && ! ( $_GET['page'] ?? '' ) ) {
+		if ( 'options-general.php' === $pagenow && empty( $_GET['page'] ) ) {
 			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen
 			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd
 			// phpcs:disable Generic.WhiteSpace.ScopeIndent.IncorrectExact
@@ -2913,8 +2930,7 @@ Item 2
 				break;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no form processing, just checking...
-		if ( 'admin.php' === basename( $_SERVER['PHP_SELF'] ) && 'wpcf7' === ( $_GET['page'] ?? false ) ) {
+		if ( 'admin.php' === $pagenow && 'wpcf7' === self::get_get_data( 'page' ) ) {
 			?>
 			<script>
 				jQuery(document).ready(function () {
@@ -3254,6 +3270,7 @@ Item 2
 	public static function render_deprecation_notices() {
 		// List all options that start with 'wpes_deprecated_classes_' or 'wpes_deprecated_functions_'.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$options   = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'wpes_deprecated_%'" );
 		$dismissed = get_user_meta( get_current_user_id(), 'wpes_deprecation_notice_dismissed', true );
 		$notices   = [];
@@ -3455,5 +3472,100 @@ Item 2
 		$services = apply_filters( 'email_essentials_ip_services', $services );
 
 		return apply_filters( 'email_essentials_ip_service', $services[ $type ] ?? '', $type );
+	}
+
+	/**
+	 * Get sanitized, unslashed POST data.
+	 */
+	public static function get_post_data( $property, $sanitizer = 'sanitize_text_field' ) {
+		return self::get_special_data( $property, $sanitizer, 'POST' );
+	}
+
+	/**
+	 * Get sanitized, unslashed GET data.
+	 */
+	public static function get_get_data( $property, $sanitizer = 'sanitize_text_field' ) {
+		return self::get_special_data( $property, $sanitizer, 'GET' );
+	}
+
+	/**
+	 * Get sanitized, unslashed REQUEST data.
+	 */
+	public static function get_request_data( $property, $sanitizer = 'sanitize_text_field' ) {
+		return self::get_special_data( $property, $sanitizer, 'REQUEST' );
+	}
+
+	/**
+	 * Get sanitized, unslashed SERVER data.
+	 */
+	public static function get_server_data( $property, $sanitizer = 'sanitize_text_field' ) {
+		return self::get_special_data( $property, $sanitizer, 'SERVER' );
+	}
+
+	/**
+	 * Get sanitized, unslashed data.
+	 */
+	public static function get_special_data( $property_trail, $sanitizer = 'sanitize_text_field', $source = 'POST' ) {
+		switch ( $source ) {
+			case 'POST':
+			default:
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
+				$data = ! empty( $_POST ) ? wp_unslash( $_POST ) : [];
+				break;
+			case 'GET':
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
+				$data = ! empty( $_GET ) ? wp_unslash( $_GET ) : [];
+				break;
+			case 'REQUEST':
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
+				$data = ! empty( $_REQUEST ) ? wp_unslash( $_REQUEST ) : [];
+				break;
+			case 'SERVER':
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
+				$data = ! empty( $_SERVER ) ? wp_unslash( $_SERVER ) : [];
+				break;
+		}
+
+		if ( empty( $data ) ) {
+			return null;
+		}
+
+		if ( is_string( $property_trail ) ) {
+			$property_trail = [ $property_trail ];
+		}
+
+		foreach ( $property_trail as $property ) {
+			if ( ! isset( $data[ $property ] ) ) {
+				return null;
+			}
+			$data = $data[ $property ];
+		}
+
+		return self::recursive_sanitize( $data, $sanitizer );
+	}
+
+	/**
+	 * Recursively sanitize a value or array of values.
+	 *
+	 * @param mixed  $value     The value to sanitize.
+	 * @param string $sanitizer The sanitizer function to use.
+	 *
+	 * @return mixed
+	 */
+	private static function recursive_sanitize( $value, $sanitizer ) {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $key => $item ) {
+				$value[ $key ] = self::recursive_sanitize( $item, $sanitizer );
+			}
+		} else {
+			if ( is_callable( $sanitizer ) ) {
+				$value = call_user_func( $sanitizer, $value );
+			} else {
+				// fallback to sanitize_text_field.
+				$value = sanitize_text_field( $value );
+			}
+		}
+
+		return $value;
 	}
 }

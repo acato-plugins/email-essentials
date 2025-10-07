@@ -101,6 +101,7 @@ class History {
 			add_action( 'shutdown', [ self::class, 'shutdown' ] );
 			add_action( 'admin_menu', [ self::class, 'admin_menu' ] );
 		} elseif ( get_option( 'wpes_hist_rev', 0 ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
 			$wpdb->query( "DROP TABLE `{$wpdb->prefix}wpes_hist`;" );
 			delete_option( 'wpes_hist_rev' );
 		}
@@ -110,9 +111,10 @@ class History {
 			function () {
 				global $wpdb;
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not a form!.
-				if ( current_user_can( 'manage_options' ) && isset( $_GET['download_eml'] ) ) {
-					// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- still not a form!.
-					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}wpes_hist WHERE id = %d LIMIT 1", $_GET['download_eml'] ), ARRAY_A );
+				$download_eml = Plugin::get_get_data( 'download_eml', 'intval' );
+				if ( current_user_can( 'manage_options' ) && $download_eml ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.Security.NonceVerification.Recommended -- still not a form!.
+					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}wpes_hist WHERE id = %d LIMIT 1", $download_eml ), ARRAY_A );
 					if ( $data['eml'] ?? false ) {
 						header( 'Content-Type: message/rfc822' );
 						$uniq = sprintf(
@@ -146,6 +148,7 @@ class History {
 	 */
 	public static function shutdown() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( "DELETE FROM `{$wpdb->prefix}wpes_hist` WHERE thedatetime <  NOW() - INTERVAL 1 MONTH" );
 	}
 
@@ -175,34 +178,39 @@ class History {
 	 * Maybe resend an email.
 	 */
 	private static function maybe_resend_email() {
-		if ( ! is_admin() || 'wpes-emails' !== ( $_GET['page'] ?? '' ) ) {
+		$the_nonce = Plugin::get_get_data( 'nonce' );
+		$action    = Plugin::get_get_data( 'action' );
+		$email     = (int) Plugin::get_get_data( 'email', 'intval' );
+		$page      = Plugin::get_get_data( 'page' );
+
+		if ( ! is_admin() || 'wpes-emails' !== $page ) {
 			return;
 		}
 
-		if ( 'resend-failed-email' !== ( $_GET['action'] ?? '' ) || ! isset( $_GET['email'] ) || ! current_user_can( 'manage_options' ) ) {
+		if ( 'resend-failed-email' !== $action || ! $email || ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
 		// Check nonce.
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], 'wpes_resend_email_' . (int) $_GET['email'] ) ) {
+		if ( ! wp_verify_nonce( $the_nonce, 'wpes_resend_email_' . $email ) ) {
 			return;
 		}
 
 		global $wpdb;
-		$id = (int) $_GET['email'];
-		if ( $id <= 0 ) {
+		if ( $email <= 0 ) {
 			return;
 		}
 
-		$data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}wpes_hist` WHERE ID = %d LIMIT 1", $id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}wpes_hist` WHERE ID = %d LIMIT 1", $email ), ARRAY_A );
 		if ( ! $data ) {
 			return;
 		}
 
-		$relates_to = $id;
+		$relates_to = $email;
 		preg_match( '/X-Relates-To: (.*)/', $data['headers'], $matches );
 		if ( ! empty( $matches[1] ) ) {
-			$relates_to      = $matches[1] . ',' . $id;
+			$relates_to      = $matches[1] . ',' . $email;
 			$data['headers'] = str_replace( $matches[0], '', $data['headers'] );
 		}
 		$headers   = explode( "\n", $data['headers'] );
@@ -213,7 +221,8 @@ class History {
 		wp_mail( Plugin::rfc_explode( $data['recipient'] ), $data['subject'], $data['body'], $headers, self::extract_attachments( $data['eml'] ) );
 
 		// Mark email as re-sent so we don't try to resend it again.
-		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d WHERE ID = %d LIMIT 1", self::MAIL_RESENT, $id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d WHERE ID = %d LIMIT 1", self::MAIL_RESENT, $email ) );
 
 		wp_safe_redirect( remove_query_arg( [ 'action', 'nonce', 'email' ] ) );
 		exit;
@@ -307,7 +316,7 @@ class History {
 	/**
 	 * Retrieve the recipients from the Mailer object.
 	 *
-	 * @param WPES_PHPMailer $phpmailer The mailer object.
+	 * @param EEMailer $phpmailer The mailer object.
 	 *
 	 * @return array
 	 */
@@ -402,7 +411,7 @@ class History {
 	/**
 	 * Callback to action phpmailer_init: Grab the object for debug purposes.
 	 *
-	 * @param WPES_PHPMailer $phpmailer The PHPMailer object.
+	 * @param EEMailer $phpmailer The PHPMailer object.
 	 */
 	public static function phpmailer_init( &$phpmailer ) {
 		// @phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer, folks...
@@ -428,6 +437,7 @@ class History {
 		$phpmailer->PreSend();
 		$eml = $phpmailer->GetSentMIMEMessage();
 		Plugin::log_message( "UPDATE sender to $sender" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d, sender = %s, alt_body = %s, debug = %s, eml = %s WHERE ID = %d AND subject = %s LIMIT 1", self::MAIL_SENT, $sender, $phpmailer->AltBody, $data, $eml, self::last_insert(), $phpmailer->Subject ) );
 		// @phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer, folks...
 	}
@@ -471,6 +481,7 @@ class History {
 
 		$ip = Queue::server_remote_addr();
 		Plugin::log_message( "INSERT with sender $from" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "INSERT INTO `{$wpdb->prefix}wpes_hist` (status, sender, recipient, subject, headers, body, thedatetime, ip) VALUES (%d, %s, %s, %s, %s, %s, %s, %s);", self::MAIL_NEW, $from, is_array( $to ) ? implode( ',', $to ) : $to, $subject, $_headers, $message, gmdate( 'Y-m-d H:i:s', time() ), $ip ) );
 		self::last_insert( $wpdb->insert_id );
 
@@ -489,6 +500,7 @@ class History {
 		if ( ! $data ) {
 			$errormsg = 'Unknown error';
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d, errinfo = CONCAT(%s, errinfo) WHERE ID = %d LIMIT 1", self::MAIL_FAILED, $errormsg . "\n", self::last_insert() ) );
 
 		self::store_log( $GLOBALS['wpes_log'] ?? [] );
@@ -509,6 +521,7 @@ class History {
 	private static function store_log( $log ) {
 		global $wpdb;
 		$log = implode( "\n", $log );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET debug = CONCAT(debug, '\n----\n', %s) WHERE ID = %d LIMIT 1", $log, self::last_insert() ) );
 	}
 
@@ -531,7 +544,9 @@ class History {
 	 */
 	public static function handle_tracker() {
 		global $wpdb;
-		if ( preg_match( '/\/email-image-(\d+).png/', $_SERVER['REQUEST_URI'], $match ) ) {
+		$request_uri = Plugin::get_server_data( 'REQUEST_URI' ) ?: '';
+		if ( preg_match( '/\/email-image-(\d+).png/', $request_uri, $match ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $match[1] ) );
 
 			header( 'Content-Type: image/png' );

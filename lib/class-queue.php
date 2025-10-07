@@ -144,6 +144,7 @@ class Queue {
 				$queue_item
 			);
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$wpdb->insert(
 				"{$wpdb->prefix}wpes_queue",
 				$queue_item,
@@ -191,8 +192,8 @@ class Queue {
 		global $wpdb;
 		$ip = $me->server_remote_addr();
 
-		$q                   = $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) );
-		$mails_recently_sent = $wpdb->get_var( $q ); // @phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
 
 		if ( $mails_recently_sent > self::get_max_count_per_time_window() ) {
 			return apply_filters(
@@ -320,14 +321,15 @@ class Queue {
 			'REMOTE_ADDR'           => false,
 		];
 		foreach ( $possibilities as $option => $htaccess_variable ) {
-			if ( isset( $_SERVER[ $option ] ) && trim( $_SERVER[ $option ] ) ) {
-				$ip = explode( ',', $_SERVER[ $option ] );
+			$possible_value = Plugin::get_server_data( $option, 'trim' );
+			if ( $possible_value ) {
+				$ip = explode( ',', $possible_value );
 
 				return $return_htaccess_variable ? $htaccess_variable : end( $ip );
 			}
 		}
 
-		return $_SERVER['REMOTE_ADDR'];
+		return Plugin::get_server_data( 'REMOTE_ADDR' );
 	}
 
 	/**
@@ -407,7 +409,9 @@ class Queue {
 	private function mail_token() {
 		static $token;
 		if ( ! $token ) {
-			$token = md5( microtime( true ) . $_SERVER['REMOTE_ADDR'] . wp_rand( 0, PHP_INT_MAX ) );
+			$remote_addr = Plugin::get_server_data( 'REMOTE_ADDR' );
+			// We don't care about the value, as long as it is absolutely unique for this request.
+			$token = md5( microtime( true ) . $remote_addr . wp_rand( 0, PHP_INT_MAX ) );
 		}
 
 		return $token;
@@ -425,6 +429,7 @@ class Queue {
 	 */
 	public static function send_one_email() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC", self::FRESH ) );
 		self::send_now( $id );
 	}
@@ -448,6 +453,7 @@ class Queue {
 		$me = self::instance();
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC LIMIT %d", self::FRESH, self::get_batch_size() ) );
 		foreach ( $ids as $id ) {
 			self::send_now( $id );
@@ -461,6 +467,7 @@ class Queue {
 	 */
 	public static function send_now( $id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $id ), ARRAY_A );
 		self::instance()->set_skip_queue( true );
 		$mail_data = array_map( 'unserialize', $mail_data );
@@ -485,6 +492,7 @@ class Queue {
 	public static function get_status( $mail_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $mail_id ) );
 	}
 
@@ -506,13 +514,14 @@ class Queue {
 	 */
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
 	/**
 	 * When needed, this callback overwrites the passed phpMailer object with a non-sending one.
 	 *
-	 * @param WPES_PHPMailer $phpmailer The mailer object.
+	 * @param EEMailer $phpmailer The mailer object.
 	 */
 	public static function stop_mail( &$phpmailer ) {
 		remove_action( 'phpmailer_init', [ self::class, 'stop_mail' ], PHP_INT_MIN );
@@ -554,6 +563,7 @@ class Queue {
 	public static function get_queue_count() {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE status = %d", self::FRESH ) );
 	}
 }

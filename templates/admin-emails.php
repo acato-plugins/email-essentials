@@ -15,7 +15,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 global $current_user, $wpdb;
 
 // @phpcs:disable WordPress.Security.NonceVerification.Recommended
-$wpes_view_order_field = $_GET['_ofield'] ?? 'ID';
+$wpes_view_order_field = Plugin::get_get_data('_ofield') ?: 'ID';
 
 if ( ! in_array( $wpes_view_order_field, [ 'subject', 'sender', 'thedatetime', 'recipient' ], true ) ) {
 	$wpes_view_order_field = 'ID';
@@ -39,8 +39,8 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 	if ( '' !== Plugin::$error ) {
 		print '<div class="error"><p>' . wp_kses_post( Plugin::$error ) . '</p></div>';
 	}
-	?>
-	<?php
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wpes_view_total_nr_items = $wpdb->get_var( "SELECT COUNT(ID) as thecount FROM {$wpdb->prefix}wpes_hist" );
 	if ( $wpes_view_first_item > $wpes_view_total_nr_items ) {
 		$wpes_view_first_item = 0;
@@ -98,7 +98,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 
 						<tbody id="the-list">
 						<?php
-						// @phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
 						$wpes_view_emails_list = $wpdb->get_results( "SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY $wpes_view_order_field $wpes_view_order_direction LIMIT $wpes_view_first_item,$wpes_view_items_per_page" );
 						$wpes_view_email_stati = [
 							History::MAIL_NEW    => _x( 'Sent ??', 'Email log: this email is Sent', 'email-essentials' ),
@@ -233,7 +233,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 				<div id="mail-viewer">
 					<div id="mail-data-viewer">
 						<?php
-						$wpes_mailer = new WPES_PHPMailer();
+						$wpes_mailer = new EEMailer();
 						// We call this just for initialisation purposes, we do not actually care about the result.
 						$wpes_css = apply_filters_ref_array( 'wpes_css', [ '', &$wpes_mailer ] );
 						$wpes_css = apply_filters_ref_array( 'email_essentials_css', [ '', &$wpes_mailer ] );

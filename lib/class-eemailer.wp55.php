@@ -11,7 +11,6 @@ namespace Acato\Email_Essentials;
 
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
-use phpmailerException;
 
 require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
@@ -19,7 +18,7 @@ require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 /**
  * A wrapper for the WP 5.5 and later version of PHPMailer
  */
-class WPES_PHPMailer extends PHPMailer {
+class EEMailer extends PHPMailer {
 	/**
 	 * Method Send overloaded to keep the SingleTo functionality that will be deprecated in phpMailer version 6.
 	 * It is unclear when WordPress will upgrade to this version, or if WordPress will or will not implement a split-send themselves.
@@ -29,7 +28,6 @@ class WPES_PHPMailer extends PHPMailer {
 	 *
 	 * @return bool
 	 *
-	 * @throws phpmailerException This is explained in the parent method.
 	 * @throws Exception This is explained in the parent method.
 	 */
 	public function send() {
