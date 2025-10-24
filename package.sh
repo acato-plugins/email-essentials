@@ -29,3 +29,9 @@ mv tools/generate_dkim.sh{,-example.txt}
 cd "$(dirname "$0")"/..
 
 mv /tmp/email-essentials "$TARGETDIR"
+
+cd "$TARGETDIR"
+
+cd ..
+
+zip -r email-essentials{.zip,}
