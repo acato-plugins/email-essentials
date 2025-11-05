@@ -12,8 +12,9 @@ namespace Acato\Email_Essentials;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
-require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
-require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+// We're not allowed to ensure PHPMailer is loaded, so we assume WordPress has already done that for us.
+// require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+// require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 
 /**
  * A wrapper for the WP 5.5 and later version of PHPMailer

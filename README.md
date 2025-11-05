@@ -152,6 +152,34 @@ function my_custom_ip_services($services) {
 }
 ```
 
+---
+
+`email_essentials_website_root_path`
+
+Parameters:
+- (string) `$path` The current website root path.
+
+Expected return:
+- (string) The (possibly altered) website root path.
+
+Filter to supply the correct website root path in case of non-standard setups.
+
+
+# Scripts/styles:
+
+in the `public/scripts` and `public/styles` folder you find the JS and CSS files used in the plugin admin area.
+These files are processed with Webpack, just so it works in all recent browsers. Script is nearly identical to the source.
+
+You can find the source files in the `assets/scripts` and `assets/styles` folders.
+
+If you feel the need to modify these files, you can change them there, and run `npm install ; npm run build` to create the production files.
+
+# Translation files:
+
+You can use `npm run i18n` to generate the POT file for translation, update the PO files in the `languages` folder, and compile to MO/php files.
+This is a one-task-does-all; run it, change the translations, run it again. Done.
+See package.json for more details or individual commands.
+
 # Changelog:
 
 6.0.0: [ VERY VERY SOON ] GOING FOSS! This is the first release of Email Essentials as a FOSS plugin.

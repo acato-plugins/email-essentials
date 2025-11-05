@@ -12,7 +12,8 @@ use PHPMailer;
 
 // phpcs:disable Generic.Classes.DuplicateClassName.Found
 
-require_once ABSPATH . WPINC . '/class-phpmailer.php';
+// We're not allowed to ensure PHPMailer is loaded, so we can only pray that WordPress has already done that for us.
+// require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 /**
  * A wrapper for the WP 5.4 and earlier version of PHPMailer

@@ -97,6 +97,132 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 * `email_essentials_css` — Filter CSS for the email.
 * `email_essentials_subject` — Filter email subject.
 * `email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
+* `email_essentials_website_root_path` - Filter to supply the correct website root path in case of non-standard setups.
+
+== External services ==
+
+Email Essentials uses one external service by default, two if you create and define your own IP services.
+
+1. CloudFlare DNS of HTTPS. This is used to resolve domain names to IP addresses when (for example) checking SPF or DKIM records. In theory, it is possible to use PHPs odn `dns_get_record` function, but in practice this often fails due to local DNS misconfiguration. Using CloudFlare's DoH service ensures reliable DNS resolution. We only send the hostname (the domain part) to CloudFlare, no other data. Explicitly, we do NOT send any other information.
+2. The plugin can an IP-address relay service to accurately determine the sender's IP address. This is required to accurately check that the sender's IP address is authorized to send email for the domain (SPF check). To use this, you will need to set up your own service, see documentation on filter `email_essentials_ip_services`. Without this service, IP detection can be inaccurate because it will use the website itself as a relay. Use of a reverse proxy, load balancer etc can lead to incorrect IP detection.
+
+== WordPress Filters in detail ==
+
+`email_essentials_settings`
+
+Parameters:
+- (array) `$settings` The current settings of the plugin.
+
+Expected return:
+- (array) The new settings of the plugin.
+
+---
+
+`email_essentials_defaults`
+
+Parameters:
+- (array) `$defaults` The current default settings of the plugin.
+
+Expected return:
+- (array) The new default settings of the plugin.
+
+---
+
+`email_essentials_body`
+
+Parameters:
+- (string) `$should_be_html` A text that should be html, but might not yet be, your job to make a nice HTML body.
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) A text that should be html.
+
+---
+
+`email_essentials_head`
+
+Parameters:
+- (string) `$the_head_section` HTML that is the HEAD section of the HTML email.
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) The altered HEAD section of the HTML email.
+
+---
+
+`email_essentials_css`
+
+Parameters:
+- (string) `$the_css` CSS for the email (empty by default).
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) The (altered) CSS.
+
+---
+
+`email_essentials_subject`
+
+Parameters:
+- (string) `$the_subject` Subject for the email.
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) The (altered) Subject.
+
+---
+
+`email_essentials_ip_services`
+
+Parameters:
+- (array) `$services` The current list of IP services used to determine the sender's IP address.
+
+The services must be keyed with `ipv4`, `ipv6` and `dual-stack`. The values must be URLs that return the IP address in plain text.
+The dual-stack service should return an IPv6 address if available, otherwise an IPv4 address, never both.
+
+You can set-up your own service like this;
+
+- You will need a webserver that can run PHP, and you need a DNS service that allows you to manually add records.
+- You will need three webspaces, for example; ipv4.myservice.com, ipv6.myservice.com and dual-stack.myservice.com.
+    - You could use the same webspace for all three, but you will still need three subdomains on the service.
+- For the ipv4 subdomain, ONLY register an A record, pointing to the webserver's IP address.
+- For the ipv6 subdomain, ONLY register an AAAA record, pointing to the webserver's IPv6 address.
+- For the dual-stack subdomain, register both an A and an AAAA record, pointing to the webserver's IP addresses.
+- Create a file called `index.php` in each of the webspaces with the following content:
+
+```php
+<?php
+header('Content-Type: text/plain');
+print $_SERVER['REMOTE_ADDR'];
+```
+
+That's it. You can now use these services in the plugin settings like this;
+
+```php
+add_filter('email_essentials_ip_services', 'my_custom_ip_services');
+function my_custom_ip_services($services) {
+    // Add your custom services here
+    $services['ipv4'] = 'https://ipv4.myservice.com';
+    $services['ipv6'] = 'https://ipv6.myservice.com';
+    $services['dual-stack'] = 'https://dual-stack.myservice.com';
+    return $services;
+}
+```
+
+== Scripts/styles ==
+
+In the `public/scripts` and `public/styles` folder you find the JS and CSS files used in the plugin admin area.
+These files are processed with Webpack, just so it works in all recent browsers. Script is nearly identical to the source.
+
+You can find the source files in the `assets/scripts` and `assets/styles` folders.
+
+If you feel the need to modify these files, you can change them there, and run `npm install ; npm run build` to create the production files.
+
+== Translation files ==
+
+You can use `npm run i18n` to generate the POT file for translation, update the PO files in the `languages` folder, and compile to MO/php files.
+This is a one-task-does-all; run it, change the translations, run it again. Done.
+See package.json for more details or individual commands.
 
 == Changelog ==
 

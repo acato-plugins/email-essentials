@@ -16,10 +16,12 @@ cd /tmp/email-essentials
 for i in \
 	$(find . -name \.DS_Store) \
 	composer.json info.json \
-	node_modules package-lock.json package.json webpack.mix.js .editorconfig \
+	node_modules package-lock.json .editorconfig \
 	./.git ./.gitignore \
 	package.sh SUBMISSION_NOTES.txt \
 	assets/wordpress_org \
+	wp_mail_key.patch \
+	presets.php lib/class-migrations.php \
 	bitbucket-pipelines.yml; do
 	echo "Removing $i" ; rm -rf $i
 done

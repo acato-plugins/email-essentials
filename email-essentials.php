@@ -30,7 +30,6 @@ spl_autoload_register(
 
 		$class_map = [
 			$n . '\\Plugin'                => __DIR__ . '/lib/class-plugin.php',
-			$n . '\\Migrations'            => __DIR__ . '/lib/class-migrations.php',
 			$n . '\\IP'                    => __DIR__ . '/lib/class-ip.php',
 			$n . '\\History'               => __DIR__ . '/lib/class-history.php',
 			$n . '\\Queue'                 => __DIR__ . '/lib/class-queue.php',
@@ -40,6 +39,9 @@ spl_autoload_register(
 			$n . '\\CssVarEval'            => __DIR__ . '/lib/class-cssvareval.php',
 			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-csstoinlinestyles.php',
 		];
+		if ( file_exists( __DIR__ . '/lib/class-migrations.php' ) ) {
+			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/lib/class-migrations.php';
+		}
 
 		/**
 		 * Depending on the WordPress version, the phpMailer object to overload is in a different file/is called differently.
@@ -76,6 +78,14 @@ spl_autoload_register(
 );
 
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
+
+// This file is used internally to define presets we use, but are not allowed to ship with the plugin.
+// You are not missing out. This is not a secret feature, not a path to a premium upgrade, just some predefined settings we use on our clients' sites.
+// See documentation on filter 'email_essentials_ip_services', for example, what we use this for.
+// You do not need this file for the plugin to work, and you can define the same settings yourself using the available filters, in your theme or a custom plugin.
+if ( file_exists( __DIR__ . '/presets.php' ) ) {
+	require_once __DIR__ . '/presets.php';
+}
 
 new Plugin();
 

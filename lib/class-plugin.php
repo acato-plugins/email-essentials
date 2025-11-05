@@ -218,9 +218,7 @@ class Plugin {
 		// TAKEN FROM wp-includes/pluggable.php.
 		// Changed class name, so we can overload the Send method.
 		if ( ! ( $phpmailer instanceof EEMailer ) ) {
-			require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
-			require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
-			require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+			// We're not allowed to ensure presence of PHMailer by requiring the files, so we can only hope WordPress did that for us.
 			// @phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Give me a different way to do this, and I will gladly refactor.
 			$phpmailer = new EEMailer( true );
 
@@ -252,6 +250,7 @@ class Plugin {
 
 	/**
 	 * Get the root path to the website. This is NOT ABSPATH if WordPress is in a subdirectory.
+	 * If you need to correct the root path, use the filter email_essentials_website_root_path .
 	 *
 	 * @return string
 	 */
@@ -259,24 +258,7 @@ class Plugin {
 		static $root_path;
 
 		if ( ! $root_path ) {
-			$wp_path_rel_to_home = self::get_wp_subdir();
-			if ( '' !== $wp_path_rel_to_home ) {
-				$pos       = strripos( str_replace( '\\', '/', ABSPATH ), trailingslashit( $wp_path_rel_to_home ) );
-				$home_path = substr( ABSPATH, 0, $pos );
-				$home_path = trailingslashit( $home_path );
-			} else {
-				$home_path = ABSPATH;
-			}
-
-			$root_path = self::nice_path( $home_path );
-		}
-
-		// Support Deployer style paths.
-		if ( preg_match( '@/releases/(\d+)/@', $root_path, $matches ) ) {
-			$path_named_current = str_replace( '/releases/' . $matches[1] . '/', '/current/', $root_path );
-			if ( is_dir( $path_named_current ) && realpath( $path_named_current ) === realpath( $root_path ) ) {
-				$root_path = $path_named_current;
-			}
+			$root_path = apply_filters( 'email_essentials_website_root_path', ABSPATH );
 		}
 
 		return $root_path;
@@ -2754,14 +2736,14 @@ Item 2
 		// @phpcs:disable WordPress.WP.I18n.MissingArgDomain
 		// WordPress strings, do NOT use own text-domain here, this construction is here because these are WP translated strings.
 		$keys = [
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
-			sprintf( _x( '[%s] New User Registration', 'translators: ignore this.' ), $blogname ) => 'new_user_registration_admin_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
-			sprintf( _x( '[%s] Password Reset', 'translators: ignore this.' ), $blogname )        => 'password_reset_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
-			sprintf( _x( '[%s] Password Changed', 'translators: ignore this.' ), $blogname )      => 'password_changed_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here.
-			sprintf( _x( '[%s] Password Lost/Changed', 'translators: ignore this.' ), $blogname ) => 'password_lost_changed_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] New User Registration' ), $blogname ) => 'new_user_registration_admin_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Reset' ), $blogname )        => 'password_reset_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Changed' ), $blogname )      => 'password_changed_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Lost/Changed' ), $blogname ) => 'password_lost_changed_email',
 
 			self::dummy_subject() => 'email_essentials_test_email_body',
 		];
@@ -3463,13 +3445,20 @@ Item 2
 	 * @return string
 	 */
 	private static function get_ip_service( $type ) {
-		$services = [
-			'ipv4'       => 'https://ip4.acato.nl',
-			'ipv6'       => 'https://ip6.acato.nl',
-			'dual-stack' => 'https://ip.acato.nl',
-		];
+		/**
+		 * Example services; have your filter return an array like this;
+		 * add_filter( 'email_essentials_ip_services', function( $services ) {
+		 * $services = [
+		 * 'ipv4'       => 'https://ip4.myservice.com',
+		 * 'ipv6'       => 'https://ip6.myservice.com',
+		 * 'dual-stack' => 'https://ip.myservice.com',
+		 * ];
+		 * return $services;
+		 * }
+		 * more details in README.md, see `email_essentials_ip_services` filter.
+		 */
 
-		$services = apply_filters( 'email_essentials_ip_services', $services );
+		$services = apply_filters( 'email_essentials_ip_services', [] );
 
 		return apply_filters( 'email_essentials_ip_service', $services[ $type ] ?? '', $type );
 	}

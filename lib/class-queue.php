@@ -371,16 +371,12 @@ class Queue {
 		$tmp = "$tmp/mail_queue_atts";
 		if ( ! is_dir( $tmp ) ) {
 			mkdir( $tmp );
-			if ( ! is_writable( ABSPATH . '/wp-load.php' ) ) {
-				chmod( $tmp, 0777 );
-			}
+			chmod( $tmp, 0777 );
 		}
 		$tmp .= '/' . $this->mail_token();
 		if ( ! is_dir( $tmp ) ) {
 			mkdir( $tmp );
-			if ( ! is_writable( ABSPATH . '/wp-load.php' ) ) {
-				chmod( $tmp, 0777 );
-			}
+			chmod( $tmp, 0777 );
 		}
 		foreach ( $mail_data['attachments'] as $filename => $data ) {
 			// @phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
