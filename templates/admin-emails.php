@@ -98,8 +98,30 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 
 						<tbody id="the-list">
 						<?php
+						/**
+						 * Note to reviewers:
+						 *
+						 * All input in the query has been sanitized on top of this file.
+						 *
+						 * $wpes_view_order_direction can only be ASC or DESC
+						 * $wpes_view_order_field can only be subject, sender, thedatetime, recipient or ID
+						 * $wpes_view_first_item and $wpes_view_items_per_page are integers greater than or equal to 0
+						 *
+						 * The Prepare here is because automated review by WordPress.org has detected this.
+						 * It serves no purpose other than that, as all data is sanitized before injection.
+						 *
+						 * Also; an ORDER BY direction indicator cannot be parameterized, so we have to inject those directly.
+						 */
 						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
-						$wpes_view_emails_list = $wpdb->get_results( "SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY $wpes_view_order_field $wpes_view_order_direction LIMIT $wpes_view_first_item,$wpes_view_items_per_page" );
+						$wpes_view_emails_list = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY %i $wpes_view_order_direction LIMIT %d,%d",
+								$wpes_view_order_field,
+								$wpes_view_first_item,
+								$wpes_view_items_per_page
+							)
+						);
+
 						$wpes_view_email_stati = [
 							History::MAIL_NEW    => _x( 'Sent ??', 'Email log: this email is Sent', 'email-essentials' ),
 							History::MAIL_SENT   => _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' ),
