@@ -204,7 +204,7 @@ class Plugin {
 		// Public API filters.
 		add_filter( 'acato_email_essentials_minify_css', [ self::class, 'minify_css' ] );
 
-		add_action( 'wp_ajax_dismiss_wpes_deprecation_notice', [ self::class, 'dismiss_deprecation_notice' ] );
+		add_action( 'wp_ajax_acato_email_essentials_dismiss_deprecation_notice', [ self::class, 'dismiss_deprecation_notice' ] );
 	}
 
 	/**
@@ -3332,7 +3332,7 @@ Item 2
 		<script>
 			jQuery(document).on('click', '.wpes_deprecation_notice_dismissible .notice-dismiss', function () {
 				jQuery.post(ajaxurl, {
-					action: 'dismiss_wpes_deprecation_notice'
+					action: 'acato_email_essentials_dismiss_deprecation_notice'
 				});
 			});
 		</script>
