@@ -38,6 +38,7 @@ spl_autoload_register(
 			$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-css-inliner.php',
 			$n . '\\CssVarEval'            => __DIR__ . '/lib/class-cssvareval.php',
 			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-csstoinlinestyles.php',
+			$n . '\\Logger'                => __DIR__ . '/lib/class-logger.php',
 		];
 		if ( file_exists( __DIR__ . '/lib/class-migrations.php' ) ) {
 			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/lib/class-migrations.php';

@@ -503,14 +503,14 @@ class History {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d, errinfo = CONCAT(%s, errinfo) WHERE ID = %d LIMIT 1", self::MAIL_FAILED, $errormsg . "\n", self::last_insert() ) );
 
-		self::store_log( $GLOBALS['wpes_log'] ?? [] );
+		self::store_log( Logger::get() );
 	}
 
 	/**
 	 * Callback on action wp_mail_succeeded: store the log.
 	 */
 	public static function wp_mail_succeeded() {
-		self::store_log( $GLOBALS['wpes_log'] ?? [] );
+		self::store_log( Logger::get() );
 	}
 
 	/**

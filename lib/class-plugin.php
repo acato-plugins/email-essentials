@@ -3148,7 +3148,7 @@ Item 2
 	 * @param mixed $pass_thru The value to pass through.
 	 */
 	public static function start_log( $pass_thru ) {
-		$GLOBALS['wpes_log'] = [];
+		Logger::clear();
 
 		return $pass_thru;
 	}
@@ -3159,21 +3159,21 @@ Item 2
 	 * @param string $message The message to log.
 	 */
 	public static function log_message( $message ) {
-		$GLOBALS['wpes_log'][] = $message;
+		Logger::log( $message );
 	}
 
 	/**
 	 * Get the log.
 	 */
 	public static function get_log() {
-		return $GLOBALS['wpes_log'];
+		return Logger::get();
 	}
 
 	/**
 	 * End the log
 	 */
 	public static function end_log() {
-		unset( $GLOBALS['wpes_log'] );
+		Logger::clear();
 	}
 
 	/**
