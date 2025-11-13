@@ -251,6 +251,26 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 							$wpes_view_email->debug = wp_json_encode( $wpes_view_email->debug, JSON_PRETTY_PRINT );
 							$wpes_view_email->debug = ( $wpes_view_email->log ? $wpes_view_email->log . "\n" : '' ) . $wpes_view_email->debug;
 
+							/**
+							 * Note to reviewers:
+							 *
+							 * It has been brought to our attention that the following code need more output filtering.
+							 * Scripts are already disabled in multiple ways, and storing and showing email content (the history function)
+							 * is a debugging tool for admins to see what was ACTUALLY emailed.
+							 * If there is script in there, it HAS ALREADY BEEN SENT VIA EMAIL, which is NOT our responsibility.
+							 * This is also the reason we don't remove it, but replace it with [script] so the administrator can directly
+							 * SEE that scripts have been emailed.
+							 *
+							 * The current method is intentional.
+							 *
+							 * If you have a better way, I invite you to visit our github repo and provide a PR. Any other
+							 * filtering we do will change the output and leave the administrator in a false sense of security.
+							 *
+							 * "There is nothing wrong in the debug window, so no, we did not email malware to half the world."
+							 *
+							 * I hope you can understand our reasoning here. If not, well, I guess we'll know :)
+							 */
+
 							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- how else am I supposed to base64_encode?.
 							$wpes_email_data_base64 = base64_encode(
 								str_ireplace(
