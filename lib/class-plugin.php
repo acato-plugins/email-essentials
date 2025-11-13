@@ -408,17 +408,31 @@ class Plugin {
 		];
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- we will sanitize below.
 		$return_value = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '::1' );
+		$return_type  = 'ip';
 		foreach ( $possibilities as $option => $htaccess_variable ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- we will sanitize below.
 			$option_value = trim( wp_unslash( $_SERVER[ $option ] ?? '' ) );
 			if ( ! empty( $option_value ) ) {
 				$ip = explode( ',', $option_value );
-
-				$return_value = $return_htaccess_variable ? $htaccess_variable : end( $ip );
+				if ( $return_htaccess_variable ) {
+					$return_type  = 'variable_name';
+					$return_value = $htaccess_variable;
+				} else {
+					// only retain the last IP in the list, as that is the original client.
+					$return_value = end( $ip );
+				}
 				break;
 			}
 		}
 
+		// If we want the variable name, return it now.
+		if ( 'variable_name' === $return_type ) {
+			// We return unsanitized as that's not required; we're talking about a static string, defined on top of the function.
+			// There is no way this can be influenced by user-input.
+			return $return_value;
+		}
+
+		// For other return types, which is only 'ip' now, we validate the IP using filter_var.
 		return filter_var( $return_value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4 );
 	}
 
@@ -1560,8 +1574,8 @@ class Plugin {
 		if ( self::get_config()['is_html'] ) {
 			$css = apply_filters_ref_array( 'acato_email_essentials_css', [ '', &$mailer ] );
 
-			$head = '<title>' . $subject . '</title><style type="text/css">' . $css . '</style>';
-			$head = apply_filters_ref_array( 'acato_email_essentials_head', [ $head, &$mailer ] );
+			$head           = '<title>' . $subject . '</title><style type="text/css">' . $css . '</style>';
+			$head           = apply_filters_ref_array( 'acato_email_essentials_head', [ $head, &$mailer ] );
 			$should_be_html = apply_filters_ref_array( 'acato_email_essentials_body', [ $should_be_html, &$mailer ] );
 			$should_be_html = htmlspecialchars_decode( htmlentities( $should_be_html ) );
 		}
