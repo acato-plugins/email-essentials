@@ -3094,8 +3094,14 @@ Item 2
 	 */
 	public static function get_wpes_version() {
 		if ( ! function_exists( 'get_plugin_data' ) ) {
+			/**
+			 * Note to reviewer:
+			 * This was marked as not allowed, however, there is no other way to get the get_plugin_data function to be available.
+			 * If there is a way unknown to us to do this without a require_once, please let us know.
+			 */
 			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
 		}
+		// Because we're in a subfolder, we need to go up one level to get the proper plugin path.
 		$plugin_path = dirname( __DIR__ ) . '/' . basename( self::SLUG );
 		$plugin_data = get_plugin_data( $plugin_path );
 
