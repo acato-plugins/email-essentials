@@ -60,17 +60,17 @@ spl_autoload_register(
 		$class_map = array_merge(
 			$class_map,
 			[
-				$n . '\\Plugin'                => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Migrations'            => __DIR__ . '/lib/deprecation.php',
-				$n . '\\IP'                    => __DIR__ . '/lib/deprecation.php',
-				$n . '\\History'               => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Queue'                 => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Fake_Sender'           => __DIR__ . '/lib/deprecation.php',
-				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CssVarEval'            => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/deprecation.php',
-				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/deprecation.php',
+				$n . '\\Plugin'                => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\Migrations'            => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\IP'                    => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\History'               => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\Queue'                 => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\CssVarEval'            => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/class-deprecation.php',
 			]
 		);
 
@@ -81,5 +81,6 @@ spl_autoload_register(
 );
 
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
+require_once __DIR__ . '/lib/filter-deprecation.php';
 
 new Plugin();

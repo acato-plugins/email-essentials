@@ -1128,29 +1128,35 @@ $wpes_dkim_identities  = [];
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin defaults', 'email-essentials' ); ?></td>
-							<td><code>email_essentials_defaults</code></td>
+							<td><code>acato_email_essentials_defaults</code></td>
 							<td colspan="2"><code>array $defaults</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin settings', 'email-essentials' ); ?></td>
-							<td><code>email_essentials_settings</code></td>
+							<td><code>acato_email_essentials_settings</code></td>
 							<td colspan="2"><code>array $settings</code></td class=last>
 						</tr>
 						<tr>
 							<td><?php esc_html_e( 'Email subject', 'email-essentials' ); ?></td>
-							<td><code>email_essentials_subject</code></td>
+							<td><code>acato_email_essentials_subject</code></td>
 							<td colspan="2"><code>string $subject</code>, <code>PHPMailer $mailer</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <head>', 'email-essentials' ); ?></td>
-							<td><code>email_essentials_head</code></td>
+							<td><code>acato_email_essentials_head</code></td>
 							<td colspan="2"><code>string $head_content</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <body>', 'email-essentials' ); ?></td>
-							<td><code>email_essentials_body</code></td>
+							<td><code>acato_email_essentials_body</code></td>
 							<td colspan="2"><code>string $body_content</code>, <code>PHPMailer $mailer</code>
+							</td class=last>
+						</tr>
+						<tr class="on-smtp-is_html">
+							<td><?php esc_html_e( 'Email CSS styles', 'email-essentials' ); ?></td>
+							<td><code>acato_email_essentials_css</code></td>
+							<td colspan="2"><code>string $css</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
 						<tr class="not-smtp-is_html">

@@ -24,8 +24,8 @@ class Migrations {
 	 * Runs on init, implement filters for Acato specific services.
 	 */
 	public static function init() {
-		add_filter( 'email_essentials_ip_services', [ self::class, 'email_essentials_ip_services' ] );
-		add_filter( 'email_essentials_website_root_path', [ self::class, 'email_essentials_website_root_path' ] );
+		add_filter( 'acato_email_essentials_ip_services', [ self::class, 'acato_email_essentials_ip_services' ] );
+		add_filter( 'acato_email_essentials_website_root_path', [ self::class, 'acato_email_essentials_website_root_path' ] );
 
 		self::maybe_migrate_from_wp_email_essentials();
 	}

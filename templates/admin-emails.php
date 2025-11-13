@@ -235,8 +235,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						<?php
 						$wpes_mailer = new EEMailer();
 						// We call this just for initialisation purposes, we do not actually care about the result.
-						$wpes_css = apply_filters_ref_array( 'wpes_css', [ '', &$wpes_mailer ] );
-						$wpes_css = apply_filters_ref_array( 'email_essentials_css', [ '', &$wpes_mailer ] );
+						$wpes_css = apply_filters_ref_array( 'acato_email_essentials_css', [ '', &$wpes_mailer ] );
 
 						foreach ( $wpes_view_emails_list as $wpes_view_email ) {
 							// @phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- phpMailer thing. cannot help it.

@@ -196,7 +196,7 @@ class Queue {
 		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
 
 		if ( $mails_recently_sent > self::get_max_count_per_time_window() ) {
-			return apply_filters( 'email_essentials_mail_is_throttled', true, $ip, $mails_recently_sent );
+			return apply_filters( 'acato_email_essentials_mail_is_throttled', true, $ip, $mails_recently_sent );
 		}
 
 		return false;
@@ -208,7 +208,7 @@ class Queue {
 	 * @return mixed|null
 	 */
 	public static function get_time_window() {
-		$window = (int) apply_filters( 'email_essentials_mail_throttle_time_window', 5 );
+		$window = (int) apply_filters( 'acato_email_essentials_mail_throttle_time_window', 5 );
 
 		return $window > 0 ? $window : 5;
 	}
@@ -219,7 +219,7 @@ class Queue {
 	 * @return int
 	 */
 	public static function get_max_count_per_time_window() {
-		$max = (int) apply_filters( 'email_essentials_mail_throttle_max_count_per_time_window', 10 );
+		$max = (int) apply_filters( 'acato_email_essentials_mail_throttle_max_count_per_time_window', 10 );
 
 		return $max > 0 ? $max : 10;
 	}
@@ -230,7 +230,7 @@ class Queue {
 	 * @return int
 	 */
 	public static function get_batch_size() {
-		$max = (int) apply_filters( 'email_essentials_mail_throttle_batch_size', 25 );
+		$max = (int) apply_filters( 'acato_email_essentials_mail_throttle_batch_size', 25 );
 
 		return $max > 0 ? $max : 25;
 	}

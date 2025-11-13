@@ -201,7 +201,7 @@ class Plugin {
 		add_filter( 'plugin_action_links', [ self::class, 'plugin_actions' ], 10, 2 );
 
 		// Public API filters.
-		add_filter( 'email_essentials_minify_css', [ self::class, 'minify_css' ] );
+		add_filter( 'acato_email_essentials_minify_css', [ self::class, 'minify_css' ] );
 
 		add_action( 'wp_ajax_dismiss_wpes_deprecation_notice', [ self::class, 'dismiss_deprecation_notice' ] );
 	}
@@ -255,7 +255,7 @@ class Plugin {
 
 	/**
 	 * Get the root path to the website. This is NOT ABSPATH if WordPress is in a subdirectory.
-	 * If you need to correct the root path, use the filter email_essentials_website_root_path .
+	 * If you need to correct the root path, use the filter acato_email_essentials_website_root_path .
 	 *
 	 * @return string
 	 */
@@ -263,7 +263,7 @@ class Plugin {
 		static $root_path;
 
 		if ( ! $root_path ) {
-			$root_path = apply_filters( 'email_essentials_website_root_path', ABSPATH );
+			$root_path = apply_filters( 'acato_email_essentials_website_root_path', ABSPATH );
 		}
 
 		return $root_path;
@@ -1010,7 +1010,7 @@ class Plugin {
 	 */
 	public static function dns_get_record( $lookup, $filter, $single_output = null ) {
 		// pre-filter; these tlds can never have SPF or other special records.
-		$local_tlds = apply_filters( 'wpes_local_tlds', [ 'local', 'test' ] );
+		$local_tlds = apply_filters( 'acato_email_essentials_development_tlds', [ 'local', 'test' ] );
 		$local_tlds = array_filter( array_unique( $local_tlds ) );
 		if ( [] !== $local_tlds ) {
 			$local_tlds = array_map( 'preg_quote', $local_tlds, [ '/' ] );
@@ -1020,7 +1020,7 @@ class Plugin {
 			}
 		}
 		// Proceed with normal lookup.
-		$transient_name = "dns_{$lookup}__TYPE{$filter}__cache";
+		$transient_name = "acato_email_essentials_dns_{$lookup}__TYPE{$filter}__cache";
 		$transient      = get_site_transient( $transient_name );
 		if ( ! $transient ) {
 			$transient = self::dns_get_record__internal( $lookup, $filter );
@@ -1338,7 +1338,7 @@ class Plugin {
 
 			$mailer->Body = self::maybe_convert_to_html( $mailer->Body, $mailer->Subject, $mailer, $check_encoding_result ?: 'utf-8' );
 
-			$css = apply_filters_ref_array( 'email_essentials_css', [ '', &$mailer ] );
+			$css = apply_filters_ref_array( 'acato_email_essentials_css', [ '', &$mailer ] );
 
 			if ( $config['css_inliner'] ) {
 				require_once __DIR__ . '/../lib/class-css-inliner.php';
@@ -1550,16 +1550,16 @@ class Plugin {
 		// you can define a file  wpes-email-template.php  in your theme to define the filters.
 		locate_template( [ 'wpes-email-template.php' ], true );
 
-		$subject = apply_filters_ref_array( 'email_essentials_subject', [ $subject, &$mailer ] );
+		$subject = apply_filters_ref_array( 'acato_email_essentials_subject', [ $subject, &$mailer ] );
 
 		$head = '';
 
 		if ( self::get_config()['is_html'] ) {
-			$css = apply_filters_ref_array( 'email_essentials_css', [ '', &$mailer ] );
+			$css = apply_filters_ref_array( 'acato_email_essentials_css', [ '', &$mailer ] );
 
 			$head = '<title>' . $subject . '</title><style type="text/css">' . $css . '</style>';
-			$head = apply_filters_ref_array( 'email_essentials_head', [ $head, &$mailer ] );
-			$should_be_html = apply_filters_ref_array( 'email_essentials_body', [ $should_be_html, &$mailer ] );
+			$head = apply_filters_ref_array( 'acato_email_essentials_head', [ $head, &$mailer ] );
+			$should_be_html = apply_filters_ref_array( 'acato_email_essentials_body', [ $should_be_html, &$mailer ] );
 			$should_be_html = htmlspecialchars_decode( htmlentities( $should_be_html ) );
 		}
 
@@ -1672,11 +1672,11 @@ class Plugin {
 			'make_from_valid'      => 'default',
 		];
 
-		$defaults = apply_filters( 'email_essentials_defaults', $defaults );
+		$defaults = apply_filters( 'acato_email_essentials_defaults', $defaults );
 
 		$settings = get_option( 'acato_email_essentials_config', $defaults );
 		if ( ! $raw ) {
-			$settings = apply_filters( 'email_essentials_settings', $settings );
+			$settings = apply_filters( 'acato_email_essentials_settings', $settings );
 			if ( ! is_array( $settings ) ) {
 				$settings = $defaults;
 			}
@@ -3398,7 +3398,7 @@ Item 2
 	}
 
 	/**
-	 * Get a remote address for an IP service. You can override with filter `email_essentials_ip_service` with parameter $type, or `email_essentials_ip_services` to change the array of services.
+	 * Get a remote address for an IP service. You can override with filter `acato_email_essentials_ip_service` with parameter $type, or `acato_email_essentials_ip_services` to change the array of services.
 	 *
 	 * @param string $type Enum ('ipv4', 'ipv6', 'dual-stack').
 	 *                     ipv4 service should always return IPv4 or blank string/no data in case of failure.
@@ -3412,7 +3412,7 @@ Item 2
 	private static function get_ip_service( $type ) {
 		/**
 		 * Example services; have your filter return an array like this;
-		 * add_filter( 'email_essentials_ip_services', function( $services ) {
+		 * add_filter( 'acato_email_essentials_ip_services', function( $services ) {
 		 * $services = [
 		 * 'ipv4'       => 'https://ip4.myservice.com',
 		 * 'ipv6'       => 'https://ip6.myservice.com',
@@ -3420,12 +3420,12 @@ Item 2
 		 * ];
 		 * return $services;
 		 * }
-		 * more details in README.md, see `email_essentials_ip_services` filter.
+		 * more details in README.md, see `acato_email_essentials_ip_services` filter.
 		 */
 
-		$services = apply_filters( 'email_essentials_ip_services', [] );
+		$services = apply_filters( 'acato_email_essentials_ip_services', [] );
 
-		return apply_filters( 'email_essentials_ip_service', $services[ $type ] ?? '', $type );
+		return apply_filters( 'acato_email_essentials_ip_service', $services[ $type ] ?? '', $type );
 	}
 
 	/**
