@@ -21,7 +21,7 @@ for i in \
 	package.sh SUBMISSION_NOTES.txt \
 	assets/wordpress_org \
 	wp_mail_key.patch \
-	presets.php lib/class-migrations.php \
+	lib/class-migrations.php \
 	bitbucket-pipelines.yml; do
 	echo "Removing $i" ; rm -rf $i
 done

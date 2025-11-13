@@ -55,6 +55,11 @@ class Plugin {
 		self::$message = get_transient( 'wpes_message' ) ?: '';
 		add_action( 'admin_notices', [ $this, 'admin_notices' ] );
 
+		if ( class_exists( Migrations::class ) ) {
+			register_activation_hook( __FILE__, [ Migrations::class, 'plugin_activation_hook' ] );
+			add_action( 'init', [ Migrations::class, 'init' ] );
+		}
+
 		self::init();
 	}
 

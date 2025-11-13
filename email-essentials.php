@@ -79,14 +79,4 @@ spl_autoload_register(
 
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
 
-// This file is used internally to define presets we use, but are not allowed to ship with the plugin.
-// You are not missing out. This is not a secret feature, not a path to a premium upgrade, just some predefined settings we use on our clients' sites.
-// See documentation on filter 'email_essentials_ip_services', for example, what we use this for.
-// You do not need this file for the plugin to work, and you can define the same settings yourself using the available filters, in your theme or a custom plugin.
-if ( file_exists( __DIR__ . '/presets.php' ) ) {
-	require_once __DIR__ . '/presets.php';
-}
-
 new Plugin();
-
-register_activation_hook( __FILE__, [ Migrations::class, 'plugin_activation_hook' ] );
