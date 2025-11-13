@@ -252,7 +252,6 @@ Expected return:
 
 Filter to modify which TLDs are treated as development/local environments. Default values are 'local' and 'test'.
 
-
 # Scripts/styles:
 
 in the `public/scripts` and `public/styles` folder you find the JS and CSS files used in the plugin admin area.
@@ -267,6 +266,15 @@ If you feel the need to modify these files, you can change them there, and run `
 You can use `npm run i18n` to generate the POT file for translation, update the PO files in the `languages` folder, and compile to MO/php files.
 This is a one-task-does-all; run it, change the translations, run it again. Done.
 See package.json for more details or individual commands.
+
+# Tools:
+
+In the `tools` folder you will find two files that compose a script to generate DKIM keys, should you want to use DKIM signing.
+rename the scripts from to .sh and .php respectively, and run the shell script from the command line.
+
+These scripts are provided as-is, without support. Use at your own risk. Read the scripts before using them.
+
+You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 # Changelog:
 

@@ -331,6 +331,15 @@ You can use `npm run i18n` to generate the POT file for translation, update the 
 This is a one-task-does-all; run it, change the translations, run it again. Done.
 See package.json for more details or individual commands.
 
+== Tools ==
+
+In the `tools` folder you will find two files that compose a script to generate DKIM keys, should you want to use DKIM signing.
+rename the scripts from to .sh and .php respectively, and run the shell script from the command line.
+
+These scripts are provided as-is, without support. Use at your own risk. Read the scripts before using them.
+
+You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
+
 == Changelog ==
 
 = 6.0.0 =

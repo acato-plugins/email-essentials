@@ -27,6 +27,7 @@ for i in \
 done
 
 mv tools/generate_dkim.sh{,-example.txt}
+mv tools/generate_dkim.php{,-example.txt}
 
 cd "$(dirname "$0")"/..
 
