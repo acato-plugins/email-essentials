@@ -35,8 +35,8 @@ $wpes_dkim_identities  = [];
 	?>
 
 	<form id="outpost" class="wpes-admin" method='POST' action="" enctype="multipart/form-data">
-		<input type="hidden" name="form_id" value="wp-email-essentials"/>
-		<?php wp_nonce_field( 'wp-email-essentials--settings', 'wpes-nonce' ); ?>
+		<input type="hidden" name="form_id" value="acato-email-essentials"/>
+		<?php wp_nonce_field( 'acato-email-essentials--settings', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
@@ -1128,28 +1128,28 @@ $wpes_dkim_identities  = [];
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin defaults', 'email-essentials' ); ?></td>
-							<td><code>wpes_defaults</code></td>
+							<td><code>email_essentials_defaults</code></td>
 							<td colspan="2"><code>array $defaults</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin settings', 'email-essentials' ); ?></td>
-							<td><code>wpes_settings</code></td>
+							<td><code>email_essentials_settings</code></td>
 							<td colspan="2"><code>array $settings</code></td class=last>
 						</tr>
 						<tr>
 							<td><?php esc_html_e( 'Email subject', 'email-essentials' ); ?></td>
-							<td><code>wpes_subject</code></td>
+							<td><code>email_essentials_subject</code></td>
 							<td colspan="2"><code>string $subject</code>, <code>PHPMailer $mailer</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <head>', 'email-essentials' ); ?></td>
-							<td><code>wpes_head</code></td>
+							<td><code>email_essentials_head</code></td>
 							<td colspan="2"><code>string $head_content</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <body>', 'email-essentials' ); ?></td>
-							<td><code>wpes_body</code></td>
+							<td><code>email_essentials_body</code></td>
 							<td colspan="2"><code>string $body_content</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
@@ -1201,7 +1201,7 @@ $wpes_dkim_identities  = [];
 					$wpes_recipients[ 'Configured recipient: ' . $wpes_configured_email ] = $wpes_configured_email;
 				}
 
-				$wpes_last_test_sent_to = get_option( 'wpes_last_test_sent_to', reset( $wpes_recipients ) );
+				$wpes_last_test_sent_to = get_option( 'acato_email_essentials_last_test_to', reset( $wpes_recipients ) );
 
 				$wpes_senders = [];
 				// Add 'default' as set in the settings.
@@ -1209,7 +1209,7 @@ $wpes_dkim_identities  = [];
 				// Add the others, as determined at 'To'.
 				$wpes_senders = array_merge( $wpes_senders, $wpes_recipients );
 				// Check the last one used.
-				$wpes_last_test_sent_from = get_option( 'wpes_last_test_sent_from', reset( $wpes_recipients ) );
+				$wpes_last_test_sent_from = get_option( 'acato_email_essentials_last_test_from', reset( $wpes_recipients ) );
 				?>
 				<div class="inside cols">
 					<div class="inside col">

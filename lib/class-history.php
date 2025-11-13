@@ -87,11 +87,11 @@ class History {
 			  KEY `status` (`status`)
 			) DEFAULT CHARSET=utf8mb4";
 			$hash   = md5( $schema );
-			if ( get_option( 'wpes_hist_rev' ) !== $hash ) {
+			if ( get_option( 'acato_email_essentials_history_revision' ) !== $hash ) {
 				require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/upgrade.php';
 				dbDelta( $schema );
 
-				update_option( 'wpes_hist_rev', $hash );
+				update_option( 'acato_email_essentials_history_revision', $hash );
 			}
 			add_action( 'phpmailer_init', [ self::class, 'phpmailer_init' ], 10000000000 );
 			add_filter( 'wp_mail', [ self::class, 'wp_mail' ], 10000000000 );
@@ -100,10 +100,10 @@ class History {
 			add_action( 'pre_handle_404', [ self::class, 'handle_tracker' ], ~PHP_INT_MAX );
 			add_action( 'shutdown', [ self::class, 'shutdown' ] );
 			add_action( 'admin_menu', [ self::class, 'admin_menu' ] );
-		} elseif ( get_option( 'wpes_hist_rev', 0 ) ) {
+		} elseif ( get_option( 'acato_email_essentials_history_revision', 0 ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
 			$wpdb->query( "DROP TABLE `{$wpdb->prefix}wpes_hist`;" );
-			delete_option( 'wpes_hist_rev' );
+			delete_option( 'acato_email_essentials_history_revision' );
 		}
 
 		add_action(
@@ -157,7 +157,7 @@ class History {
 	 */
 	public static function admin_menu() {
 		add_submenu_page(
-			'wp-email-essentials',
+			'acato-email-essentials',
 			Plugin::plugin_data()['Name'] . ' - ' . __( 'Email History', 'email-essentials' ),
 			__( 'Email History', 'email-essentials' ),
 			'manage_options',

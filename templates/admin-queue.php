@@ -46,7 +46,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		action="<?php print esc_attr( add_query_arg( 'wpes-action', 'form-post' ) ); ?>"
 		method="post">
 		<?php
-		wp_nonce_field( 'wp-email-essentials--queue', 'wpes-nonce' );
+		wp_nonce_field( 'acato-email-essentials--queue', 'wpes-nonce' );
 		$wpes_queue_list_table->process_bulk_action();
 		$wpes_queue_list_table->prepare_items();
 		$wpes_queue_list_table->display();

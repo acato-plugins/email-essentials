@@ -49,6 +49,8 @@ spl_autoload_register(
 		 */
 		if ( version_compare( $wp_version, '5.4.99', '<' ) ) {
 			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp54.php';
+		} elseif ( version_compare( $wp_version, '6.8', '>=' ) ) {
+			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp68.php';
 		} else {
 			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp55.php';
 		}

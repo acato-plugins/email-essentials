@@ -13,7 +13,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 global $current_user;
 
-$wpes_config          = get_option( 'mail_key_admins', [] );
+$wpes_config          = get_option( 'acato_email_essentials_admin_keys', [] );
 $wpes_mail_keys       = Plugin::mail_key_database();
 $wpes_wordpress_admin = get_option( 'admin_email' );
 ?>
@@ -31,7 +31,7 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 
 	<form id="outpost" class="wpes-admin" method='POST' action="">
 		<input type="hidden" name="form_id" value="wpes-admins"/>
-		<?php wp_nonce_field( 'wp-email-essentials--admins', 'wpes-nonce' ); ?>
+		<?php wp_nonce_field( 'acato-email-essentials--admins', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
@@ -122,7 +122,7 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 
 						<?php
 						$wpes_loop_iterator_0 = 0;
-						$wpes_regexp_list     = get_option( 'mail_key_list', [] );
+						$wpes_regexp_list     = get_option( 'acato_email_essentials_key_list', [] );
 						foreach ( $wpes_regexp_list as $wpes_regexp => $wpes_mail_key ) {
 							?>
 							<tr>
@@ -165,14 +165,14 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 					</table>
 
 					<?php
-					$wpes_missed_subjects = get_option( 'mail_key_fails', [] );
+					$wpes_missed_subjects = get_option( 'acato_email_essentials_failed_keys', [] );
 					$wpes_missed_subjects = array_filter(
 						$wpes_missed_subjects,
 						function ( $item ) {
 							return ! Plugin::mail_subject_match( $item ) && ! Plugin::get_mail_key( $item );
 						}
 					);
-					update_option( 'mail_key_fails', array_values( $wpes_missed_subjects ) );
+					update_option( 'acato_email_essentials_failed_keys', array_values( $wpes_missed_subjects ) );
 
 					if ( ! empty( $wpes_missed_subjects ) ) {
 						?>

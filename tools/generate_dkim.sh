@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[ "" = "$1" ] && echo "Generates DKIM files for use with wp-email-essentials." && echo "Usage: $0 domain.tld dkim_selector passphrase" && echo "DNS record will be dkim_selector._domainkey.domain.tld" && exit 1
+[ "" = "$1" ] && echo "Generates DKIM files for use with Email Essentials." && echo "Usage: $0 domain.tld dkim_selector passphrase" && echo "DNS record will be dkim_selector._domainkey.domain.tld" && exit 1
 
 R_SELECTOR=$( echo $RANDOM | md5sum | head -c 16 );
 R_PASSPHRASE=$( echo $RANDOM | md5sum | head -c 32 )$( echo $RANDOM | md5sum | head -c 32 );

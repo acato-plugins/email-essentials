@@ -207,6 +207,39 @@ class Migrations {
 	 */
 	private static function maybe_migrate_from_wp_email_essentials() {
 		// Settings mapping from old to new.
-		$settings_map = [];
+		$settings_map = [
+			// Main plugin configuration.
+			'wp-email-essentials'      => 'acato_email_essentials_config',
+			// Queue management.
+			'wpes_queue_rev'           => 'acato_email_essentials_queue_revision',
+			'last_batch_sent'          => 'acato_email_essentials_last_batch_sent',
+			// Email key management.
+			'mail_key_admins'          => 'acato_email_essentials_admin_keys',
+			'mail_key_list'            => 'acato_email_essentials_key_list',
+			'mail_key_fails'           => 'acato_email_essentials_failed_keys',
+			'mail_key_moderators'      => 'acato_email_essentials_moderator_keys',
+			// Test email tracking.
+			'wpes_last_test_sent_from' => 'acato_email_essentials_last_test_from',
+			'wpes_last_test_sent_to'   => 'acato_email_essentials_last_test_to',
+			// History management.
+			'wpes_hist_rev'            => 'acato_email_essentials_history_revision',
+		];
+
+		// Check if migration is needed.
+		$a_random_value_that_should_never_exist = random_bytes( 32 );
+		foreach ( $settings_map as $old_name => $new_name ) {
+			$old_value = get_option( $old_name, $a_random_value_that_should_never_exist );
+
+			if ( $a_random_value_that_should_never_exist === $old_value ) {
+				// Old setting does not exist, skip.
+				continue;
+			}
+
+			// Migrate setting.
+			update_option( $new_name, $old_value );
+
+			// Delete old setting.
+			delete_option( $old_name );
+		}
 	}
 }

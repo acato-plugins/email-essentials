@@ -12,7 +12,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 }
 
 global $current_user;
-$wpes_config               = get_option( 'mail_key_moderators', [] );
+$wpes_config               = get_option( 'acato_email_essentials_moderator_keys', [] );
 $wpes_moderator_keys       = [ 'pingback', 'comment' ];
 $wpes_moderator_recipients = [
 	'author'    => 'notification',
@@ -36,7 +36,7 @@ if ( ! get_option( 'moderation_notify' ) ) {
 	?>
 	<form id="outpost" class="wpes-admin" method='POST' action="">
 		<input type="hidden" name="form_id" value="wpes-moderators"/>
-		<?php wp_nonce_field( 'wp-email-essentials--moderators', 'wpes-nonce' ); ?>
+		<?php wp_nonce_field( 'acato-email-essentials--moderators', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">

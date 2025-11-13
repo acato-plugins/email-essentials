@@ -94,7 +94,7 @@ class Plugin {
 	 */
 	public static function init() {
 
-		add_filter( 'wp_mail', [ self::class, 'jit_overload_phpmailer' ], ~PHP_INT_MAX );
+		add_filter( 'wp_mail_from', [ self::class, 'jit_overload_phpmailer' ], ~PHP_INT_MAX );
 
 		add_filter( 'wp_mail', [ self::class, 'start_log' ], -100000000 );
 		add_action( 'wp_mail_succeeded', [ self::class, 'end_log' ], 10000000001 ); // prio of HIST + 1.
@@ -246,7 +246,7 @@ class Plugin {
 	public static function plugin_actions( $links, $file ) {
 		if ( self::SLUG === $file && function_exists( 'admin_url' ) ) {
 			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- we want to use the WordPress default translation here.
-			$settings_link = '<a href="' . admin_url( 'admin.php?page=wp-email-essentials' ) . '">' . _x( 'Settings', 'translators: ignore this.' ) . '</a>';
+			$settings_link = '<a href="' . admin_url( 'admin.php?page=acato-email-essentials' ) . '">' . _x( 'Settings', 'translators: ignore this.' ) . '</a>';
 			array_unshift( $links, $settings_link ); // before other links.
 		}
 
@@ -829,7 +829,7 @@ class Plugin {
 						'httpversion' => '1.1',
 						// Sending only the base URL of the website for privacy reasons; not sending the real referrer.
 						'referer'     => get_bloginfo( 'url' ),
-						'user-agent'  => sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
+						'user-agent'  => sprintf( 'WordPress/%s/Acato-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
 					]
 				)
 			);
@@ -845,7 +845,7 @@ class Plugin {
 						'httpversion' => '1.1',
 						// Sending only the base URL of the website for privacy reasons; not sending the real referrer.
 						'referer'     => get_bloginfo( 'url' ),
-						'user-agent'  => sprintf( 'WordPress/%s/WP-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
+						'user-agent'  => sprintf( 'WordPress/%s/Acato-Email-Essentials/%s', get_bloginfo( 'version' ), self::get_wpes_version() ),
 					]
 				)
 			);
@@ -1338,8 +1338,7 @@ class Plugin {
 
 			$mailer->Body = self::maybe_convert_to_html( $mailer->Body, $mailer->Subject, $mailer, $check_encoding_result ?: 'utf-8' );
 
-			$css = self::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
-			$css = apply_filters_ref_array( 'email_essentials_css', [ $css, &$mailer ] );
+			$css = apply_filters_ref_array( 'email_essentials_css', [ '', &$mailer ] );
 
 			if ( $config['css_inliner'] ) {
 				require_once __DIR__ . '/../lib/class-css-inliner.php';
@@ -1428,7 +1427,7 @@ class Plugin {
 		$the_nonce = self::get_post_data( 'wpes-nonce' );
 		$form_id   = self::get_post_data( 'form_id' );
 		$op        = self::get_post_data( 'op' );
-		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && $_POST && 'wp-email-essentials' === $form_id && __( 'Send sample mail', 'email-essentials' ) === $op ) {
+		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && $_POST && 'acato-email-essentials' === $form_id && __( 'Send sample mail', 'email-essentials' ) === $op ) {
 			$mailer->Timeout   = 5;
 			$mailer->SMTPDebug = 2;
 		}
@@ -1463,7 +1462,7 @@ class Plugin {
 
 		// DEBUG output .
 		// @phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && 'wp-email-essentials' === $form_id && __( 'Print debug output of sample mail', 'email-essentials' ) === $op ) {
+		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && 'acato-email-essentials' === $form_id && __( 'Print debug output of sample mail', 'email-essentials' ) === $op ) {
 			$mailer->SMTPDebug = true;
 			print '<h2>' . esc_html__( 'Dump of PHP Mailer object', 'email-essentials' ) . '</h2><pre>';
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
@@ -1551,48 +1550,17 @@ class Plugin {
 		// you can define a file  wpes-email-template.php  in your theme to define the filters.
 		locate_template( [ 'wpes-email-template.php' ], true );
 
-		$subject = self::apply_filters_deprecated(
-			'wpes_subject',
-			[
-				$subject,
-				&$mailer,
-			],
-			'5.0.0',
-			'email_essentials_subject'
-		);
 		$subject = apply_filters_ref_array( 'email_essentials_subject', [ $subject, &$mailer ] );
 
 		$head = '';
 
 		if ( self::get_config()['is_html'] ) {
-
-			$css = self::apply_filters_deprecated( 'wpes_css', [ '', &$mailer ], '5.0.0', 'email_essentials_css' );
-			$css = apply_filters_ref_array( 'email_essentials_css', [ $css, &$mailer ] );
+			$css = apply_filters_ref_array( 'email_essentials_css', [ '', &$mailer ] );
 
 			$head = '<title>' . $subject . '</title><style type="text/css">' . $css . '</style>';
-			$head = self::apply_filters_deprecated(
-				'wpes_head',
-				[
-					$head,
-					&$mailer,
-				],
-				'5.0.0',
-				'email_essentials_head'
-			);
 			$head = apply_filters_ref_array( 'email_essentials_head', [ $head, &$mailer ] );
-
-			$should_be_html = self::apply_filters_deprecated(
-				'wpes_body',
-				[
-					$should_be_html,
-					&$mailer,
-				],
-				'5.0.0',
-				'email_essentials_body'
-			);
 			$should_be_html = apply_filters_ref_array( 'email_essentials_body', [ $should_be_html, &$mailer ] );
 			$should_be_html = htmlspecialchars_decode( htmlentities( $should_be_html ) );
-
 		}
 
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -1704,19 +1672,11 @@ class Plugin {
 			'make_from_valid'      => 'default',
 		];
 
-		$defaults = apply_filters(
-			'email_essentials_defaults',
-			self::apply_filters_deprecated( 'wpes_defaults', [ $defaults ], '5.0.0', 'email_essentials_defaults' ),
-			$defaults
-		);
+		$defaults = apply_filters( 'email_essentials_defaults', $defaults );
 
-		$settings = get_option( 'wp-email-essentials', $defaults );
+		$settings = get_option( 'acato_email_essentials_config', $defaults );
 		if ( ! $raw ) {
-			$settings = apply_filters(
-				'email_essentials_settings',
-				self::apply_filters_deprecated( 'wpes_settings', [ $settings ], '5.0.0', 'email_essentials_settings' ),
-				$settings
-			);
+			$settings = apply_filters( 'email_essentials_settings', $settings );
 			if ( ! is_array( $settings ) ) {
 				$settings = $defaults;
 			}
@@ -1756,7 +1716,7 @@ class Plugin {
 	 */
 	private static function set_config( $values, $raw = false ) {
 		if ( $raw ) {
-			return update_option( 'wp-email-essentials', $values );
+			return update_option( 'acato_email_essentials_config', $values );
 		}
 
 		$values   = stripslashes_deep( $values );
@@ -1804,7 +1764,7 @@ class Plugin {
 		$settings['make_from_valid']      = array_key_exists( 'make_from_valid', $values ) && $values['make_from_valid'] ? $values['make_from_valid'] : '';
 		$settings['make_from_valid_when'] = array_key_exists( 'make_from_valid_when', $values ) && $values['make_from_valid_when'] ? $values['make_from_valid_when'] : 'when_sender_invalid';
 		$settings['errors_to']            = array_key_exists( 'errors_to', $values ) && $values['errors_to'] ? $values['errors_to'] : '';
-		update_option( 'wp-email-essentials', $settings );
+		update_option( 'acato_email_essentials_config', $settings );
 	}
 
 	/**
@@ -1963,7 +1923,7 @@ class Plugin {
 		/**
 		 * Save options for "Settings" pane..
 		 */
-		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--settings' ) && 'wp-email-essentials' === $page && isset( $_POST['form_id'] ) && 'wp-email-essentials' === $_POST['form_id'] ) {
+		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && 'acato-email-essentials' === $page && isset( $_POST['form_id'] ) && 'acato-email-essentials' === $_POST['form_id'] ) {
 			switch ( $op ) {
 				case __( 'Save settings', 'email-essentials' ):
 					$config     = self::get_config();
@@ -1997,8 +1957,8 @@ class Plugin {
 						self::$error = __( 'No email address to send from.', 'email-essentials' );
 						break;
 					}
-					update_option( 'wpes_last_test_sent_from', $send_email_from );
-					update_option( 'wpes_last_test_sent_to', $send_email_to );
+					update_option( 'acato_email_essentials_last_test_from', $send_email_from );
+					update_option( 'acato_email_essentials_last_test_to', $send_email_to );
 
 					$result      = wp_mail(
 						$send_email_to,
@@ -2022,7 +1982,7 @@ class Plugin {
 		 * Iframe content to show a sample email.
 		 */
 		// @phpcs:ignore WordPress.Security.NonceVerification.Missing -- not processing form content.
-		if ( 'wp-email-essentials' === $page && 'content' === self::get_get_data( 'iframe' ) ) {
+		if ( 'acato-email-essentials' === $page && 'content' === self::get_get_data( 'iframe' ) ) {
 			$mailer          = new EEMailer();
 			$config          = self::get_config();
 			$subject         = __( 'Sample email subject', 'email-essentials' );
@@ -2048,7 +2008,7 @@ class Plugin {
 		/**
 		 * Save options for "alternative admins" panel
 		 */
-		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--admins' ) && 'wpes-admins' === $page && 'wpes-admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--admins' ) && 'wpes-admins' === $page && 'wpes-admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
 			$keys = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
 			$keys = array_filter(
@@ -2065,7 +2025,7 @@ class Plugin {
 					return implode( ',', $els );
 				}
 			);
-			update_option( 'mail_key_admins', $keys );
+			update_option( 'acato_email_essentials_admin_keys', $keys );
 			self::$message = __( 'Alternative Admins list saved.', 'email-essentials' );
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
 			$regexps = self::get_post_data( [ 'settings', 'regexp' ], 'trim' ) ?: [];
@@ -2076,14 +2036,14 @@ class Plugin {
 					$list[ $entry['regexp'] ] = $entry['key'];
 				}
 			}
-			update_option( 'mail_key_list', $list );
+			update_option( 'acato_email_essentials_key_list', $list );
 			self::$message .= ' ' . __( 'Subject-RegExp list saved.', 'email-essentials' );
 		}
 
 		/**
 		 * Save options for "Moderators" panel.
 		 */
-		if ( wp_verify_nonce( $the_nonce, 'wp-email-essentials--moderators' ) && 'wpes-moderators' === $page && 'wpes-moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--moderators' ) && 'wpes-moderators' === $page && 'wpes-moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
 			$new_data = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
 			foreach ( $new_data as &$_keys ) {
@@ -2110,7 +2070,7 @@ class Plugin {
 				}
 			}
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared above
-			update_option( 'mail_key_moderators', wp_unslash( $new_data ) );
+			update_option( 'acato_email_essentials_moderator_keys', wp_unslash( $new_data ) );
 			self::$message = __( 'Alternative Moderators list saved.', 'email-essentials' );
 		}
 	}
@@ -2123,13 +2083,13 @@ class Plugin {
 			self::plugin_data()['LongName'],
 			self::plugin_data()['Name'],
 			'manage_options',
-			'wp-email-essentials',
+			'acato-email-essentials',
 			[ self::class, 'admin_interface' ],
 			'dashicons-email-alt'
 		);
 
 		add_submenu_page(
-			'wp-email-essentials',
+			'acato-email-essentials',
 			self::plugin_data()['LongName'] . ' - ' . __( 'Alternative Admins', 'email-essentials' ),
 			__( 'Alternative Admins', 'email-essentials' ),
 			'manage_options',
@@ -2141,7 +2101,7 @@ class Plugin {
 		);
 
 		add_submenu_page(
-			'wp-email-essentials',
+			'acato-email-essentials',
 			self::plugin_data()['LongName'] . ' - ' . __( 'Alternative Moderators', 'email-essentials' ),
 			__( 'Alternative Moderators', 'email-essentials' ),
 			'manage_options',
@@ -2302,11 +2262,11 @@ Item 2
 	public static function admin_notices() {
 		$config = self::get_config();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no form processing, just checking...
-		$onpage = is_admin() && isset( $_GET['page'] ) && 'wp-email-essentials' === $_GET['page'];
+		$onpage = is_admin() && isset( $_GET['page'] ) && 'acato-email-essentials' === $_GET['page'];
 
 		$from = $config['from_email'];
 		if ( ! $from ) {
-			$url = add_query_arg( 'page', 'wp-email-essentials', admin_url( 'tools.php' ) );
+			$url = add_query_arg( 'page', 'acato-email-essentials', admin_url( 'tools.php' ) );
 			if ( $onpage ) {
 				$class = 'updated';
 				// translators: %s: Plugin name.
@@ -2518,7 +2478,7 @@ Item 2
 		$key = self::get_mail_key( $email['subject'] );
 		if ( ! empty( $key ) ) {
 			// we were able to determine a mailkey.
-			$admins = get_option( 'mail_key_admins', [] );
+			$admins = get_option( 'acato_email_essentials_admin_keys', [] );
 			if ( isset( $admins[ $key ] ) && $admins[ $key ] ) {
 				$the_admins = explode( ',', $admins[ $key ] );
 				foreach ( $the_admins as $i => $the_admin ) {
@@ -2575,7 +2535,7 @@ Item 2
 		}
 
 		// sorry, we failed :( .
-		$fails = get_option( 'mail_key_fails', [] );
+		$fails = get_option( 'acato_email_essentials_failed_keys', [] );
 		if ( $fails ) {
 			$fails = array_combine( $fails, $fails );
 		}
@@ -2586,7 +2546,7 @@ Item 2
 				return ! self::mail_subject_match( $item ) && ! self::get_mail_key( $item );
 			}
 		);
-		update_option( 'mail_key_fails', array_values( $fails ) );
+		update_option( 'acato_email_essentials_failed_keys', array_values( $fails ) );
 
 		$to = self::rfc_encode( $to );
 
@@ -2652,7 +2612,7 @@ Item 2
 		// idea: future version; allow setting per post-type.
 		// trace back the post-type using: commentID -> comment -> post -> post-type.
 
-		$c = get_option( 'mail_key_moderators', [] );
+		$c = get_option( 'acato_email_essentials_moderator_keys', [] );
 		if ( ! $c || ! is_array( $c ) ) {
 			return $email;
 		}
@@ -2773,7 +2733,7 @@ Item 2
 	 * @return false|string
 	 */
 	public static function mail_subject_match( $subject ) {
-		$store = get_option( 'mail_key_list', [] );
+		$store = get_option( 'acato_email_essentials_key_list', [] );
 		foreach ( $store as $regexp => $mail_key ) {
 			if ( preg_match( $regexp, $subject ) ) {
 				return $mail_key;
@@ -2901,19 +2861,19 @@ Item 2
 		switch ( $config['make_from_valid'] ) {
 			case 'noreply':
 				// translators: %1$s: a URL, %2$s: the plugin name, %3$s: website hostname.
-				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="noreply">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=wp-email-essentials', self::plugin_data()['Name'], $host );
+				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="noreply">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=acato-email-essentials', self::plugin_data()['Name'], $host );
 				break;
 			case 'default':
 				// translators: %1$s: a URL, %2$s: the plugin name, %3$s: email address.
-				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="default">%3$s</em> as sender and set <em>this email address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=wp-email-essentials', self::plugin_data()['Name'], self::wp_mail_from( $config['from_email'] ) );
+				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="default">%3$s</em> as sender and set <em>this email address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=acato-email-essentials', self::plugin_data()['Name'], self::wp_mail_from( $config['from_email'] ) );
 				break;
 			case '-at-':
 				// translators: %1$s: a URL, %2$s: the plugin name.
-				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="at-">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=wp-email-essentials', self::plugin_data()['Name'] );
+				$text = sprintf( __( 'But <strong>please do not worry</strong>! <a href="%1$s" target="_blank">%2$s</a> will set <em class="at-">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=acato-email-essentials', self::plugin_data()['Name'] );
 				break;
 			default:
 				// translators: %1$s: a URL, %2$s: the plugin name.
-				$text = sprintf( __( 'You can fix this here, or you can let <a href="%1$s" target="_blank">%2$s</a> fix this automatically upon sending the email.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=wp-email-essentials', self::plugin_data()['Name'] );
+				$text = sprintf( __( 'You can fix this here, or you can let <a href="%1$s" target="_blank">%2$s</a> fix this automatically upon sending the email.', 'email-essentials' ), admin_url( 'tools.php' ) . '?page=acato-email-essentials', self::plugin_data()['Name'] );
 				break;
 		}
 

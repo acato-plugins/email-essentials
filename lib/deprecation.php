@@ -6,7 +6,7 @@ namespace WP_Email_Essentials;
  * This file is used to load the deprecated classes.
  * It is used to ensure that the old plugin can be replaced by the new plugin.
  * The old plugin will be replaced by the new plugin, if it is active.
- * This file is loaded by the autoloader in wp-email-essentials.php.
+ * This file is loaded by the autoloader in email-essentials.php.
  */
 class CSS_Inliner extends \Acato\Email_Essentials\CSS_Inliner {
 	public function __construct( $html, $css = false ) {
@@ -767,3 +767,70 @@ class WPES_Queue_List_Table extends \Acato\Email_Essentials\WPES_Queue_List_Tabl
 		parent::__construct();
 	}
 }
+
+add_filter( 'email_essentials_mail_is_throttled', function ( $is_throttled, $ip, $mails_recently_sent ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated(
+		'wpes_mail_is_throttled',
+		[ true, $ip, $mails_recently_sent ],
+		'5.0.0',
+		'email_essentials_mail_is_throttled'
+	);
+}, -12345 );
+
+add_filter( 'email_essentials_css', function ( $css, &$mailer ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_css', [
+		$css,
+		&$mailer,
+	], '5.0.0', 'email_essentials_css' );
+}, -12345 );
+
+add_filter( 'email_essentials_subject', function ( $subject, &$mailer ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_subject', [
+		$subject,
+		&$mailer,
+	], '5.0.0', 'email_essentials_subject' );
+}, -12345 );
+
+add_filter( 'email_essentials_subject', function ( $should_be_html, &$mailer ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated(
+		'wpes_body',
+		[
+			$should_be_html,
+			&$mailer,
+		],
+		'5.0.0',
+		'email_essentials_body'
+	);
+}, -12345 );
+
+add_filter( 'email_essentials_subject', function ( $head, &$mailer ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated(
+		'wpes_head',
+		[
+			$head,
+			&$mailer,
+		],
+		'5.0.0',
+		'email_essentials_head'
+	);
+}, -12345 );
+
+add_filter( 'email_essentials_defaults', function ( $defaults ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_defaults', [ $defaults ], '5.0.0', 'email_essentials_defaults' );
+}, -12345 );
+
+add_filter( 'email_essentials_settings', function ( $settings ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_settings', [ $settings ], '5.0.0', 'email_essentials_settings' );
+}, -12345 );
+
+add_filter( 'email_essentials_mail_throttle_time_window', function ( $time_window ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_mail_throttle_time_window', [ $time_window ], '5.0.0', 'email_essentials_mail_throttle_time_window' );
+}, -12345 );
+
+add_filter( 'email_essentials_mail_throttle_max_count_per_time_window', function ( $count ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_mail_throttle_max_count_per_time_window', [ $count ], '5.0.0', 'email_essentials_mail_throttle_max_count_per_time_window' );
+}, -12345 );
+
+add_filter( 'email_essentials_mail_throttle_batch_size', function ( $size ) {
+	return \Acato\Email_Essentials\Plugin::apply_filters_deprecated( 'wpes_mail_throttle_batch_size', [ $size ], '5.0.0', 'email_essentials_mail_throttle_batch_size' );
+}, -12345 );
