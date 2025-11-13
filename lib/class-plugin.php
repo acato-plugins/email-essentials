@@ -2025,8 +2025,17 @@ class Plugin {
 					break;
 			}
 
-			print $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- How to escape email content?.
+			// Detect and preserve <!doctype line.
+			$doctype = '';
+			if ( preg_match( '/^(<!DOCTYPE [^>]+>)/i', $html, $m ) ) {
+				$doctype = $m[1] . "\n";
+			}
+			if ( $doctype ) {
+				$html = str_replace( $doctype, '', $html );
+			}
 
+			// Doctype cannot be handled by kses, so we print it separately. There is no other way.
+			print $doctype . wp_kses( $html, self::allowed_html_for_displaying_an_entire_html_page() );
 			exit;
 		}
 
@@ -3459,5 +3468,41 @@ Item 2
 		$services = apply_filters( 'acato_email_essentials_ip_services', [] );
 
 		return apply_filters( 'acato_email_essentials_ip_service', $services[ $type ] ?? '', $type );
+	}
+
+	/**
+	 * WP_Kses allowed HTML tags for email content.
+	 */
+	public static function allowed_html_for_displaying_an_entire_html_page() {
+		$base = wp_kses_allowed_html( 'post' );
+		// add html, head, body, title, meta, style, link and other tags needed for a full HTML page, but not script, iframe etc.
+		$additional_tags             = [
+			'html'  => [
+				'lang'  => true,
+				'xmlns' => true,
+			],
+			'head'  => [],
+			'body'  => [],
+			'title' => [],
+			'meta'  => [
+				'charset'         => true,
+				'name'            => true,
+				'content'         => true,
+				'http-equiv'      => true,
+				'viewport'        => true,
+				'X-UA-Compatible' => true,
+			],
+			'style' => [
+				'type' => true,
+			],
+			'link'  => [
+				'rel'  => true,
+				'href' => true,
+				'type' => true,
+			],
+		];
+		$additional_tags['!DOCTYPE'] = [];
+
+		return array_merge( $base, $additional_tags );
 	}
 }
