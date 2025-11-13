@@ -52,7 +52,7 @@ class Plugin {
 	 * Constructor.
 	 */
 	public function __construct() {
-		self::$message = get_transient( 'wpes_message' ) ?: '';
+		self::$message = get_transient( 'acato_email_essentials_admin_message' ) ?: '';
 		add_action( 'admin_notices', [ $this, 'admin_notices' ] );
 
 		if ( class_exists( Migrations::class ) ) {
@@ -70,7 +70,7 @@ class Plugin {
 		static $plugin_data;
 		if ( ! $plugin_data ) {
 			if ( ! is_admin() ) {
-				$plugin_data = get_transient( 'wpes_plugin_data' );
+				$plugin_data = get_transient( 'acato_email_essentials_plugin_data' );
 			}
 			if ( ! $plugin_data ) {
 				if ( ! function_exists( 'get_plugin_data' ) ) {
@@ -78,7 +78,7 @@ class Plugin {
 				}
 				$plugin_data = get_plugin_data( __DIR__ . '/../email-essentials.php' );
 			}
-			set_transient( 'wpes_plugin_data', $plugin_data, WEEK_IN_SECONDS );
+			set_transient( 'acato_email_essentials_plugin_data', $plugin_data, WEEK_IN_SECONDS );
 		}
 
 		if ( empty( $plugin_data['LongName'] ) ) {
@@ -1125,7 +1125,7 @@ class Plugin {
 		}
 
 		// Slow dns lookup, will crash on LocalWP, so we check if not disabled in php.ini, and if not disabled, we check if disabled in options.
-		if ( ! $return && function_exists( 'dns_get_record' ) && ! get_option( 'disable_dns_get_record', false ) ) {
+		if ( ! $return && function_exists( 'dns_get_record' ) && ! get_option( 'acato_email_essentials_disable_dns_get_record', false ) ) {
 			// Slow dns lookup.
 			if ( DNS_ANY === $type ) {
 				$return_a4 = dns_get_record( $hostname, DNS_A );
@@ -1935,7 +1935,7 @@ class Plugin {
 						$new_config['make_from_valid'] = 'noreply';
 					}
 					self::set_config( $new_config );
-					set_transient( 'wpes_message', __( 'Settings saved.', 'email-essentials' ), 5 );
+					set_transient( 'acato_email_essentials_admin_message', __( 'Settings saved.', 'email-essentials' ), 5 );
 					wp_safe_redirect( remove_query_arg( 'wpes-nonce' ) );
 					exit;
 				case __( 'Send sample mail', 'email-essentials' ):
@@ -3161,7 +3161,7 @@ Item 2
 			_deprecated_class( $class_name, $version, $replacement );
 		}
 
-		$tag = 'wpes_deprecated_classes_' . md5( $class_name );
+		$tag = 'acato_email_essentials_deprecated_classes_' . md5( $class_name );
 
 		update_option( $tag, [ time(), $class_name, $version, $replacement ] );
 	}
@@ -3178,7 +3178,7 @@ Item 2
 			// Use the WordPress function if available.
 			_deprecated_function( $function_name, $version, $replacement ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
-		$tag = 'wpes_deprecated_functions_' . md5( $function_name );
+		$tag = 'acato_email_essentials_deprecated_functions_' . md5( $function_name );
 
 		update_option( $tag, [ time(), $function_name, $version, $replacement ] );
 	}
@@ -3196,7 +3196,7 @@ Item 2
 	 */
 	public static function apply_filters_deprecated( $hook_name, $args, $version, $replacement = '', $message = '' ) {
 		if ( has_filter( $hook_name ) ) {
-			$tag = 'wpes_deprecated_filters_' . md5( $hook_name );
+			$tag = 'acato_email_essentials_deprecated_filters_' . md5( $hook_name );
 
 			update_option( $tag, [ time(), $hook_name, $version, $replacement ] );
 
@@ -3215,10 +3215,10 @@ Item 2
 	 * @return string
 	 */
 	public static function render_deprecation_notices() {
-		// List all options that start with 'wpes_deprecated_classes_' or 'wpes_deprecated_functions_'.
+		// List all options that start with 'acato_email_essentials_deprecated_classes_' or 'acato_email_essentials_deprecated_functions_'.
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$options   = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'wpes_deprecated_%'" );
+		$options   = $wpdb->get_col( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE 'acato_email_essentials_deprecated_%'" );
 		$dismissed = get_user_meta( get_current_user_id(), 'wpes_deprecation_notice_dismissed', true );
 		$notices   = [];
 		foreach ( $options as $option ) {
@@ -3229,7 +3229,7 @@ Item 2
 			}
 
 			// Get the tag type.
-			preg_match( '/^wpes_deprecated_(class|function|filter)e?s_(.*)$/', $option, $matches );
+			preg_match( '/^acato_email_essentials_deprecated_(class|function|filter)e?s_(.*)$/', $option, $matches );
 			$type = $matches[1] ?? 'unknown';
 
 			// Get the time, version and replacement.
