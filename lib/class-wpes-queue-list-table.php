@@ -220,7 +220,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		}
 
 		// We have a nonce, but it is invalid.
-		if ( $the_nonce && ! wp_verify_nonce( $the_nonce, 'wp-email-essentials--queue' ) ) {
+		if ( ! wp_verify_nonce( $the_nonce, 'wp-email-essentials--queue' ) ) {
 			wp_die( 'Nope! Security check failed!' );
 		}
 
