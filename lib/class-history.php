@@ -88,7 +88,7 @@ class History {
 			) DEFAULT CHARSET=utf8mb4";
 			$hash   = md5( $schema );
 			if ( get_option( 'wpes_hist_rev' ) !== $hash ) {
-				require_once ABSPATH . WPINC . '/upgrade.php';
+				require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/upgrade.php';
 				dbDelta( $schema );
 
 				update_option( 'wpes_hist_rev', $hash );
