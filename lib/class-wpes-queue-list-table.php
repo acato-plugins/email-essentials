@@ -11,7 +11,7 @@ use WP_List_Table;
 
 if ( ! class_exists( WP_List_Table::class ) ) {
 	// WP_List_Table is not loaded automatically so we need to load it in our application.
-	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+	require_once ABSPATH . WPINC . '/class-wp-list-table.php';
 }
 
 /**

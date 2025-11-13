@@ -74,7 +74,7 @@ class Plugin {
 			}
 			if ( ! $plugin_data ) {
 				if ( ! function_exists( 'get_plugin_data' ) ) {
-					require_once ABSPATH . '/wp-admin/includes/plugin.php';
+					require_once ABSPATH . WPINC . '/plugin.php';
 				}
 				$plugin_data = get_plugin_data( __DIR__ . '/../email-essentials.php' );
 			}
@@ -3134,7 +3134,7 @@ Item 2
 	 */
 	public static function get_wpes_version() {
 		if ( ! function_exists( 'get_plugin_data' ) ) {
-			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
+			require_once ABSPATH . WPINC . '/plugin.php';
 		}
 		$plugin_path = dirname( __DIR__ ) . '/' . basename( self::SLUG );
 		$plugin_data = get_plugin_data( $plugin_path );
