@@ -13,6 +13,10 @@ echo "Target: $TARGETDIR"
 cp -a "$PLUGINDIR" /tmp/email-essentials
 cd /tmp/email-essentials
 
+[ -f .nvmrc ] && nvm use
+[ ! -d node_modules ] && npm install --no-audit --no-fund
+npm run build
+
 for i in \
 	$(find . -name \.DS_Store) \
 	composer.json info.json \

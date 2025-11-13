@@ -253,6 +253,24 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 				</style>
 
 				<div id="mail-viewer">
+					<nav class="mail-viewer-tabs" role="tablist" style="display: none">
+						<button type="button" class="mail-tab" data-view="body" role="tab" aria-selected="false">
+							<span class="dashicons dashicons-email"></span>
+							<?php echo esc_html_x( 'HTML Email Body', 'Email History Legend', 'email-essentials' ); ?>
+						</button>
+						<button type="button" class="mail-tab" data-view="headers" role="tab" aria-selected="false">
+							<span class="dashicons dashicons-admin-settings"></span>
+							<?php echo esc_html_x( 'Email Headers', 'Email History Legend', 'email-essentials' ); ?>
+						</button>
+						<button type="button" class="mail-tab" data-view="alt-body" role="tab" aria-selected="false">
+							<span class="dashicons dashicons-text"></span>
+							<?php echo esc_html_x( 'Plain Text Alternative', 'Email History Legend', 'email-essentials' ); ?>
+						</button>
+						<button type="button" class="mail-tab" data-view="debug" role="tab" aria-selected="false">
+							<span class="dashicons dashicons-info"></span>
+							<?php echo esc_html_x( 'Debug information', 'Email History Legend', 'email-essentials' ); ?>
+						</button>
+					</nav>
 					<div id="mail-data-viewer">
 						<?php
 						$wpes_mailer = new EEMailer();
@@ -311,29 +329,25 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 							);
 							?>
 							<div class="email-data" id="email-data-<?php print esc_attr( $wpes_view_email->ID ); ?>">
-								<span
-									class="headers"
-									data-legend="<?php echo esc_html_x( 'Email Headers', 'Email History Legend', 'email-essentials' ); ?>">
+								<div
+									class="headers">
 									<pre><?php print esc_html( $wpes_view_email->headers ); ?></pre>
-								</span>
-								<span
-									class="alt_body"
-									data-legend="<?php echo esc_html_x( 'Plain Text Alternative', 'Email History Legend', 'email-essentials' ); ?>">
+								</div>
+								<div
+									class="alt_body">
 									<pre><?php print wp_kses_post( $wpes_view_email->alt_body ); ?></pre>
-								</span>
-								<span
-									class="body"
-									data-legend="<?php echo esc_html_x( 'HTML Email Body', 'Email History Legend', 'email-essentials' ); ?>">
+								</div>
+								<div
+									class="body">
 									<iframe
 										class="autofit" width="100%" height="100%" border="0" frameborder="0"
 										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print $wpes_email_data_base64; /* @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>">
 									</iframe>
-								</span>
-								<span
-									class="debug"
-									data-legend="<?php echo esc_html_x( 'Debug information', 'Email History Legend', 'email-essentials' ); ?>">
+								</div>
+								<div
+									class="debug">
 									<pre><?php print esc_html( $wpes_view_email->debug ); ?></pre>
-								</span>
+								</div>
 							</div>
 							<?php
 						}

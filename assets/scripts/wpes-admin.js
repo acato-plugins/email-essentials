@@ -43,6 +43,45 @@ jQuery( document ).ready( function ($) {
     /**
      * Emails panel
      */
+
+    const enableTabs = function () {
+      $( '.mail-viewer-tabs' ).show();
+    }
+
+    // Function to switch to a specific view
+    const switchToView = function (viewClass) {
+      let activeEmail = $( '.email-item.active' );
+      if (activeEmail.length === 0) return;
+
+      let id = '#' + activeEmail.attr( 'id' ).replace( 'email-', 'email-data-' );
+      let that = $( id );
+
+      // Remove all show-* classes
+      activeEmail.removeClass( (index, className) => (
+        className.match( /(^|\s)show-\S+/g ) || []
+      ).join( ' ' ) );
+      that.removeClass( (index, className) => (
+        className.match( /(^|\s)show-\S+/g ) || []
+      ).join( ' ' ) );
+
+      // Add the new show-* class
+      activeEmail.add( that ).addClass( 'show-' + viewClass );
+
+      // Update tab active states
+      $( '.mail-tab' ).removeClass( 'active' ).attr( 'aria-selected', 'false' );
+      $( '.mail-tab[data-view="' + viewClass + '"]' ).addClass( 'active' ).attr( 'aria-selected', 'true' );
+
+      $( window ).trigger( 'resize' );
+    };
+
+    // Tab click handler
+    $( '.mail-tab' ).on( 'click', function (e) {
+      e.preventDefault();
+      let view = $( this ).attr( 'data-view' );
+      switchToView( view );
+    } );
+
+    // Email row click handler (cycling through views)
     $( '.email-item' ).on( 'click', function (e) { // we need 'function' here for 'this'.
       if ($( e.target ).is( 'a.dashicons-download' )) {
         e.stopPropagation();
@@ -60,17 +99,18 @@ jQuery( document ).ready( function ($) {
       ).join( ' ' ) );
 
       // Click to cycle through the views.
-      let this_and_that = $( this ).add( that );
+      let currentView = null;
       if ($( this ).is( '.show-body' )) {
-        this_and_that.removeClass( 'show-body' ).addClass( 'show-headers' );
+        currentView = 'headers';
       } else if ($( this ).is( '.show-headers' )) {
-        this_and_that.removeClass( 'show-headers' ).addClass( 'show-alt-body' );
+        currentView = 'alt-body';
       } else if ($( this ).is( '.show-alt-body' )) {
-        this_and_that.removeClass( 'show-alt-body' ).addClass( 'show-debug' );
+        currentView = 'debug';
       } else {
-        this_and_that.addClass( 'show-body' );
+        currentView = 'body';
       }
-      $( window ).trigger( 'resize' );
+      enableTabs();
+      switchToView( currentView );
     } );
 
     $( window ).bind( 'resize', function () { // we need 'function' here for 'this'.

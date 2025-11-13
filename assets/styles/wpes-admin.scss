@@ -391,6 +391,8 @@ $tools-width: 200px;
 		border: 1px solid $border-color;
 		height: 600px;
 		width: 100%;
+		display: flex;
+		flex-direction: column;
 
 		.debug, .body, .alt_body, .headers {
 			display: none;
@@ -405,30 +407,71 @@ $tools-width: 200px;
 		}
 	}
 
+	.mail-viewer-tabs {
+		display: flex;
+		flex-direction: row;
+		background: #f0f0f1;
+		border-bottom: 1px solid $border-color;
+		padding: 0;
+		margin: 0;
+		flex-shrink: 0;
+
+		.mail-tab {
+			background: transparent;
+			border: none;
+			border-right: 1px solid $border-color;
+			padding: 10px 16px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 13px;
+			color: #50575e;
+			transition: all 0.2s ease;
+			outline: none;
+			flex: 1;
+			justify-content: center;
+			position: relative;
+
+			&:last-child {
+				border-right: none;
+			}
+
+			.dashicons {
+				font-size: 16px;
+				width: 16px;
+				height: 16px;
+			}
+
+			&:hover {
+				background: #fff;
+				color: #2271b1;
+			}
+
+			&:focus {
+				box-shadow: inset 0 0 0 1px #2271b1, inset 0 0 0 2px #fff;
+				outline: 2px solid transparent;
+				outline-offset: 0;
+			}
+
+			&.active {
+				background: #fff;
+				color: #2271b1;
+				font-weight: 600;
+				border-bottom: 3px solid #2271b1;
+				padding-bottom: 7px;
+			}
+		}
+	}
+
 	#mail-data-viewer {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		position: relative;
+		flex: 1;
 		overflow: auto;
 
 		.email-data.show-debug, .show-body, .show-alt-body, .show-headers {
-			padding-top: 20px;
 			height: 100%;
 			width: 100%;
-		}
-
-		>div>span:after {
-			content: attr(data-legend);
-			position: absolute;
-			top: 0;
-			left: 0;
-			background: rgba(0, 0, 0, .5);
-			z-index: 1;
-			color: white;
-			border-bottom-right-radius: 5px;
-			padding: 3px 10px;
 		}
 	}
 }
