@@ -479,7 +479,7 @@ class History {
 		}
 		$_headers = trim( implode( "\n", $headers ) );
 
-		$ip = Queue::server_remote_addr();
+		$ip = Plugin::server_remote_addr();
 		Plugin::log_message( "INSERT with sender $from" );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "INSERT INTO `{$wpdb->prefix}wpes_hist` (status, sender, recipient, subject, headers, body, thedatetime, ip) VALUES (%d, %s, %s, %s, %s, %s, %s, %s);", self::MAIL_NEW, $from, is_array( $to ) ? implode( ',', $to ) : $to, $subject, $_headers, $message, gmdate( 'Y-m-d H:i:s', time() ), $ip ) );

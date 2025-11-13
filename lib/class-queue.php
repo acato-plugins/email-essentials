@@ -138,7 +138,7 @@ class Queue {
 			$queue_item = array_merge(
 				[
 					'dt'     => gmdate( 'Y-m-d H:i:s' ),
-					'ip'     => self::server_remote_addr(),
+					'ip'     => Plugin::server_remote_addr(),
 					'status' => $throttle ? self::BLOCK : self::FRESH,
 				],
 				$queue_item
@@ -190,7 +190,7 @@ class Queue {
 	private static function throttle() {
 		$me = self::instance();
 		global $wpdb;
-		$ip = $me->server_remote_addr();
+		$ip = Plugin::server_remote_addr();
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
@@ -308,31 +308,6 @@ class Queue {
 	}
 
 	/**
-	 * Get the real remote address.
-	 *
-	 * @param bool $return_htaccess_variable Return the variable used (true) or the value thereof (false).
-	 *
-	 * @return string
-	 */
-	public static function server_remote_addr( $return_htaccess_variable = false ) {
-		$possibilities = [
-			'HTTP_CF_CONNECTING_IP' => 'HTTP:CF-CONNECTING-IP',
-			'HTTP_X_FORWARDED_FOR'  => 'HTTP:X-FORWARDED-FOR',
-			'REMOTE_ADDR'           => false,
-		];
-		foreach ( $possibilities as $option => $htaccess_variable ) {
-			$possible_value = Plugin::get_server_data( $option, 'trim' );
-			if ( $possible_value ) {
-				$ip = explode( ',', $possible_value );
-
-				return $return_htaccess_variable ? $htaccess_variable : end( $ip );
-			}
-		}
-
-		return Plugin::get_server_data( 'REMOTE_ADDR' );
-	}
-
-	/**
 	 * Get database-ready attachments.
 	 *
 	 * @param array $mail_data A wp_mail data array.
@@ -405,7 +380,7 @@ class Queue {
 	private function mail_token() {
 		static $token;
 		if ( ! $token ) {
-			$remote_addr = Plugin::get_server_data( 'REMOTE_ADDR' );
+			$remote_addr = Plugin::server_remote_addr();
 			// We don't care about the value, as long as it is absolutely unique for this request.
 			$token = md5( microtime( true ) . $remote_addr . wp_rand( 0, PHP_INT_MAX ) );
 		}

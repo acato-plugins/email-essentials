@@ -677,12 +677,6 @@ class Queue extends \Acato\Email_Essentials\Queue {
 		return parent::processed_mail_headers( $headers );
 	}
 
-	public static function server_remote_addr( $return_htaccess_variable = false ) {
-		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\Queue\\server_remote_addr', '5.0.0', 'Acato\\Email_Essentials\\Queue\\server_remote_addr' );
-
-		return parent::server_remote_addr( $return_htaccess_variable = false );
-	}
-
 	public static function scheduled_task() {
 		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\Queue\\scheduled_task', '5.0.0', 'Acato\\Email_Essentials\\Queue\\scheduled_task' );
 
