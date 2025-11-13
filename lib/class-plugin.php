@@ -102,7 +102,8 @@ class Plugin {
 
 		add_filter( 'wp_mail', [ self::class, 'alternative_to' ] );
 
-		add_action( 'wp_ajax_nopriv_wpes_get_ip', [ self::class, 'ajax_get_ip' ] );
+		add_action( 'wp_ajax_acato_email_essentials_get_ip', [ self::class, 'ajax_get_ip' ] );
+		add_action( 'wp_ajax_nopriv_acato_email_essentials_get_ip', [ self::class, 'ajax_get_ip' ] );
 
 		add_action(
 			'admin_enqueue_scripts',
@@ -870,7 +871,7 @@ class Plugin {
 
 		// If we have no IP yet, try to get it from the website itself.
 		if ( ! $ip ) {
-			$ip = wp_remote_retrieve_body( wp_remote_get( $url . '?action=wpes_get_ip' ) );
+			$ip = wp_remote_retrieve_body( wp_remote_get( $url . '?action=acato_email_essentials_get_ip' ) );
 
 			$ip_type_filter = $force_ip4 ? FILTER_FLAG_IPV4 : ( FILTER_FLAG_IPV6 | FILTER_FLAG_IPV4 );
 			if ( ! filter_var( trim( $ip ), FILTER_VALIDATE_IP, $ip_type_filter ) ) {
