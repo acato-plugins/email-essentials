@@ -88,27 +88,36 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 8. Email History overview.
 9. Email History detail views.
 
-== WordPress Filters ==
-
-* `email_essentials_settings` — Filter plugin settings.
-* `email_essentials_defaults` — Filter default settings.
-* `email_essentials_body` — Filter HTML body of the email.
-* `email_essentials_head` — Filter HEAD section of HTML email.
-* `email_essentials_css` — Filter CSS for the email.
-* `email_essentials_subject` — Filter email subject.
-* `email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
-* `email_essentials_website_root_path` - Filter to supply the correct website root path in case of non-standard setups.
-
 == External services ==
 
 Email Essentials uses one external service by default, two if you create and define your own IP services.
 
 1. CloudFlare DNS of HTTPS. This is used to resolve domain names to IP addresses when (for example) checking SPF or DKIM records. In theory, it is possible to use PHPs odn `dns_get_record` function, but in practice this often fails due to local DNS misconfiguration. Using CloudFlare's DoH service ensures reliable DNS resolution. We only send the hostname (the domain part) to CloudFlare, no other data. Explicitly, we do NOT send any other information.
-2. The plugin can an IP-address relay service to accurately determine the sender's IP address. This is required to accurately check that the sender's IP address is authorized to send email for the domain (SPF check). To use this, you will need to set up your own service, see documentation on filter `email_essentials_ip_services`. Without this service, IP detection can be inaccurate because it will use the website itself as a relay. Use of a reverse proxy, load balancer etc can lead to incorrect IP detection.
+2. The plugin can an IP-address relay service to accurately determine the sender's IP address. This is required to accurately check that the sender's IP address is authorized to send email for the domain (SPF check). To use this, you will need to set up your own service, see documentation on filter `acato_email_essentials_ip_services`. Without this service, IP detection can be inaccurate because it will use the website itself as a relay. Use of a reverse proxy, load balancer etc can lead to incorrect IP detection.
+
+== WordPress Filters ==
+
+* `acato_email_essentials_settings` — Filter plugin settings.
+* `acato_email_essentials_defaults` — Filter default settings.
+* `acato_email_essentials_subject` — Filter email subject.
+* `acato_email_essentials_body` — Filter HTML body of the email.
+* `acato_email_essentials_head` — Filter HEAD section of HTML email.
+* `acato_email_essentials_css` — Filter CSS for the email.
+* `acato_email_essentials_minify_css` — Filter CSS minification.
+* `acato_email_essentials_mail_is_throttled` — Check if mail should be throttled.
+* `acato_email_essentials_mail_throttle_time_window` — Set mail throttle time window.
+* `acato_email_essentials_mail_throttle_max_count_per_time_window` — Set max emails per time window.
+* `acato_email_essentials_mail_throttle_batch_size` — Set mail batch size.
+* `acato_email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
+* `acato_email_essentials_ip_service` — Filter individual IP service URLs.
+* `acato_email_essentials_website_root_path` — Filter to supply the correct website root path in case of non-standard setups.
+* `acato_email_essentials_development_tlds` — Filter development/local TLDs.
 
 == WordPress Filters in detail ==
 
-`email_essentials_settings`
+**Plugin Settings**
+
+`acato_email_essentials_settings`
 
 Parameters:
 - (array) `$settings` The current settings of the plugin.
@@ -118,7 +127,7 @@ Expected return:
 
 ---
 
-`email_essentials_defaults`
+`acato_email_essentials_defaults`
 
 Parameters:
 - (array) `$defaults` The current default settings of the plugin.
@@ -128,40 +137,9 @@ Expected return:
 
 ---
 
-`email_essentials_body`
+**Email Content**
 
-Parameters:
-- (string) `$should_be_html` A text that should be html, but might not yet be, your job to make a nice HTML body.
-- (PHPMailer) `$mailer` The PHPMailer object (by reference).
-
-Expected return:
-- (string) A text that should be html.
-
----
-
-`email_essentials_head`
-
-Parameters:
-- (string) `$the_head_section` HTML that is the HEAD section of the HTML email.
-- (PHPMailer) `$mailer` The PHPMailer object (by reference).
-
-Expected return:
-- (string) The altered HEAD section of the HTML email.
-
----
-
-`email_essentials_css`
-
-Parameters:
-- (string) `$the_css` CSS for the email (empty by default).
-- (PHPMailer) `$mailer` The PHPMailer object (by reference).
-
-Expected return:
-- (string) The (altered) CSS.
-
----
-
-`email_essentials_subject`
+`acato_email_essentials_subject`
 
 Parameters:
 - (string) `$the_subject` Subject for the email.
@@ -172,10 +150,102 @@ Expected return:
 
 ---
 
-`email_essentials_ip_services`
+`acato_email_essentials_body`
+
+Parameters:
+- (string) `$should_be_html` A text that should be html, but might not yet be, your job to make a nice HTML body.
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) A text that should be html.
+
+---
+
+`acato_email_essentials_head`
+
+Parameters:
+- (string) `$the_head_section` HTML that is the HEAD section of the HTML email.
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) The altered HEAD section of the HTML email.
+
+---
+
+`acato_email_essentials_css`
+
+Parameters:
+- (string) `$the_css` CSS for the email (empty by default).
+- (PHPMailer) `$mailer` The PHPMailer object (by reference).
+
+Expected return:
+- (string) The (altered) CSS.
+
+---
+
+`acato_email_essentials_minify_css`
+
+Parameters:
+- (string) `$css` CSS to be minified.
+
+Expected return:
+- (string) The minified CSS.
+
+---
+
+**Mail Throttling**
+
+`acato_email_essentials_mail_is_throttled`
+
+Parameters:
+- (bool) `$is_throttled` Whether the mail is currently throttled.
+- (string) `$ip` The sender's IP address.
+- (int) `$mails_recently_sent` Number of mails recently sent from this IP.
+
+Expected return:
+- (bool) Whether the mail should be throttled.
+
+---
+
+`acato_email_essentials_mail_throttle_time_window`
+
+Parameters:
+- (int) `$time_window` Time window in seconds for counting sent emails.
+
+Expected return:
+- (int) The (altered) time window in seconds.
+
+---
+
+`acato_email_essentials_mail_throttle_max_count_per_time_window`
+
+Parameters:
+- (int) `$count` Maximum number of emails allowed per time window.
+
+Expected return:
+- (int) The (altered) maximum count.
+
+---
+
+`acato_email_essentials_mail_throttle_batch_size`
+
+Parameters:
+- (int) `$size` Number of emails to send in a single batch.
+
+Expected return:
+- (int) The (altered) batch size.
+
+---
+
+**IP Detection**
+
+`acato_email_essentials_ip_services`
 
 Parameters:
 - (array) `$services` The current list of IP services used to determine the sender's IP address.
+
+Expected return:
+- (array) The (altered) list of IP services.
 
 The services must be keyed with `ipv4`, `ipv6` and `dual-stack`. The values must be URLs that return the IP address in plain text.
 The dual-stack service should return an IPv6 address if available, otherwise an IPv4 address, never both.
@@ -199,7 +269,7 @@ print $_SERVER['REMOTE_ADDR'];
 That's it. You can now use these services in the plugin settings like this;
 
 ```php
-add_filter('email_essentials_ip_services', 'my_custom_ip_services');
+add_filter('acato_email_essentials_ip_services', 'my_custom_ip_services');
 function my_custom_ip_services($services) {
     // Add your custom services here
     $services['ipv4'] = 'https://ipv4.myservice.com';
@@ -208,6 +278,43 @@ function my_custom_ip_services($services) {
     return $services;
 }
 ```
+
+---
+
+`acato_email_essentials_ip_service`
+
+Parameters:
+- (string) `$service` The URL of the IP service for the given type.
+- (string) `$type` The type of IP service ('ipv4', 'ipv6', or 'dual-stack').
+
+Expected return:
+- (string) The (altered) IP service URL.
+
+Filter to modify individual IP service URLs based on type.
+
+---
+
+`acato_email_essentials_website_root_path`
+
+Parameters:
+- (string) `$path` The current website root path.
+
+Expected return:
+- (string) The (possibly altered) website root path.
+
+Filter to supply the correct website root path in case of non-standard setups.
+
+---
+
+`acato_email_essentials_development_tlds`
+
+Parameters:
+- (array) `$tlds` Array of top-level domains considered as development environments.
+
+Expected return:
+- (array) The (altered) array of development TLDs.
+
+Filter to modify which TLDs are treated as development/local environments. Default values are 'local' and 'test'.
 
 == Scripts/styles ==
 
@@ -227,7 +334,7 @@ See package.json for more details or individual commands.
 == Changelog ==
 
 = 6.0.0 =
-* GOING FOSS! First release as a FOSS plugin.
+* GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
 
 = 5.4.7 =
 * i18n text domain changed to `email-essentials`.
