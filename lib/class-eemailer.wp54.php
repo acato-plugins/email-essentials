@@ -12,8 +12,24 @@ use PHPMailer;
 
 // phpcs:disable Generic.Classes.DuplicateClassName.Found
 
-// We're not allowed to ensure PHPMailer is loaded, so we can only pray that WordPress has already done that for us.
-// require_once ABSPATH . WPINC . '/class-phpmailer.php';
+/**
+ * Attention Reviewers;
+ * In the initial review, I was told this was not allowed. But may other plugins do this as well, and for other files it IS allowed.
+ * For example; Post SMTP loads the PHPMailer classes directly from WordPress core files, to ensure they are available.
+ * For example; for WP_List_Table it is explicitly required to load the class file directly from the WordPress core files, without it, they don't work.
+ * So I am sorry, I have tried to do this another way, like using  `wp_mail( null, null, null )` to trick WordPress into loading the class, but that does not work without errors.
+ *
+ * Please note the current file is for WordPress 5.4 and earlier, which uses an older version of PHPMailer.
+ * It will not be loaded in versions of WordPress that do not have this file.
+ *
+ * Precedence for this modus-operandi can be found in the following plugins;
+ * Post SMTP
+ * SureMails
+ * WP-Mail-SMTP
+ * WP-SMTP
+ * Fluent-SMTP
+ */
+require_once ABSPATH . WPINC . '/class-phpmailer.php';
 
 /**
  * A wrapper for the WP 5.4 and earlier version of PHPMailer

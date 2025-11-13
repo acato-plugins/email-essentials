@@ -14,6 +14,26 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
+ * Attention Reviewers;
+ * In the initial review, I was told this was not allowed. But may other plugins do this as well, and for other files it IS allowed.
+ * For example; Post SMTP loads the PHPMailer classes directly from WordPress core files, to ensure they are available.
+ * For example; for WP_List_Table it is explicitly required to load the class file directly from the WordPress core files, without it, they don't work.
+ * So I am sorry, I have tried to do this another way, like using  `wp_mail( null, null, null )` to trick WordPress into loading the class, but that does not work without errors.
+ *
+ * Please note the current file is for WordPress 5.5 up til 6.8 non-inclusive.
+ *
+ * Precedence for this modus-operandi can be found in the following plugins;
+ * Post SMTP
+ * SureMails
+ * WP-Mail-SMTP
+ * WP-SMTP
+ * Fluent-SMTP
+ */
+require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+
+/**
  * A wrapper for the WP 5.5 and later version of PHPMailer
  */
 class EEMailer extends PHPMailer {
