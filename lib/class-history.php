@@ -111,7 +111,7 @@ class History {
 			function () {
 				global $wpdb;
 				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not a form!.
-				$download_eml = Plugin::get_get_data( 'download_eml', 'intval' );
+				$download_eml = isset( $_GET['download_eml'] ) ? (int) $_GET['download_eml'] : 0;
 				if ( current_user_can( 'manage_options' ) && $download_eml ) {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.Security.NonceVerification.Recommended -- still not a form!.
 					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}wpes_hist WHERE id = %d LIMIT 1", $download_eml ), ARRAY_A );
@@ -178,10 +178,14 @@ class History {
 	 * Maybe resend an email.
 	 */
 	private static function maybe_resend_email() {
-		$the_nonce = Plugin::get_get_data( 'nonce' );
-		$action    = Plugin::get_get_data( 'action' );
-		$email     = (int) Plugin::get_get_data( 'email', 'intval' );
-		$page      = Plugin::get_get_data( 'page' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce is verified below.
+		$the_nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce is verified below.
+		$action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce is verified below.
+		$email = isset( $_GET['email'] ) ? (int) $_GET['email'] : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce is verified below.
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 
 		if ( ! is_admin() || 'wpes-emails' !== $page ) {
 			return;
@@ -541,10 +545,20 @@ class History {
 
 	/**
 	 * Callback for action pre_handle_404: act on the calling of the tracker URL.
+	 *
+	 * For the security people; this is not a vulnerability, as the tracker URL is only included
+	 * in emails sent by the site, and the ID is just an integer that maps to an email in the log.
+	 *
+	 * We do not store any personal data other than what is already in the email log.
+	 * We just mark the email as opened, so we know email is actually sent and received.
+	 *
+	 * Also; this is only active when email logging is enabled, which is not GDPR compliant anyway.
+	 * Email logging is a DEBUG function and should only be active for a short time, in case of issues.
 	 */
 	public static function handle_tracker() {
 		global $wpdb;
-		$request_uri = Plugin::get_server_data( 'REQUEST_URI' ) ?: '';
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by regex below.
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
 		if ( preg_match( '/\/email-image-(\d+).png/', $request_uri, $match ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $match[1] ) );

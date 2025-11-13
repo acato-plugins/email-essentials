@@ -1424,9 +1424,12 @@ class Plugin {
 		}
 
 		// Check if this is a debug request;.
-		$the_nonce = self::get_post_data( 'wpes-nonce' );
-		$form_id   = self::get_post_data( 'form_id' );
-		$op        = self::get_post_data( 'op' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$the_nonce = isset( $_POST['wpes-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpes-nonce'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$form_id = isset( $_POST['form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['form_id'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$op = isset( $_POST['op'] ) ? sanitize_text_field( wp_unslash( $_POST['op'] ) ) : '';
 		if ( $the_nonce && $form_id && $op && wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && $_POST && 'acato-email-essentials' === $form_id && __( 'Send sample mail', 'email-essentials' ) === $op ) {
 			$mailer->Timeout   = 5;
 			$mailer->SMTPDebug = 2;
@@ -1915,19 +1918,24 @@ class Plugin {
 	 * Process settings when POSTed.
 	 */
 	public static function save_admin_settings() {
-		$html      = null;
-		$the_nonce = self::get_post_data( 'wpes-nonce' );
-		$form_id   = self::get_post_data( 'form_id' );
-		$op        = self::get_post_data( 'op' );
-		$page      = self::get_get_data( 'page' );
+		$html = null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$the_nonce = isset( $_POST['wpes-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpes-nonce'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$form_id = isset( $_POST['form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['form_id'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$op = isset( $_POST['op'] ) ? sanitize_text_field( wp_unslash( $_POST['op'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- used with nonce verification.
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 		/**
 		 * Save options for "Settings" pane..
 		 */
 		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && 'acato-email-essentials' === $page && isset( $_POST['form_id'] ) && 'acato-email-essentials' === $_POST['form_id'] ) {
 			switch ( $op ) {
 				case __( 'Save settings', 'email-essentials' ):
-					$config     = self::get_config();
-					$new_config = self::get_post_data( 'settings', 'trim' ) ?: [];
+					$config = self::get_config();
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, sanitized below.
+					$new_config = isset( $_POST['settings'] ) ? map_deep( wp_unslash( $_POST['settings'] ), 'trim' ) : [];
 					$host       = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
 					$host       = preg_replace( '/^www\d*\./', '', $host );
 					$defmail    = self::wp_mail_from( $new_config['from_email'] ?? '' );
@@ -1940,9 +1948,11 @@ class Plugin {
 					exit;
 				case __( 'Send sample mail', 'email-essentials' ):
 					ob_start();
-					self::$debug     = true;
-					$send_email_to   = self::get_post_data( 'send-test-email-to' );
-					$send_email_from = self::get_post_data( 'send-test-email-from' );
+					self::$debug = true;
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+					$send_email_to = isset( $_POST['send-test-email-to'] ) ? sanitize_email( wp_unslash( $_POST['send-test-email-to'] ) ) : '';
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+					$send_email_from = isset( $_POST['send-test-email-from'] ) ? sanitize_email( wp_unslash( $_POST['send-test-email-from'] ) ) : '';
 					if ( ! $send_email_to || ! is_email( $send_email_to ) ) {
 						$send_email_to = get_option( 'admin_email', false );
 					}
@@ -1981,8 +1991,9 @@ class Plugin {
 		/**
 		 * Iframe content to show a sample email.
 		 */
-		// @phpcs:ignore WordPress.Security.NonceVerification.Missing -- not processing form content.
-		if ( 'acato-email-essentials' === $page && 'content' === self::get_get_data( 'iframe' ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$iframe = isset( $_GET['iframe'] ) ? sanitize_text_field( wp_unslash( $_GET['iframe'] ) ) : '';
+		if ( 'acato-email-essentials' === $page && 'content' === $iframe ) {
 			$mailer          = new EEMailer();
 			$config          = self::get_config();
 			$subject         = __( 'Sample email subject', 'email-essentials' );
@@ -2009,8 +2020,8 @@ class Plugin {
 		 * Save options for "alternative admins" panel
 		 */
 		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--admins' ) && 'wpes-admins' === $page && 'wpes-admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
-			$keys = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
+			$keys = ( isset( $_POST['settings']['keys'] ) && is_array( $_POST['settings']['keys'] ) ) ? wp_unslash( $_POST['settings']['keys'] ) : [];
 			$keys = array_filter(
 				$keys,
 				function ( $el ) {
@@ -2027,8 +2038,8 @@ class Plugin {
 			);
 			update_option( 'acato_email_essentials_admin_keys', $keys );
 			self::$message = __( 'Alternative Admins list saved.', 'email-essentials' );
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
-			$regexps = self::get_post_data( [ 'settings', 'regexp' ], 'trim' ) ?: [];
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
+			$regexps = ( isset( $_POST['settings']['regexp'] ) && is_array( $_POST['settings']['regexp'] ) ) ? map_deep( wp_unslash( $_POST['settings']['regexp'] ), 'trim' ) : [];
 			$list    = [];
 			$__regex = '/^\/[\s\S]+\/$/';
 			foreach ( $regexps as $entry ) {
@@ -2044,8 +2055,8 @@ class Plugin {
 		 * Save options for "Moderators" panel.
 		 */
 		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--moderators' ) && 'wpes-moderators' === $page && 'wpes-moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- data prepared below
-			$new_data = self::get_post_data( [ 'settings', 'keys' ] ) ?: [];
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
+			$new_data = ( isset( $_POST['settings']['keys'] ) && is_array( $_POST['settings']['keys'] ) ) ? wp_unslash( $_POST['settings']['keys'] ) : [];
 			foreach ( $new_data as &$_keys ) {
 				foreach ( $_keys as &$keys ) {
 					// this is where we sanitize the input.
@@ -2877,7 +2888,9 @@ Item 2
 				break;
 		}
 
-		if ( 'admin.php' === $pagenow && 'wpcf7' === self::get_get_data( 'page' ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$page_param = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		if ( 'admin.php' === $pagenow && 'wpcf7' === $page_param ) {
 			?>
 			<script>
 				jQuery(document).ready(function () {
@@ -3432,100 +3445,5 @@ Item 2
 		$services = apply_filters( 'acato_email_essentials_ip_services', [] );
 
 		return apply_filters( 'acato_email_essentials_ip_service', $services[ $type ] ?? '', $type );
-	}
-
-	/**
-	 * Get sanitized, unslashed POST data.
-	 */
-	public static function get_post_data( $property, $sanitizer = 'sanitize_text_field' ) {
-		return self::get_special_data( $property, $sanitizer, 'POST' );
-	}
-
-	/**
-	 * Get sanitized, unslashed GET data.
-	 */
-	public static function get_get_data( $property, $sanitizer = 'sanitize_text_field' ) {
-		return self::get_special_data( $property, $sanitizer, 'GET' );
-	}
-
-	/**
-	 * Get sanitized, unslashed REQUEST data.
-	 */
-	public static function get_request_data( $property, $sanitizer = 'sanitize_text_field' ) {
-		return self::get_special_data( $property, $sanitizer, 'REQUEST' );
-	}
-
-	/**
-	 * Get sanitized, unslashed SERVER data.
-	 */
-	public static function get_server_data( $property, $sanitizer = 'sanitize_text_field' ) {
-		return self::get_special_data( $property, $sanitizer, 'SERVER' );
-	}
-
-	/**
-	 * Get sanitized, unslashed data.
-	 */
-	public static function get_special_data( $property_trail, $sanitizer = 'sanitize_text_field', $source = 'POST' ) {
-		switch ( $source ) {
-			case 'POST':
-			default:
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
-				$data = ! empty( $_POST ) ? wp_unslash( $_POST ) : [];
-				break;
-			case 'GET':
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
-				$data = ! empty( $_GET ) ? wp_unslash( $_GET ) : [];
-				break;
-			case 'REQUEST':
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
-				$data = ! empty( $_REQUEST ) ? wp_unslash( $_REQUEST ) : [];
-				break;
-			case 'SERVER':
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- nonce validation is done elsewhere -- this is just a data retrieval function.
-				$data = ! empty( $_SERVER ) ? wp_unslash( $_SERVER ) : [];
-				break;
-		}
-
-		if ( empty( $data ) ) {
-			return null;
-		}
-
-		if ( is_string( $property_trail ) ) {
-			$property_trail = [ $property_trail ];
-		}
-
-		foreach ( $property_trail as $property ) {
-			if ( ! isset( $data[ $property ] ) ) {
-				return null;
-			}
-			$data = $data[ $property ];
-		}
-
-		return self::recursive_sanitize( $data, $sanitizer );
-	}
-
-	/**
-	 * Recursively sanitize a value or array of values.
-	 *
-	 * @param mixed  $value     The value to sanitize.
-	 * @param string $sanitizer The sanitizer function to use.
-	 *
-	 * @return mixed
-	 */
-	private static function recursive_sanitize( $value, $sanitizer ) {
-		if ( is_array( $value ) ) {
-			foreach ( $value as $key => $item ) {
-				$value[ $key ] = self::recursive_sanitize( $item, $sanitizer );
-			}
-		} else {
-			if ( is_callable( $sanitizer ) ) {
-				$value = call_user_func( $sanitizer, $value );
-			} else {
-				// fallback to sanitize_text_field.
-				$value = sanitize_text_field( $value );
-			}
-		}
-
-		return $value;
 	}
 }

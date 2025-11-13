@@ -212,7 +212,8 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	 */
 	public function process_bulk_action() {
 		// security check!
-		$the_nonce = Plugin::get_post_data( 'wpes-nonce' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$the_nonce = isset( $_POST['wpes-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpes-nonce'] ) ) : '';
 
 		// No nonce? No bulk action for you.
 		if ( ! $the_nonce ) {
@@ -225,7 +226,8 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		}
 
 		$action = $this->current_action();
-		$ids    = Plugin::get_post_data( 'item', 'intval' ) ?: [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, sanitized below.
+		$ids = isset( $_POST['item'] ) ? array_map( 'intval', wp_unslash( $_POST['item'] ) ) : [];
 
 		switch ( $action ) {
 
@@ -285,13 +287,15 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		$order   = 'desc';
 
 		// If orderby is set, use this as the sort column.
-		$_orderby = Plugin::get_get_data( 'orderby' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$_orderby = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : '';
 		if ( ! empty( $_orderby ) ) {
 			$orderby = $_orderby;
 		}
 
 		// If order is set use this as the order.
-		$_order = Plugin::get_get_data( 'order' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$_order = isset( $_GET['order'] ) ? sanitize_text_field( wp_unslash( $_GET['order'] ) ) : '';
 		if ( ! empty( $_order ) ) {
 			$order = $_order;
 		}

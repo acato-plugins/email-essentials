@@ -15,7 +15,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 global $current_user, $wpdb;
 
 // @phpcs:disable WordPress.Security.NonceVerification.Recommended
-$wpes_view_order_field = Plugin::get_get_data('_ofield') ?: 'ID';
+$wpes_view_order_field = isset( $_GET['_ofield'] ) ? sanitize_text_field( wp_unslash( $_GET['_ofield'] ) ) : 'ID';
 
 if ( ! in_array( $wpes_view_order_field, [ 'subject', 'sender', 'thedatetime', 'recipient' ], true ) ) {
 	$wpes_view_order_field = 'ID';
