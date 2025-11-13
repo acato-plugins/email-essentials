@@ -191,12 +191,11 @@ class History {
 			return;
 		}
 
-		if ( 'resend-failed-email' !== $action || ! $email || ! current_user_can( 'manage_options' ) ) {
+		if ( ! wp_verify_nonce( $the_nonce, 'wpes_resend_email_' . $email ) ) {
 			return;
 		}
 
-		// Check nonce.
-		if ( ! wp_verify_nonce( $the_nonce, 'wpes_resend_email_' . $email ) ) {
+		if ( 'resend-failed-email' !== $action || ! $email || ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
