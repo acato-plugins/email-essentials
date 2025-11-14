@@ -118,7 +118,7 @@ class Queue_List_Table extends WP_List_Table {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wpes_queue ORDER BY id DESC", ARRAY_A );
+		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}acato_email_essentials_queue ORDER BY id DESC", ARRAY_A );
 	}
 
 	/**
@@ -204,7 +204,7 @@ class Queue_List_Table extends WP_List_Table {
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
+		$wpdb->update( "{$wpdb->prefix}acato_email_essentials_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
 	/**

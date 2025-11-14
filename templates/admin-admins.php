@@ -30,7 +30,7 @@ $acato_email_essentials_wordpress_admin = get_option( 'admin_email' );
 	?>
 
 	<form id="outpost" class="wpes-admin" method='POST' action="">
-		<input type="hidden" name="form_id" value="wpes-admins"/>
+		<input type="hidden" name="form_id" value="acato-email-essentials/admins"/>
 		<?php wp_nonce_field( 'acato-email-essentials--admins', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">

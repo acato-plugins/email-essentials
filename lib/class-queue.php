@@ -37,7 +37,7 @@ class Queue {
 	public function __construct() {
 		global $wpdb;
 
-		$schema = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}wpes_queue (
+		$schema = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}acato_email_essentials_queue (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `dt` datetime NOT NULL,
   `ip` varchar(256) NOT NULL DEFAULT '',
@@ -146,7 +146,7 @@ class Queue {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$wpdb->insert(
-				"{$wpdb->prefix}wpes_queue",
+				"{$wpdb->prefix}acato_email_essentials_queue",
 				$queue_item,
 				[
 					'%s',
@@ -193,7 +193,7 @@ class Queue {
 		$ip = Plugin::server_remote_addr();
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
-		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
+		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}acato_email_essentials_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
 
 		if ( $mails_recently_sent > self::get_max_count_per_time_window() ) {
 			return apply_filters( 'acato_email_essentials_mail_is_throttled', true, $ip, $mails_recently_sent );
@@ -390,7 +390,7 @@ class Queue {
 	public static function send_one_email() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC", self::FRESH ) );
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d ORDER BY dt ASC", self::FRESH ) );
 		self::send_now( $id );
 	}
 
@@ -414,7 +414,7 @@ class Queue {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC LIMIT %d", self::FRESH, self::get_batch_size() ) );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d ORDER BY dt ASC LIMIT %d", self::FRESH, self::get_batch_size() ) );
 		foreach ( $ids as $id ) {
 			self::send_now( $id );
 		}
@@ -428,7 +428,7 @@ class Queue {
 	public static function send_now( $id ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $id ), ARRAY_A );
+		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}acato_email_essentials_queue WHERE id = %d", $id ), ARRAY_A );
 		self::instance()->set_skip_queue( true );
 		$mail_data = array_map( 'unserialize', $mail_data );
 		self::set_status( $id, self::SENDING );
@@ -453,7 +453,7 @@ class Queue {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $mail_id ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}acato_email_essentials_queue WHERE id = %d", $mail_id ) );
 	}
 
 	/**
@@ -475,7 +475,7 @@ class Queue {
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
+		$wpdb->update( "{$wpdb->prefix}acato_email_essentials_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
 	/**
@@ -505,7 +505,7 @@ class Queue {
 			Plugin::plugin_data()['Name'] . ' - ' . __( 'Email Throttling', 'email-essentials' ),
 			__( 'Email Throttling', 'email-essentials' ) . $count,
 			'manage_options',
-			'wpes-queue',
+			'acato-email-essentials/queue',
 			[ self::class, 'admin_interface' ]
 		);
 	}
@@ -524,6 +524,6 @@ class Queue {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE status = %d", self::FRESH ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d", self::FRESH ) );
 	}
 }

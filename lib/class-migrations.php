@@ -245,5 +245,34 @@ class Migrations {
 			// Delete old setting.
 			delete_option( $old_name );
 		}
+
+		$database_tables = [
+			'wpes_queue' => 'acato_email_essentials_queue',
+			'wpes_hist'  => 'acato_email_essentials_history',
+		];
+
+		global $wpdb;
+		foreach ( $database_tables as $old_table_name => $new_table_name ) {
+			$old_table_full_name = $wpdb->prefix . $old_table_name;
+			$new_table_full_name = $wpdb->prefix . $new_table_name;
+
+			// Check if old table exists.
+			$old_table_exists = $wpdb->get_var(
+				$wpdb->prepare(
+					"SHOW TABLES LIKE %s",
+					$old_table_full_name
+				)
+			);
+
+			if ( $old_table_exists !== $old_table_full_name ) {
+				// Old table does not exist, skip.
+				continue;
+			}
+
+			// Rename old table to new table.
+			$wpdb->query( "CREATE TABLE IF NOT EXISTS `{$new_table_full_name}` LIKE `{$old_table_full_name}`;" );
+			$wpdb->query( "INSERT INTO `{$new_table_full_name}` SELECT * FROM `{$old_table_full_name}`;" );
+			$wpdb->query( "DROP TABLE `{$old_table_full_name}`;" );
+		}
 	}
 }

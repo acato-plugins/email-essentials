@@ -88,7 +88,7 @@ $acato_email_essentials_dkim_identities  = [];
 					$acato_email_essentials_urls = [
 						__( 'Blog settings', 'email-essentials' )      => admin_url( 'options-general.php' ),
 						__( 'Site settings', 'email-essentials' )      => is_multisite() ? network_admin_url( 'settings.php' ) : false,
-						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'wpes-admins', admin_url( 'admin.php' ) ),
+						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'acato-email-essentials/admins', admin_url( 'admin.php' ) ),
 					];
 					$acato_email_essentials_urls = array_filter( $acato_email_essentials_urls );
 					foreach ( $acato_email_essentials_urls as $acato_email_essentials_url_name => $acato_email_essentials_url ) {

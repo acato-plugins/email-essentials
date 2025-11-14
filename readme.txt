@@ -92,8 +92,8 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 
 Email Essentials uses one external service by default, two if you create and define your own IP services.
 
-1. CloudFlare DNS of HTTPS. This is used to resolve domain names to IP addresses when (for example) checking SPF or DKIM records. In theory, it is possible to use PHPs odn `dns_get_record` function, but in practice this often fails due to local DNS misconfiguration. Using CloudFlare's DoH service ensures reliable DNS resolution. We only send the hostname (the domain part) to CloudFlare, no other data. Explicitly, we do NOT send any other information.
-2. The plugin can an IP-address relay service to accurately determine the sender's IP address. This is required to accurately check that the sender's IP address is authorized to send email for the domain (SPF check). To use this, you will need to set up your own service, see documentation on filter `acato_email_essentials_ip_services`. Without this service, IP detection can be inaccurate because it will use the website itself as a relay. Use of a reverse proxy, load balancer etc can lead to incorrect IP detection.
+1. CloudFlare DNS over HTTPS (DoH). This is used to resolve domain names to IP addresses when (for example) checking SPF or DKIM records. In theory, it is possible to use PHPs own `dns_get_record` function, but in practice this often fails due to server DNS-resolve misconfiguration. Using CloudFlare's DoH service ensures reliable DNS resolution. We only send the hostname (the domain part) to CloudFlare, no other data. Explicitly, we do NOT send any other information.
+2. The plugin can use an IP-address relay service to accurately determine the sender's IP address. This is required to accurately check that the sender's IP address is authorized to send email for the domain (SPF check). To use this, you will need to set up your own service, see documentation on filter `acato_email_essentials_ip_services`. Without this service, IP detection can be inaccurate because it will use the website itself as a relay. Use of a reverse proxy, load balancer etc. can lead to incorrect IP detection.
 
 == WordPress Filters ==
 
@@ -334,7 +334,7 @@ See package.json for more details or individual commands.
 == Tools ==
 
 In the `tools` folder you will find two files that compose a script to generate DKIM keys, should you want to use DKIM signing.
-rename the scripts from to .sh and .php respectively, and run the shell script from the command line.
+rename the scripts from .txt to .sh and .php respectively, and run the shell script from the command line.
 
 These scripts are provided as-is, without support. Use at your own risk. Read the scripts before using them.
 

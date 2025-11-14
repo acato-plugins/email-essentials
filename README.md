@@ -270,7 +270,7 @@ See package.json for more details or individual commands.
 # Tools:
 
 In the `tools` folder you will find two files that compose a script to generate DKIM keys, should you want to use DKIM signing.
-rename the scripts from to .sh and .php respectively, and run the shell script from the command line.
+rename the scripts from .txt to .sh and .php respectively, and run the shell script from the command line.
 
 These scripts are provided as-is, without support. Use at your own risk. Read the scripts before using them.
 

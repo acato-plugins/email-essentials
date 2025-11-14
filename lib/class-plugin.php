@@ -2115,7 +2115,7 @@ class Plugin {
 		/**
 		 * Save options for "alternative admins" panel
 		 */
-		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--admins' ) && 'wpes-admins' === $page && 'wpes-admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--admins' ) && 'acato-email-essentials/admins' === $page && 'acato-email-essentials/admins' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
 			$keys = ( isset( $_POST['settings']['keys'] ) && is_array( $_POST['settings']['keys'] ) ) ? wp_unslash( $_POST['settings']['keys'] ) : [];
 			$keys = array_filter(
@@ -2150,7 +2150,7 @@ class Plugin {
 		/**
 		 * Save options for "Moderators" panel.
 		 */
-		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--moderators' ) && 'wpes-moderators' === $page && 'wpes-moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
+		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--moderators' ) && 'acato-email-essentials/moderators' === $page && 'acato-email-essentials/moderators' === $form_id && __( 'Save settings', 'email-essentials' ) === $op ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
 			$new_data = ( isset( $_POST['settings']['keys'] ) && is_array( $_POST['settings']['keys'] ) ) ? wp_unslash( $_POST['settings']['keys'] ) : [];
 			foreach ( $new_data as &$_keys ) {
@@ -2200,7 +2200,7 @@ class Plugin {
 			self::plugin_data()['LongName'] . ' - ' . __( 'Alternative Admins', 'email-essentials' ),
 			__( 'Alternative Admins', 'email-essentials' ),
 			'manage_options',
-			'wpes-admins',
+			'acato-email-essentials/admins',
 			[
 				self::class,
 				'admin_interface_admins',
@@ -2212,7 +2212,7 @@ class Plugin {
 			self::plugin_data()['LongName'] . ' - ' . __( 'Alternative Moderators', 'email-essentials' ),
 			__( 'Alternative Moderators', 'email-essentials' ),
 			'manage_options',
-			'wpes-moderators',
+			'acato-email-essentials/moderators',
 			[
 				self::class,
 				'admin_interface_moderators',
@@ -2952,7 +2952,7 @@ Item 2
 			<script>
 				jQuery("#admin_email,#new_admin_email").after('<p class="description"><?php
 					// translators: %s: a URL.
-					print wp_kses_post( sprintf( __( 'You can configure alternative administrators <a href="%s">here</a>.', 'email-essentials' ), add_query_arg( [ 'page' => 'wpes-admins' ], admin_url( 'admin.php' ) ) ) );
+					print wp_kses_post( sprintf( __( 'You can configure alternative administrators <a href="%s">here</a>.', 'email-essentials' ), add_query_arg( [ 'page' => 'acato-email-essentials/admins' ], admin_url( 'admin.php' ) ) ) );
 					?></p>');
 			</script>
 			<?php

@@ -52,7 +52,7 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$acato_email_essentials_view_total_nr_items = $wpdb->get_var( "SELECT COUNT(ID) as thecount FROM {$wpdb->prefix}wpes_hist" );
+	$acato_email_essentials_view_total_nr_items = $wpdb->get_var( "SELECT COUNT(ID) as thecount FROM {$wpdb->prefix}acato_email_essentials_history" );
 	if ( $acato_email_essentials_view_first_item > $acato_email_essentials_view_total_nr_items ) {
 		$acato_email_essentials_view_first_item = 0;
 	}
@@ -216,7 +216,7 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 						$acato_email_essentials_view_emails_list = $wpdb->get_results(
 							$wpdb->prepare(
 							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- give me a way to parameterize ORDER BY direction indicators and I'll use it.
-								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY %i $acato_email_essentials_view_order_direction LIMIT %d,%d",
+								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}acato_email_essentials_history ORDER BY %i $acato_email_essentials_view_order_direction LIMIT %d,%d",
 								$acato_email_essentials_view_order_field,
 								$acato_email_essentials_view_first_item,
 								$acato_email_essentials_view_items_per_page

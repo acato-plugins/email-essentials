@@ -65,7 +65,7 @@ class History {
 		$enabled = $enabled['enable_history'];
 
 		if ( $enabled ) {
-			$schema = "CREATE TABLE `{$wpdb->prefix}wpes_hist` (
+			$schema = "CREATE TABLE `{$wpdb->prefix}acato_email_essentials_history` (
 			  `ID` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `sender` varchar(256) NOT NULL DEFAULT '',
 			  `ip` varchar(128) NOT NULL DEFAULT '',
@@ -102,7 +102,7 @@ class History {
 			add_action( 'admin_menu', [ self::class, 'admin_menu' ] );
 		} elseif ( get_option( 'acato_email_essentials_history_revision', 0 ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query( "DROP TABLE `{$wpdb->prefix}wpes_hist`;" );
+			$wpdb->query( "DROP TABLE `{$wpdb->prefix}acato_email_essentials_history`;" );
 			delete_option( 'acato_email_essentials_history_revision' );
 		}
 
@@ -114,7 +114,7 @@ class History {
 				$download_eml = isset( $_GET['download_eml'] ) ? (int) $_GET['download_eml'] : 0;
 				if ( current_user_can( 'manage_options' ) && $download_eml ) {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.Security.NonceVerification.Recommended -- still not a form!.
-					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}wpes_hist WHERE id = %d LIMIT 1", $download_eml ), ARRAY_A );
+					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}acato_email_essentials_history WHERE id = %d LIMIT 1", $download_eml ), ARRAY_A );
 					if ( $data['eml'] ?? false ) {
 						header( 'Content-Type: message/rfc822' );
 						$uniq = sprintf(
@@ -149,7 +149,7 @@ class History {
 	public static function shutdown() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( "DELETE FROM `{$wpdb->prefix}wpes_hist` WHERE thedatetime <  NOW() - INTERVAL 1 MONTH" );
+		$wpdb->query( "DELETE FROM `{$wpdb->prefix}acato_email_essentials_history` WHERE thedatetime <  NOW() - INTERVAL 1 MONTH" );
 	}
 
 	/**
@@ -161,7 +161,7 @@ class History {
 			Plugin::plugin_data()['Name'] . ' - ' . __( 'Email History', 'email-essentials' ),
 			__( 'Email History', 'email-essentials' ),
 			'manage_options',
-			'wpes-emails',
+			'acato-email-essentials/emails',
 			[ self::class, 'admin_interface' ]
 		);
 		self::maybe_resend_email();
@@ -187,7 +187,7 @@ class History {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce is verified below.
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 
-		if ( ! is_admin() || 'wpes-emails' !== $page ) {
+		if ( ! is_admin() || 'acato-email-essentials/emails' !== $page ) {
 			return;
 		}
 
@@ -205,7 +205,7 @@ class History {
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}wpes_hist` WHERE ID = %d LIMIT 1", $email ), ARRAY_A );
+		$data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}acato_email_essentials_history` WHERE ID = %d LIMIT 1", $email ), ARRAY_A );
 		if ( ! $data ) {
 			return;
 		}
@@ -225,7 +225,7 @@ class History {
 
 		// Mark email as re-sent so we don't try to resend it again.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d WHERE ID = %d LIMIT 1", self::MAIL_RESENT, $email ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %d WHERE ID = %d LIMIT 1", self::MAIL_RESENT, $email ) );
 
 		wp_safe_redirect( remove_query_arg( [ 'action', 'nonce', 'email' ] ) );
 		exit;
@@ -441,7 +441,7 @@ class History {
 		$eml = $phpmailer->GetSentMIMEMessage();
 		Plugin::log_message( "UPDATE sender to $sender" );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d, sender = %s, alt_body = %s, debug = %s, eml = %s WHERE ID = %d AND subject = %s LIMIT 1", self::MAIL_SENT, $sender, $phpmailer->AltBody, $data, $eml, self::last_insert(), $phpmailer->Subject ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %d, sender = %s, alt_body = %s, debug = %s, eml = %s WHERE ID = %d AND subject = %s LIMIT 1", self::MAIL_SENT, $sender, $phpmailer->AltBody, $data, $eml, self::last_insert(), $phpmailer->Subject ) );
 		// @phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer, folks...
 	}
 
@@ -485,7 +485,7 @@ class History {
 		$ip = Plugin::server_remote_addr();
 		Plugin::log_message( "INSERT with sender $from" );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "INSERT INTO `{$wpdb->prefix}wpes_hist` (status, sender, recipient, subject, headers, body, thedatetime, ip) VALUES (%d, %s, %s, %s, %s, %s, %s, %s);", self::MAIL_NEW, $from, is_array( $to ) ? implode( ',', $to ) : $to, $subject, $_headers, $message, gmdate( 'Y-m-d H:i:s', time() ), $ip ) );
+		$wpdb->query( $wpdb->prepare( "INSERT INTO `{$wpdb->prefix}acato_email_essentials_history` (status, sender, recipient, subject, headers, body, thedatetime, ip) VALUES (%d, %s, %s, %s, %s, %s, %s, %s);", self::MAIL_NEW, $from, is_array( $to ) ? implode( ',', $to ) : $to, $subject, $_headers, $message, gmdate( 'Y-m-d H:i:s', time() ), $ip ) );
 		self::last_insert( $wpdb->insert_id );
 
 		return $data;
@@ -504,7 +504,7 @@ class History {
 			$errormsg = 'Unknown error';
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %d, errinfo = CONCAT(%s, errinfo) WHERE ID = %d LIMIT 1", self::MAIL_FAILED, $errormsg . "\n", self::last_insert() ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %d, errinfo = CONCAT(%s, errinfo) WHERE ID = %d LIMIT 1", self::MAIL_FAILED, $errormsg . "\n", self::last_insert() ) );
 
 		self::store_log( Logger::get() );
 	}
@@ -525,7 +525,7 @@ class History {
 		global $wpdb;
 		$log = implode( "\n", $log );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET debug = CONCAT(debug, '\n----\n', %s) WHERE ID = %d LIMIT 1", $log, self::last_insert() ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET debug = CONCAT(debug, '\n----\n', %s) WHERE ID = %d LIMIT 1", $log, self::last_insert() ) );
 	}
 
 	/**
@@ -560,7 +560,7 @@ class History {
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
 		if ( preg_match( '/\/email-image-(\d+).png/', $request_uri, $match ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}wpes_hist` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $match[1] ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $match[1] ) );
 
 			header( 'Content-Type: image/png' );
 			header( 'Content-Length: 0' );
