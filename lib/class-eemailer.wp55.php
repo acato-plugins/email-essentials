@@ -3,7 +3,7 @@
 /**
  * A normalised class for PHPMailer.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -37,7 +37,7 @@ require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
  * A wrapper for the WP 5.5 and later version of PHPMailer
  */
 class EEMailer extends PHPMailer {
-	const Acato_Mailer_Version = '5.5-6.7.99';
+	const ACATO_MAILER_VERSION = '5.5-6.7.99';
 
 	/**
 	 * Method Send overloaded to keep the SingleTo functionality that will be deprecated in phpMailer version 6.

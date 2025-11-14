@@ -1,4 +1,11 @@
 <?php
+/**
+ * Logger class file.
+ *
+ * @since   6.0.0
+ * @package Acato_Email_Essentials
+ * @author  Remon Pel <remon@acato.nl>
+ */
 
 namespace Acato\Email_Essentials;
 

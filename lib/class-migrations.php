@@ -2,7 +2,7 @@
 /**
  * Class for Migrating other plugins settings
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -11,7 +11,6 @@ namespace Acato\Email_Essentials;
  * The PHP 5.4 and earlier version of this class, also used as the base for the PHP 5.5+ version.
  */
 class Migrations {
-
 	/**
 	 * Implementation of register_activation_hook().
 	 */
@@ -25,7 +24,13 @@ class Migrations {
 	 */
 	public static function init() {
 		add_filter( 'acato_email_essentials_ip_services', [ self::class, 'acato_email_essentials_ip_services' ] );
-		add_filter( 'acato_email_essentials_website_root_path', [ self::class, 'acato_email_essentials_website_root_path' ] );
+		add_filter(
+			'acato_email_essentials_website_root_path',
+			[
+				self::class,
+				'acato_email_essentials_website_root_path',
+			]
+		);
 
 		self::maybe_migrate_from_wp_email_essentials();
 	}
@@ -162,7 +167,6 @@ class Migrations {
 			if ( is_dir( $path_named_current ) && realpath( $path_named_current ) === realpath( $root_path ) ) {
 				$root_path = $path_named_current;
 			}
-
 		}
 
 		return $root_path;

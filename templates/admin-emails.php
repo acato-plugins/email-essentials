@@ -2,7 +2,7 @@
 /**
  * View: email log.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -12,23 +12,34 @@ use stdClass;
 if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( wp_kses_post( __( 'Uh uh uh! You didn\'t say the magic word!', 'email-essentials' ) ) );
 }
-global $current_user, $wpdb;
+global $wpdb;
 
 // @phpcs:disable WordPress.Security.NonceVerification.Recommended
-$wpes_view_order_field = isset( $_GET['_ofield'] ) ? sanitize_text_field( wp_unslash( $_GET['_ofield'] ) ) : 'ID';
+$acato_email_essentials_view_order_field = isset( $_GET['_ofield'] ) ? sanitize_text_field( wp_unslash( $_GET['_ofield'] ) ) : 'ID';
 
-if ( ! in_array( $wpes_view_order_field, [ 'subject', 'sender', 'thedatetime', 'recipient' ], true ) ) {
-	$wpes_view_order_field = 'ID';
+if (
+	! in_array(
+		$acato_email_essentials_view_order_field,
+		[
+			'subject',
+			'sender',
+			'thedatetime',
+			'recipient',
+		],
+		true
+	)
+) {
+	$acato_email_essentials_view_order_field = 'ID';
 }
 
-$wpes_view_order_direction = isset( $_GET['_order'] ) ? ( 'DESC' === $_GET['_order'] ? 'DESC' : 'ASC' ) : ( 'ID' === $wpes_view_order_field ? 'DESC' : 'ASC' );
-$wpes_view_items_per_page  = isset( $_GET['_limit'] ) && (int) $_GET['_limit'] > 0 ? (int) $_GET['_limit'] : 25;
-$wpes_view_current_page    = isset( $_GET['_page'] ) && (int) $_GET['_page'] > 0 ? (int) $_GET['_page'] : 0;
-$wpes_view_first_item      = $wpes_view_current_page * $wpes_view_items_per_page;
+$acato_email_essentials_view_order_direction = isset( $_GET['_order'] ) ? ( 'DESC' === $_GET['_order'] ? 'DESC' : 'ASC' ) : ( 'ID' === $acato_email_essentials_view_order_field ? 'DESC' : 'ASC' );
+$acato_email_essentials_view_items_per_page  = isset( $_GET['_limit'] ) && (int) $_GET['_limit'] > 0 ? (int) $_GET['_limit'] : 25;
+$acato_email_essentials_view_current_page    = isset( $_GET['_page'] ) && (int) $_GET['_page'] > 0 ? (int) $_GET['_page'] : 0;
+$acato_email_essentials_view_first_item      = $acato_email_essentials_view_current_page * $acato_email_essentials_view_items_per_page;
 // @phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-$wpes_default_sender = Plugin::get_config()['from_email'];
-$wpes_wp_admin_email = get_option( 'admin_email' );
+$acato_email_essentials_default_sender = Plugin::get_config()['from_email'];
+$acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 ?>
 <div class="wrap wpes-wrap wpes-emails wpes-admin">
 	<?php
@@ -41,63 +52,73 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpes_view_total_nr_items = $wpdb->get_var( "SELECT COUNT(ID) as thecount FROM {$wpdb->prefix}wpes_hist" );
-	if ( $wpes_view_first_item > $wpes_view_total_nr_items ) {
-		$wpes_view_first_item = 0;
+	$acato_email_essentials_view_total_nr_items = $wpdb->get_var( "SELECT COUNT(ID) as thecount FROM {$wpdb->prefix}wpes_hist" );
+	if ( $acato_email_essentials_view_first_item > $acato_email_essentials_view_total_nr_items ) {
+		$acato_email_essentials_view_first_item = 0;
 	}
-	$wpes_view_nr_pages  = ceil( $wpes_view_total_nr_items / $wpes_view_items_per_page );
-	$wpes_view_next_page = $wpes_view_current_page + 1;
-	$wpes_view_prev_page = $wpes_view_current_page - 1;
-	if ( $wpes_view_prev_page < 0 ) {
-		$wpes_view_prev_page = false;
+	$acato_email_essentials_view_nr_pages  = ceil( $acato_email_essentials_view_total_nr_items / $acato_email_essentials_view_items_per_page );
+	$acato_email_essentials_view_next_page = $acato_email_essentials_view_current_page + 1;
+	$acato_email_essentials_view_prev_page = $acato_email_essentials_view_current_page - 1;
+	if ( $acato_email_essentials_view_prev_page < 0 ) {
+		$acato_email_essentials_view_prev_page = false;
 	}
-	if ( $wpes_view_next_page > $wpes_view_nr_pages - 1 ) {
-		$wpes_view_next_page = false;
+	if ( $acato_email_essentials_view_next_page > $acato_email_essentials_view_nr_pages - 1 ) {
+		$acato_email_essentials_view_next_page = false;
 	}
 	?>
 	<?php
 	// Generate page numbers with smart ellipsis.
-	$wpes_view_page_range = 2; // Show 2 pages on each side of current page.
-	$wpes_view_pages      = [];
+	$acato_email_essentials_view_page_range = 2; // Show 2 pages on each side of current page.
+	$acato_email_essentials_view_pages      = [];
 
-	for ( $i = 0; $i < $wpes_view_nr_pages; $i++ ) {
+	for ( $acato_email_essentials_iterator = 0; $acato_email_essentials_iterator < $acato_email_essentials_view_nr_pages; $acato_email_essentials_iterator++ ) {
 		// Always show first page, last page, and pages around current page.
-		if ( 0 === $i || $i === $wpes_view_nr_pages - 1 || abs( $i - $wpes_view_current_page ) <= $wpes_view_page_range ) {
-			$wpes_view_pages[] = $i;
-		} elseif ( ! empty( $wpes_view_pages ) && end( $wpes_view_pages ) !== '...' ) {
-			$wpes_view_pages[] = '...';
+		if ( 0 === $acato_email_essentials_iterator || $acato_email_essentials_iterator === $acato_email_essentials_view_nr_pages - 1 || abs( $acato_email_essentials_iterator - $acato_email_essentials_view_current_page ) <= $acato_email_essentials_view_page_range ) {
+			$acato_email_essentials_view_pages[] = $acato_email_essentials_iterator;
+		} elseif ( ! empty( $acato_email_essentials_view_pages ) && end( $acato_email_essentials_view_pages ) !== '...' ) {
+			$acato_email_essentials_view_pages[] = '...';
 		}
 	}
 	?>
 	<div class="pager">
-		<?php if ( $wpes_view_current_page >= 2 ) { ?>
-			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
+		<?php if ( $acato_email_essentials_view_current_page >= 2 ) { ?>
+			<a
+				class="button"
+				href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
 		<?php } ?>
 
-		<?php if ( false !== $wpes_view_prev_page ) { ?>
-			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
+		<?php if ( false !== $acato_email_essentials_view_prev_page ) { ?>
+			<a
+				class="button"
+				href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
 		<?php } ?>
 
 		<span>
-			<?php foreach ( $wpes_view_pages as $wpes_page_num ) : ?>
-				<?php if ( '...' === $wpes_page_num ) : ?>
+			<?php foreach ( $acato_email_essentials_view_pages as $acato_email_essentials_page_num ) : ?>
+				<?php if ( '...' === $acato_email_essentials_page_num ) : ?>
 					<span class="ellipsis">...</span>
 				<?php else : ?>
-					<?php if ( $wpes_page_num === $wpes_view_current_page ) : ?>
-						<strong><?php print esc_html( $wpes_page_num + 1 ); ?></strong>
+					<?php if ( $acato_email_essentials_page_num === $acato_email_essentials_view_current_page ) : ?>
+						<strong><?php print esc_html( $acato_email_essentials_page_num + 1 ); ?></strong>
 					<?php else : ?>
-						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_page_num ) ); ?>"><?php print esc_html( $wpes_page_num + 1 ); ?></a>
+						<a
+							class="button"
+							href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_page_num ) ); ?>"><?php print esc_html( $acato_email_essentials_page_num + 1 ); ?></a>
 					<?php endif; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
 		</span>
 
-		<?php if ( false !== $wpes_view_next_page ) { ?>
-			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
+		<?php if ( false !== $acato_email_essentials_view_next_page ) { ?>
+			<a
+				class="button"
+				href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
 		<?php } ?>
 
-		<?php if ( $wpes_view_current_page < $wpes_view_nr_pages - 2 ) { ?>
-			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
+		<?php if ( $acato_email_essentials_view_current_page < $acato_email_essentials_view_nr_pages - 2 ) { ?>
+			<a
+				class="button"
+				href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
 		<?php } ?>
 
 		<span>
@@ -105,39 +126,26 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 			// Show reset button if custom sorting is active.
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation.
 			if ( isset( $_GET['_ofield'] ) ) {
-				$wpes_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
+				$acato_email_essentials_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
 				?>
-				<a class="button" href="<?php print esc_attr( $wpes_reset_url ); ?>">
+				<a class="button" href="<?php print esc_attr( $acato_email_essentials_reset_url ); ?>">
 					<?php esc_html_e( 'Reset Sorting', 'email-essentials' ); ?>
 				</a>
 				<?php
 			}
 			?>
-			<label for="wpes-page-size"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
+			<label
+				for="wpes-page-size"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
 			<select id="wpes-page-size" name="_limit">
-				<?php foreach ( [ 25, 50, 100, 250 ] as $wpes_page_size ) : ?>
-					<option value="<?php print esc_attr( $wpes_page_size ); ?>" <?php selected( $wpes_view_items_per_page, $wpes_page_size ); ?>>
-						<?php print esc_html( $wpes_page_size ); ?>
+				<?php foreach ( [ 25, 50, 100, 250 ] as $acato_email_essentials_page_size ) : ?>
+					<option
+						value="<?php print esc_attr( $acato_email_essentials_page_size ); ?>" <?php selected( $acato_email_essentials_view_items_per_page, $acato_email_essentials_page_size ); ?>>
+						<?php print esc_html( $acato_email_essentials_page_size ); ?>
 					</option>
 				<?php endforeach; ?>
 			</select>
 		</span>
 	</div>
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		var pageSizeSelects = document.querySelectorAll('#wpes-page-size, #wpes-page-size-bottom');
-		pageSizeSelects.forEach(function(select) {
-			if (select) {
-				select.addEventListener('change', function() {
-					var currentUrl = new URL(window.location.href);
-					currentUrl.searchParams.set('_limit', this.value);
-					currentUrl.searchParams.set('_page', '0'); // Reset to first page
-					window.location.href = currentUrl.toString();
-				});
-			}
-		});
-	});
-	</script>
 
 	<div id="poststuff">
 		<div class="postbox">
@@ -154,30 +162,30 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 							<td class="eml"><span class="dashicons dashicons-email-alt"></span></td>
 							<?php
 							// Sortable columns.
-							$wpes_sortable_columns = [
+							$acato_email_essentials_sortable_columns = [
 								'thedatetime' => __( 'Date/Time', 'email-essentials' ),
 								'recipient'   => __( 'Recipient', 'email-essentials' ),
 								'sender'      => __( 'Sender', 'email-essentials' ),
 								'subject'     => __( 'Subject', 'email-essentials' ),
 							];
-							foreach ( $wpes_sortable_columns as $wpes_column_key => $wpes_column_label ) {
-								$wpes_is_active_sort = ( $wpes_view_order_field === $wpes_column_key );
+							foreach ( $acato_email_essentials_sortable_columns as $acato_email_essentials_column_key => $acato_email_essentials_column_label ) {
+								$acato_email_essentials_is_active_sort = ( $acato_email_essentials_view_order_field === $acato_email_essentials_column_key );
 								// Toggle direction if clicking on active column.
-								$wpes_new_direction  = $wpes_is_active_sort ? ( 'ASC' === $wpes_view_order_direction ? 'DESC' : 'ASC' ) : 'ASC';
-								$wpes_sort_url       = add_query_arg(
+								$acato_email_essentials_new_direction  = $acato_email_essentials_is_active_sort ? ( 'ASC' === $acato_email_essentials_view_order_direction ? 'DESC' : 'ASC' ) : 'ASC';
+								$acato_email_essentials_sort_url       = add_query_arg(
 									[
-										'_ofield' => $wpes_column_key,
-										'_order'  => $wpes_new_direction,
+										'_ofield' => $acato_email_essentials_column_key,
+										'_order'  => $acato_email_essentials_new_direction,
 									]
 								);
-								$wpes_direction_icon = '';
-								if ( $wpes_is_active_sort ) {
-									$wpes_direction_icon = 'ASC' === $wpes_view_order_direction ? ' <span class="dashicons dashicons-arrow-up-alt2"></span>' : ' <span class="dashicons dashicons-arrow-down-alt2"></span>';
+								$acato_email_essentials_direction_icon = '';
+								if ( $acato_email_essentials_is_active_sort ) {
+									$acato_email_essentials_direction_icon = 'ASC' === $acato_email_essentials_view_order_direction ? ' <span class="dashicons dashicons-arrow-up-alt2"></span>' : ' <span class="dashicons dashicons-arrow-down-alt2"></span>';
 								}
 								?>
-								<td class="<?php print esc_attr( $wpes_column_key ); ?>">
-									<a href="<?php print esc_attr( $wpes_sort_url ); ?>">
-										<?php print esc_html( $wpes_column_label ); ?><?php print wp_kses_post( $wpes_direction_icon ); ?>
+								<td class="<?php print esc_attr( $acato_email_essentials_column_key ); ?>">
+									<a href="<?php print esc_attr( $acato_email_essentials_sort_url ); ?>">
+										<?php print esc_html( $acato_email_essentials_column_label ); ?><?php print wp_kses_post( $acato_email_essentials_direction_icon ); ?>
 									</a>
 								</td>
 								<?php
@@ -195,9 +203,9 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						 *
 						 * All input in the query has been sanitized on top of this file.
 						 *
-						 * $wpes_view_order_direction can only be ASC or DESC
-						 * $wpes_view_order_field can only be subject, sender, thedatetime, recipient or ID
-						 * $wpes_view_first_item and $wpes_view_items_per_page are integers greater than or equal to 0
+						 * $acato_email_essentials_view_order_direction can only be ASC or DESC
+						 * $acato_email_essentials_view_order_field can only be subject, sender, thedatetime, recipient or ID
+						 * $acato_email_essentials_view_first_item and $acato_email_essentials_view_items_per_page are integers greater than or equal to 0
 						 *
 						 * The Prepare here is because automated review by WordPress.org has detected this.
 						 * It serves no purpose other than that, as all data is sanitized before injection.
@@ -205,115 +213,116 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						 * Also; an ORDER BY direction indicator cannot be parameterized, so we have to inject those directly.
 						 */
 						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
-						$wpes_view_emails_list = $wpdb->get_results(
+						$acato_email_essentials_view_emails_list = $wpdb->get_results(
 							$wpdb->prepare(
-								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY %i $wpes_view_order_direction LIMIT %d,%d",
-								$wpes_view_order_field,
-								$wpes_view_first_item,
-								$wpes_view_items_per_page
+							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- give me a way to parameterize ORDER BY direction indicators and I'll use it.
+								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}wpes_hist ORDER BY %i $acato_email_essentials_view_order_direction LIMIT %d,%d",
+								$acato_email_essentials_view_order_field,
+								$acato_email_essentials_view_first_item,
+								$acato_email_essentials_view_items_per_page
 							)
 						);
 
-						$wpes_view_email_stati = [
+						$acato_email_essentials_view_email_stati = [
 							History::MAIL_NEW    => _x( 'Sent ??', 'Email log: this email is Sent', 'email-essentials' ),
 							History::MAIL_SENT   => _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' ),
 							History::MAIL_FAILED => _x( 'Failed', 'Email log: this email Failed sending', 'email-essentials' ),
 							History::MAIL_RESENT => _x( 'Failed and resend attempted', 'Email log: this email Failed sending, but a resend was attempted', 'email-essentials' ),
 							History::MAIL_OPENED => _x( 'Opened', 'Email log: this email is Opened by the receiver', 'email-essentials' ),
 						];
-						foreach ( $wpes_view_emails_list as $wpes_view_email ) {
+						foreach ( $acato_email_essentials_view_emails_list as $acato_email_essentials_view_email ) {
 							// Get the sender from the log. This might be replaced, if so, this is reply-to, indicated with * .
-							$wpes__sender   = $wpes_view_email->sender;
-							$wpes__reply_to = '';
+							$acato_email_essentials__sender   = $acato_email_essentials_view_email->sender;
+							$acato_email_essentials__reply_to = '';
 							// This is reply-to!
-							if ( substr( $wpes__sender, -2, 2 ) === ' *' ) {
-								$wpes__reply_to = trim( $wpes__sender, ' *' );
+							if ( substr( $acato_email_essentials__sender, -2, 2 ) === ' *' ) {
+								$acato_email_essentials__reply_to = trim( $acato_email_essentials__sender, ' *' );
 								// So who sent it?
 								// 1. Get from Debug data, Sender if available, From otherwise, and FromName if we have it.
-								list( $wpes_view_email->debug, $wpes_view_email->log ) = explode( '----', $wpes_view_email->debug );
-								$wpes__debug = json_decode( $wpes_view_email->debug );
+								list( $acato_email_essentials_view_email->debug, $acato_email_essentials_view_email->log ) = explode( '----', $acato_email_essentials_view_email->debug );
+								$acato_email_essentials__debug = json_decode( $acato_email_essentials_view_email->debug );
 								// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-								$wpes__sender = $wpes__debug->Sender ?: $wpes__debug->From;
-								if ( $wpes__sender ) {
+								$acato_email_essentials__sender = $acato_email_essentials__debug->Sender ?: $acato_email_essentials__debug->From;
+								if ( $acato_email_essentials__sender ) {
 									// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-									if ( $wpes__debug->FromName ) {
-										$wpes__sender = Plugin::rfc_encode(
+									if ( $acato_email_essentials__debug->FromName ) {
+										$acato_email_essentials__sender = Plugin::rfc_encode(
 											[
 												// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-												'name'  => $wpes__debug->FromName,
+												'name'  => $acato_email_essentials__debug->FromName,
 												// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-												'email' => $wpes__debug->Sender ?: $wpes__debug->From,
+												'email' => $acato_email_essentials__debug->Sender ?: $acato_email_essentials__debug->From,
 											]
 										);
-										$wpes__sender = esc_html( $wpes__sender );
+										$acato_email_essentials__sender = esc_html( $acato_email_essentials__sender );
 									}
 								} else {
 									// If not available, then assume it is the configured email address.
-									$wpes__sender = $wpes_default_sender;
-									if ( $wpes__sender ) {
-										$wpes__sender = '<strong style="color: darkgreen">' . esc_html( $wpes__sender ) . '</strong>';
+									$acato_email_essentials__sender = $acato_email_essentials_default_sender;
+									if ( $acato_email_essentials__sender ) {
+										$acato_email_essentials__sender = '<strong style="color: darkgreen">' . esc_html( $acato_email_essentials__sender ) . '</strong>';
 									} else {
 										// Unless that is not set-up yet, then we assume the WP default, which might not be accurate.
-										$wpes__sender = '<strong style="color: orange">' . esc_html( $wpes_wp_admin_email ) . '</strong>';
+										$acato_email_essentials__sender = '<strong style="color: orange">' . esc_html( $acato_email_essentials_wp_admin_email ) . '</strong>';
 									}
 								}
-								$wpes__reply_to = esc_html( $wpes__reply_to );
+								$acato_email_essentials__reply_to = esc_html( $acato_email_essentials__reply_to );
 							} else {
-								$wpes__sender = esc_html( $wpes__sender );
+								$acato_email_essentials__sender = esc_html( $acato_email_essentials__sender );
 							}
 
-							preg_match( '/X-Relates-To: (.*)/', $wpes_view_email->headers, $matches );
-							$wpes_relates_to = isset( $matches[1] ) ? esc_html( $matches[1] ) : '';
-							$wpes_relates_to = explode( ',', $wpes_relates_to );
-							$wpes_relates_to = array_map( 'trim', $wpes_relates_to );
-							$wpes_relates_to = array_map( 'intval', $wpes_relates_to );
-							$wpes_relates_to = array_filter( $wpes_relates_to, 'is_int' );
-							$wpes_relates_to = implode( ',', $wpes_relates_to );
+							preg_match( '/X-Relates-To: (.*)/', $acato_email_essentials_view_email->headers, $matches );
+							$acato_email_essentials_relates_to = isset( $matches[1] ) ? esc_html( $matches[1] ) : '';
+							$acato_email_essentials_relates_to = explode( ',', $acato_email_essentials_relates_to );
+							$acato_email_essentials_relates_to = array_map( 'trim', $acato_email_essentials_relates_to );
+							$acato_email_essentials_relates_to = array_map( 'intval', $acato_email_essentials_relates_to );
+							$acato_email_essentials_relates_to = array_filter( $acato_email_essentials_relates_to, 'is_int' );
+							$acato_email_essentials_relates_to = implode( ',', $acato_email_essentials_relates_to );
 							?>
 							<tr
-								class="email-item email-item__status-<?php print esc_attr( $wpes_view_email->status ); ?>"
-								data-relates-to="<?php print esc_attr( $wpes_relates_to ); ?>"
-								id="email-<?php print esc_attr( $wpes_view_email->ID ); ?>">
+								class="email-item email-item__status-<?php print esc_attr( $acato_email_essentials_view_email->status ); ?>"
+								data-relates-to="<?php print esc_attr( $acato_email_essentials_relates_to ); ?>"
+								id="email-<?php print esc_attr( $acato_email_essentials_view_email->ID ); ?>">
 								<td class="eml">
 									<?php
-									if ( $wpes_view_email->eml ) {
-										$wpes_attachment_count = substr_count( $wpes_view_email->eml, 'Content-Disposition: attachment;' );
-										if ( 0 !== $wpes_attachment_count ) {
-											$wpes_attachment_count = '<span class="dashicons dashicons-paperclip"></span>' . $wpes_attachment_count;
+									if ( $acato_email_essentials_view_email->eml ) {
+										$acato_email_essentials_attachment_count = substr_count( $acato_email_essentials_view_email->eml, 'Content-Disposition: attachment;' );
+										if ( 0 !== $acato_email_essentials_attachment_count ) {
+											$acato_email_essentials_attachment_count = '<span class="dashicons dashicons-paperclip"></span>' . $acato_email_essentials_attachment_count;
 										} else {
-											$wpes_attachment_count = '';
+											$acato_email_essentials_attachment_count = '';
 										}
-										print '<a href="' . esc_attr( add_query_arg( 'download_eml', $wpes_view_email->ID ) ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $wpes_view_email->eml ) ) . $wpes_attachment_count );
+										print '<a href="' . esc_attr( add_query_arg( 'download_eml', $acato_email_essentials_view_email->ID ) ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $acato_email_essentials_view_email->eml ) ) . $acato_email_essentials_attachment_count );
 									}
 									?>
 								</td>
 								<td class="thedatetime">
-									<?php print esc_html( $wpes_view_email->thedatetime ); ?>&nbsp;
+									<?php print esc_html( $acato_email_essentials_view_email->thedatetime ); ?>&nbsp;
 								</td>
 								<td class="recipient">
-									<?php print esc_html( $wpes_view_email->recipient ); ?>&nbsp;
+									<?php print esc_html( $acato_email_essentials_view_email->recipient ); ?>&nbsp;
 								</td>
 								<td class="sender">
-									<?php print wp_kses_post( $wpes__sender . ( $wpes__reply_to ? '<br />Reply-To: ' . $wpes__reply_to : '' ) ); ?>
+									<?php print wp_kses_post( $acato_email_essentials__sender . ( $acato_email_essentials__reply_to ? '<br />Reply-To: ' . $acato_email_essentials__reply_to : '' ) ); ?>
 								</td>
 								<td class="subject">
-									<?php print esc_html( $wpes_view_email->subject ); ?>&nbsp;
+									<?php print esc_html( $acato_email_essentials_view_email->subject ); ?>&nbsp;
 								</td>
 								<td class="status">
-									<?php print esc_html( $wpes_view_email_stati[ $wpes_view_email->status ] ); ?><?php print ( $wpes_view_email->errinfo ? '<br />' : '' ) . wp_kses_post( $wpes_view_email->errinfo ); ?>
+									<?php print esc_html( $acato_email_essentials_view_email_stati[ $acato_email_essentials_view_email->status ] ); ?><?php print ( $acato_email_essentials_view_email->errinfo ? '<br />' : '' ) . wp_kses_post( $acato_email_essentials_view_email->errinfo ); ?>
 								</td>
 								<td>
 									<?php
-									if ( History::MAIL_FAILED === (int) $wpes_view_email->status ) {
-										$wpes_resend_link = add_query_arg(
+									if ( History::MAIL_FAILED === (int) $acato_email_essentials_view_email->status ) {
+										$acato_email_essentials_resend_link = add_query_arg(
 											[
-												'nonce'  => wp_create_nonce( 'wpes_resend_email_' . $wpes_view_email->ID ),
+												'nonce'  => wp_create_nonce( 'wpes_resend_email_' . $acato_email_essentials_view_email->ID ),
 												'action' => 'resend-failed-email',
-												'email'  => $wpes_view_email->ID,
+												'email'  => $acato_email_essentials_view_email->ID,
 											],
 										);
 										// If the email failed, then we show the debug info.
-										printf( '<a href="%s" class="button button-secondary wpes-email-view">' . esc_html__( 'Resend', 'email-essentials' ) . '</a>', esc_url( $wpes_resend_link ) );
+										printf( '<a href="%s" class="button button-secondary wpes-email-view">' . esc_html__( 'Resend', 'email-essentials' ) . '</a>', esc_url( $acato_email_essentials_resend_link ) );
 									}
 									?>
 								</td>
@@ -345,34 +354,44 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 				</style>
 
 				<div class="pager">
-					<?php if ( $wpes_view_current_page >= 2 ) { ?>
-						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
+					<?php if ( $acato_email_essentials_view_current_page >= 2 ) { ?>
+						<a
+							class="button"
+							href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
 					<?php } ?>
 
-					<?php if ( false !== $wpes_view_prev_page ) { ?>
-						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
+					<?php if ( false !== $acato_email_essentials_view_prev_page ) { ?>
+						<a
+							class="button"
+							href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
 					<?php } ?>
 
 					<span>
-						<?php foreach ( $wpes_view_pages as $wpes_page_num ) : ?>
-							<?php if ( '...' === $wpes_page_num ) : ?>
+						<?php foreach ( $acato_email_essentials_view_pages as $acato_email_essentials_page_num ) : ?>
+							<?php if ( '...' === $acato_email_essentials_page_num ) : ?>
 								<span class="ellipsis">...</span>
 							<?php else : ?>
-								<?php if ( $wpes_page_num === $wpes_view_current_page ) : ?>
-									<strong><?php print esc_html( $wpes_page_num + 1 ); ?></strong>
+								<?php if ( $acato_email_essentials_page_num === $acato_email_essentials_view_current_page ) : ?>
+									<strong><?php print esc_html( $acato_email_essentials_page_num + 1 ); ?></strong>
 								<?php else : ?>
-									<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_page_num ) ); ?>"><?php print esc_html( $wpes_page_num + 1 ); ?></a>
+									<a
+										class="button"
+										href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_page_num ) ); ?>"><?php print esc_html( $acato_email_essentials_page_num + 1 ); ?></a>
 								<?php endif; ?>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</span>
 
-					<?php if ( false !== $wpes_view_next_page ) { ?>
-						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
+					<?php if ( false !== $acato_email_essentials_view_next_page ) { ?>
+						<a
+							class="button"
+							href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
 					<?php } ?>
 
-					<?php if ( $wpes_view_current_page < $wpes_view_nr_pages - 2 ) { ?>
-						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
+					<?php if ( $acato_email_essentials_view_current_page < $acato_email_essentials_view_nr_pages - 2 ) { ?>
+						<a
+							class="button"
+							href="<?php print esc_attr( add_query_arg( '_page', $acato_email_essentials_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
 					<?php } ?>
 
 					<span>
@@ -380,19 +399,21 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						// Show reset button if custom sorting is active.
 						// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation.
 						if ( isset( $_GET['_ofield'] ) ) {
-							$wpes_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
+							$acato_email_essentials_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
 							?>
-							<a class="button" href="<?php print esc_attr( $wpes_reset_url ); ?>">
+							<a class="button" href="<?php print esc_attr( $acato_email_essentials_reset_url ); ?>">
 								<?php esc_html_e( 'Reset Sorting', 'email-essentials' ); ?>
 							</a>
 							<?php
 						}
 						?>
-						<label for="wpes-page-size-bottom"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
+						<label
+							for="wpes-page-size-bottom"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
 						<select id="wpes-page-size-bottom" name="_limit">
-							<?php foreach ( [ 25, 50, 100, 250 ] as $wpes_page_size ) : ?>
-								<option value="<?php print esc_attr( $wpes_page_size ); ?>" <?php selected( $wpes_view_items_per_page, $wpes_page_size ); ?>>
-									<?php print esc_html( $wpes_page_size ); ?>
+							<?php foreach ( [ 25, 50, 100, 250 ] as $acato_email_essentials_page_size ) : ?>
+								<option
+									value="<?php print esc_attr( $acato_email_essentials_page_size ); ?>" <?php selected( $acato_email_essentials_view_items_per_page, $acato_email_essentials_page_size ); ?>>
+									<?php print esc_html( $acato_email_essentials_page_size ); ?>
 								</option>
 							<?php endforeach; ?>
 						</select>
@@ -420,23 +441,26 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 					</nav>
 					<div id="mail-data-viewer">
 						<?php
-						$wpes_mailer = new EEMailer();
+						$acato_email_essentials_mailer = new EEMailer();
 						// We call this just for initialisation purposes, we do not actually care about the result.
-						$wpes_css = apply_filters_ref_array( 'acato_email_essentials_css', [ '', &$wpes_mailer ] );
+						$acato_email_essentials_css = apply_filters_ref_array(
+							'acato_email_essentials_css',
+							[ '', &$acato_email_essentials_mailer ]
+						);
 
-						foreach ( $wpes_view_emails_list as $wpes_view_email ) {
+						foreach ( $acato_email_essentials_view_emails_list as $acato_email_essentials_view_email ) {
 							// @phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- phpMailer thing. cannot help it.
-							$wpes_mailer->Subject = $wpes_view_email->subject;
+							$acato_email_essentials_mailer->Subject = $acato_email_essentials_view_email->subject;
 							// suffix '----' is to prevent errors like "Undefined array key 1".
-							list( $wpes_view_email->debug, $wpes_view_email->log ) = explode( '----', $wpes_view_email->debug . '----' );
+							list( $acato_email_essentials_view_email->debug, $acato_email_essentials_view_email->log ) = explode( '----', $acato_email_essentials_view_email->debug . '----' );
 
-							$wpes_view_email->debug = json_decode( trim( $wpes_view_email->debug ) );
-							$wpes_view_email->log   = trim( $wpes_view_email->log );
-							if ( ! $wpes_view_email->debug ) {
-								$wpes_view_email->debug = new stdClass();
+							$acato_email_essentials_view_email->debug = json_decode( trim( $acato_email_essentials_view_email->debug ) );
+							$acato_email_essentials_view_email->log   = trim( $acato_email_essentials_view_email->log );
+							if ( ! $acato_email_essentials_view_email->debug ) {
+								$acato_email_essentials_view_email->debug = new stdClass();
 							}
-							$wpes_view_email->debug = wp_json_encode( $wpes_view_email->debug, JSON_PRETTY_PRINT );
-							$wpes_view_email->debug = ( $wpes_view_email->log ? $wpes_view_email->log . "\n" : '' ) . $wpes_view_email->debug;
+							$acato_email_essentials_view_email->debug = wp_json_encode( $acato_email_essentials_view_email->debug, JSON_PRETTY_PRINT );
+							$acato_email_essentials_view_email->debug = ( $acato_email_essentials_view_email->log ? $acato_email_essentials_view_email->log . "\n" : '' ) . $acato_email_essentials_view_email->debug;
 
 							/**
 							 * Note to reviewers:
@@ -459,7 +483,7 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 							 */
 
 							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- how else am I supposed to base64_encode?.
-							$wpes_email_data_base64 = base64_encode(
+							$acato_email_essentials_email_data_base64 = base64_encode(
 								str_ireplace(
 									[
 										'onload',
@@ -471,29 +495,31 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 										'[SCRIPT',
 										'[/SCRIPT]',
 									],
-									Plugin::maybe_convert_to_html( $wpes_view_email->body, $wpes_view_email->subject, $wpes_mailer )
+									Plugin::maybe_convert_to_html( $acato_email_essentials_view_email->body, $acato_email_essentials_view_email->subject, $acato_email_essentials_mailer )
 								)
 							);
 							?>
-							<div class="email-data" id="email-data-<?php print esc_attr( $wpes_view_email->ID ); ?>">
+							<div
+								class="email-data"
+								id="email-data-<?php print esc_attr( $acato_email_essentials_view_email->ID ); ?>">
 								<div
 									class="headers">
-									<pre><?php print esc_html( $wpes_view_email->headers ); ?></pre>
+									<pre><?php print esc_html( $acato_email_essentials_view_email->headers ); ?></pre>
 								</div>
 								<div
 									class="alt_body">
-									<pre><?php print wp_kses_post( $wpes_view_email->alt_body ); ?></pre>
+									<pre><?php print wp_kses_post( $acato_email_essentials_view_email->alt_body ); ?></pre>
 								</div>
 								<div
 									class="body">
 									<iframe
 										class="autofit" width="100%" height="100%" border="0" frameborder="0"
-										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print $wpes_email_data_base64; /* @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>">
+										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print $acato_email_essentials_email_data_base64; /* @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>">
 									</iframe>
 								</div>
 								<div
 									class="debug">
-									<pre><?php print esc_html( $wpes_view_email->debug ); ?></pre>
+									<pre><?php print esc_html( $acato_email_essentials_view_email->debug ); ?></pre>
 								</div>
 							</div>
 							<?php

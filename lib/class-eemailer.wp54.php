@@ -3,7 +3,7 @@
 /**
  * A normalised class for PHPMailer.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -37,5 +37,5 @@ require_once ABSPATH . WPINC . '/class-phpmailer.php';
 class EEMailer extends PHPMailer {
 	// The observant developer will note that there is no SingleTo patch here;
 	// This is of course because old WordPress versions will not get an upgrade to the 6.0 version of PHPMailer that no longer has the SingleTo functionality.
-	const Acato_Mailer_Version = 'pre-5.5';
+	const ACATO_MAILER_VERSION = 'pre-5.5';
 }

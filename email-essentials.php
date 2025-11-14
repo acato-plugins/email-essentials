@@ -2,7 +2,7 @@
 /**
  * The main plugin file.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -29,20 +29,17 @@ spl_autoload_register(
 		$n = __NAMESPACE__;
 
 		$class_map = [
-			$n . '\\Plugin'                => __DIR__ . '/lib/class-plugin.php',
-			$n . '\\IP'                    => __DIR__ . '/lib/class-ip.php',
-			$n . '\\History'               => __DIR__ . '/lib/class-history.php',
-			$n . '\\Queue'                 => __DIR__ . '/lib/class-queue.php',
-			$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-fake-sender.php',
-			$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-wpes-queue-list-table.php',
-			$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-css-inliner.php',
-			$n . '\\CssVarEval'            => __DIR__ . '/lib/class-cssvareval.php',
-			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-csstoinlinestyles.php',
-			$n . '\\Logger'                => __DIR__ . '/lib/class-logger.php',
+			$n . '\\Plugin'            => __DIR__ . '/lib/class-plugin.php',
+			$n . '\\IP'                => __DIR__ . '/lib/class-ip.php',
+			$n . '\\History'           => __DIR__ . '/lib/class-history.php',
+			$n . '\\Queue'             => __DIR__ . '/lib/class-queue.php',
+			$n . '\\Fake_Sender'       => __DIR__ . '/lib/class-fake-sender.php',
+			$n . '\\Queue_List_Table'  => __DIR__ . '/lib/class-queue-list-table.php',
+			$n . '\\CSS_Inliner'       => __DIR__ . '/lib/class-css-inliner.php',
+			$n . '\\CssVarEval'        => __DIR__ . '/lib/class-cssvareval.php',
+			$n . '\\CssToInlineStyles' => __DIR__ . '/lib/class-csstoinlinestyles.php',
+			$n . '\\Logger'            => __DIR__ . '/lib/class-logger.php',
 		];
-		if ( file_exists( __DIR__ . '/lib/class-migrations.php' ) ) {
-			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/lib/class-migrations.php';
-		}
 
 		/**
 		 * Depending on the WordPress version, the phpMailer object to overload is in a different file/is called differently.
@@ -55,25 +52,6 @@ spl_autoload_register(
 			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp55.php';
 		}
 
-		// Deprecation support.
-		$n         = 'WP_Email_Essentials';
-		$class_map = array_merge(
-			$class_map,
-			[
-				$n . '\\Plugin'                => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Migrations'            => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\IP'                    => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\History'               => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Queue'                 => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CssVarEval'            => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/class-deprecation.php',
-			]
-		);
-
 		if ( ! empty( $class_map[ $class_name ] ) && is_file( $class_map[ $class_name ] ) ) {
 			require_once $class_map[ $class_name ];
 		}
@@ -81,6 +59,10 @@ spl_autoload_register(
 );
 
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
-require_once __DIR__ . '/lib/filter-deprecation.php';
+
+// This file is only used for migration from older versions, not applicable to the public version on WordPress.org.
+if ( file_exists( __DIR__ . '/lib/deprecation.php' ) ) {
+	require_once __DIR__ . '/lib/deprecation.php';
+}
 
 Plugin::instance( __FILE__ );

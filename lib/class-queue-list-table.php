@@ -2,7 +2,7 @@
 /**
  * Handles mail queue display.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -17,7 +17,7 @@ if ( ! class_exists( WP_List_Table::class ) ) {
 /**
  * The Queue class.
  */
-class WPES_Queue_List_Table extends WP_List_Table {
+class Queue_List_Table extends WP_List_Table {
 
 	/**
 	 * Holds Column Header data.
@@ -29,7 +29,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	/**
 	 * Holds table items.
 	 *
-	 * @var mixed[]
+	 * @var array
 	 */
 	public $items;
 

@@ -3,7 +3,7 @@
 /**
  * Evaluate CSS variables to their final values.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;

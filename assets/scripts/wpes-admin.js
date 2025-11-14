@@ -119,6 +119,17 @@ jQuery( document ).ready( function ($) {
         $( this ).css( 'height', $( this ).parent().innerHeight() );
       } );
     } ).trigger( 'resize' );
+
+    var $pageSizeSelects = $( '#wpes-page-size, #wpes-page-size-bottom' );
+    $pageSizeSelects.each( function () {
+      var $select = $( this );
+      $select.on( 'change', function () {
+        var currentUrl = new URL( window.location.href );
+        currentUrl.searchParams.set( '_limit', this.value );
+        currentUrl.searchParams.set( '_page', '0' ); // Reset to first page
+        window.location.href = currentUrl.toString();
+      } );
+    } );
   }
 
   if ($( '.wpes-admins' ).length > 0) {
@@ -132,7 +143,7 @@ jQuery( document ).ready( function ($) {
         let that = this;
         let re = $( that ).val();
 
-        re = re.split( re.substr( 0, 1 ) );
+        re = re.split( re.charAt( 0 ) );
         re = new RegExp( re[1], re[2] );
 
         $( '.a-fail' ).each( function () {

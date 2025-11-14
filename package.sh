@@ -21,11 +21,11 @@ for i in \
 	$(find . -name \.DS_Store) \
 	composer.json info.json \
 	node_modules package-lock.json .editorconfig \
-	./.git ./.gitignore \
+	./.git ./.gitignore .claude \
 	package.sh SUBMISSION_NOTES.txt \
 	assets/wordpress_org \
 	wp_mail_key.patch \
-	lib/class-migrations.php \
+	lib/class-migrations.php lib/class-deprecation.php lib/filter-deprecation.php lib/deprecation.php \
 	bitbucket-pipelines.yml; do
 	echo "Removing $i" ; rm -rf $i
 done

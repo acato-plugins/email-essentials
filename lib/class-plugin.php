@@ -2,7 +2,7 @@
 /**
  * The main class.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -76,7 +76,7 @@ class Plugin {
 	 * @return string
 	 */
 	public function get_plugin_slug() {
-		$dir_name = basename( $this->get_base_path() );
+		$dir_name  = basename( $this->get_base_path() );
 		$file_name = $this->get_base_file();
 
 		return "$dir_name/$file_name";
@@ -89,6 +89,8 @@ class Plugin {
 
 	/**
 	 * Constructor.
+	 *
+	 * @param string $plugin_base_path The full path to the main plugin file.
 	 */
 	public function __construct( $plugin_base_path ) {
 		$this->plugin_path = $plugin_base_path;
@@ -104,6 +106,15 @@ class Plugin {
 		self::init();
 	}
 
+	/**
+	 * Get the singleton instance.
+	 *
+	 * @param string|null $filepath The full path to the main plugin file. Required on first call.
+	 *
+	 * @return Plugin
+	 *
+	 * @throws Exception When first called without filepath.
+	 */
 	public static function instance( $filepath = null ) {
 		static $instance = null;
 		if ( null === $instance ) {
@@ -257,10 +268,13 @@ class Plugin {
 		// Public API filters.
 		add_filter( 'acato_email_essentials_minify_css', [ self::class, 'minify_css' ] );
 
-		add_action( 'wp_ajax_acato_email_essentials_dismiss_deprecation_notice', [
-			self::class,
-			'dismiss_deprecation_notice',
-		] );
+		add_action(
+			'wp_ajax_acato_email_essentials_dismiss_deprecation_notice',
+			[
+				self::class,
+				'dismiss_deprecation_notice',
+			]
+		);
 	}
 
 	/**
@@ -1609,6 +1623,16 @@ class Plugin {
 	}
 
 	/**
+	 * Get the doctype line for HTML emails.
+	 * We use this static string to prevent external html templates from changing doctype, as well as preveting abuse.
+	 *
+	 * @return string
+	 */
+	public static function doctype_line() {
+		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+	}
+
+	/**
 	 * Build HTML for sending the email.
 	 *
 	 * @param EEMailer $mailer         The mailer object.
@@ -1637,7 +1661,7 @@ class Plugin {
 			$should_be_html = htmlspecialchars_decode( htmlentities( $should_be_html ) );
 		}
 
-		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		return self::doctype_line() . '
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta http-equiv="Content-Type" content="text/html; charset=' . $charset . '" />
 <head>' . $head . '</head><body>' . $should_be_html . '</body></html>';
@@ -2082,17 +2106,9 @@ class Plugin {
 					break;
 			}
 
-			// Detect and preserve <!doctype line.
-			$doctype = '';
-			if ( preg_match( '/^(<!DOCTYPE [^>]+>)/i', $html, $m ) ) {
-				$doctype = $m[1] . "\n";
-			}
-			if ( $doctype ) {
-				$html = str_replace( $doctype, '', $html );
-			}
-
-			// Doctype cannot be handled by kses, so we print it separately. There is no other way.
-			print $doctype . wp_kses( $html, self::allowed_html_for_displaying_an_entire_html_page() );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Doctype cannot be handled by kses, so we print it separately from a static string. No way this can be abused.
+			print self::doctype_line();
+			print wp_kses( $html, self::allowed_html_for_displaying_an_entire_html_page() );
 			exit;
 		}
 
@@ -3532,7 +3548,7 @@ Item 2
 	public static function allowed_html_for_displaying_an_entire_html_page() {
 		$base = wp_kses_allowed_html( 'post' );
 		// add html, head, body, title, meta, style, link and other tags needed for a full HTML page, but not script, iframe etc.
-		$additional_tags             = [
+		$additional_tags = [
 			'html'  => [
 				'lang'  => true,
 				'xmlns' => true,
@@ -3557,7 +3573,6 @@ Item 2
 				'type' => true,
 			],
 		];
-		$additional_tags['!DOCTYPE'] = [];
 
 		return array_merge( $base, $additional_tags );
 	}

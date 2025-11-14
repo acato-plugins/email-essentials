@@ -7,6 +7,10 @@ namespace WP_Email_Essentials;
  * It is used to ensure that the old plugin can be replaced by the new plugin.
  * The old plugin will be replaced by the new plugin, if it is active.
  * This file is loaded by the autoloader in email-essentials.php.
+ *
+ * @since   6.0.0
+ * @package Acato_Email_Essentials
+ * @author  Remon Pel <remon@acato.nl>
  */
 class CSS_Inliner extends \Acato\Email_Essentials\CSS_Inliner {
 	public function __construct( $html, $css = false ) {
@@ -760,9 +764,9 @@ class WPES_PHPMailer extends \Acato\Email_Essentials\EEMailer {
 	}
 }
 
-class WPES_Queue_List_Table extends \Acato\Email_Essentials\WPES_Queue_List_Table {
+class WPES_Queue_List_Table extends \Acato\Email_Essentials\Queue_List_Table {
 	public function __construct() {
-		\Acato\Email_Essentials\Plugin::_deprecated_class( 'WP_Email_Essentials\\WPES_Queue_List_Table', '5.0.0', 'Acato\\Email_Essentials\\WPES_Queue_List_Table' );
+		\Acato\Email_Essentials\Plugin::_deprecated_class( 'WP_Email_Essentials\\WPES_Queue_List_Table', '5.0.0', 'Acato\\Email_Essentials\\Queue_List_Table' );
 
 		parent::__construct();
 	}

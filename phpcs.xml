@@ -87,9 +87,8 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="email_essentials"/>
+				<element value="acato_email_essentials"/>
 				<element value="Acato\Email_Essentials"/>
-				<element value="wpes_"/>
 			</property>
 		</properties>
 	</rule>

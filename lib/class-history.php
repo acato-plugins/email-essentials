@@ -2,7 +2,7 @@
 /**
  * Handles mail log.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
