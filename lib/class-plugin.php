@@ -16,13 +16,6 @@ use WPCF7_ContactForm;
  */
 class Plugin {
 	/**
-	 * The plugin slug.
-	 *
-	 * @const string
-	 */
-	const SLUG = 'email-essentials/email-essentials.php';
-
-	/**
 	 * Holds a message to show in the admin panel.
 	 *
 	 * @var string
@@ -44,20 +37,6 @@ class Plugin {
 	public static $debug;
 
 	/**
-	 * The base path of the plugin.
-	 *
-	 * @var string
-	 */
-	private $base_path;
-
-	/**
-	 * The base file of the plugin.
-	 *
-	 * @var string
-	 */
-	private $base_file;
-
-	/**
 	 * The full path of the plugin.
 	 *
 	 * @var mixed
@@ -70,7 +49,7 @@ class Plugin {
 	 * @return string
 	 */
 	public function get_base_path() {
-		return $this->base_path;
+		return dirname( $this->plugin_path );
 	}
 
 	/**
@@ -79,7 +58,7 @@ class Plugin {
 	 * @return string
 	 */
 	public function get_base_file() {
-		return $this->base_file;
+		return basename( $this->plugin_path );
 	}
 
 	/**
@@ -92,6 +71,18 @@ class Plugin {
 	}
 
 	/**
+	 * Get the plugin slug, like email-essentials/email-essentials.php .
+	 *
+	 * @return string
+	 */
+	public function get_plugin_slug() {
+		$dir_name = basename( $this->get_base_path() );
+		$file_name = $this->get_base_file();
+
+		return "$dir_name/$file_name";
+	}
+
+	/**
 	 * List of supported encodings.
 	 */
 	const ENCODINGS = 'utf-8,utf-16,utf-32,latin-1,iso-8859-1';
@@ -101,9 +92,8 @@ class Plugin {
 	 */
 	public function __construct( $plugin_base_path ) {
 		$this->plugin_path = $plugin_base_path;
-		$this->base_path   = dirname( $plugin_base_path );
-		$this->base_file   = basename( $plugin_base_path );
-		self::$message     = get_transient( 'acato_email_essentials_admin_message' ) ?: '';
+
+		self::$message = get_transient( 'acato_email_essentials_admin_message' ) ?: '';
 		add_action( 'admin_notices', [ $this, 'admin_notices' ] );
 
 		if ( class_exists( Migrations::class ) ) {
@@ -311,7 +301,7 @@ class Plugin {
 	 * @return string[]
 	 */
 	public static function plugin_actions( $links, $file ) {
-		if ( self::SLUG === $file && function_exists( 'admin_url' ) ) {
+		if ( function_exists( 'admin_url' ) && self::instance()->get_plugin_slug() === $file ) {
 			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- we want to use the WordPress default translation here.
 			$settings_link = '<a href="' . admin_url( 'admin.php?page=acato-email-essentials' ) . '">' . _x( 'Settings', 'translators: ignore this.' ) . '</a>';
 			array_unshift( $links, $settings_link ); // before other links.
@@ -3204,9 +3194,8 @@ Item 2
 			 */
 			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
 		}
-		// Because we're in a subfolder, we need to go up one level to get the proper plugin path.
-		$plugin_path = dirname( __DIR__ ) . '/' . basename( self::SLUG );
-		$plugin_data = get_plugin_data( $plugin_path );
+
+		$plugin_data = self::plugin_data();
 
 		return $plugin_data['Version'];
 	}
