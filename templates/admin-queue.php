@@ -30,12 +30,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<?php print wp_kses_post( __( 'Enabling the throttling feature will prevent sending large amounts of emails in quick succession, for example a spam-run.', 'email-essentials' ) ); ?>
 		<br/>
 		<?php
-		// translators: 1: max emails, 2: time window in seconds.
+		// translators: %1$d: the maximum number of emails per time window, %2$d: the time window in seconds.
 		print wp_kses_post( sprintf( __( 'Once activated, when more than %1$d emails are sent within %2$d seconds from the same IP-address, all other emails will be held until released.', 'email-essentials' ), Queue::get_max_count_per_time_window(), Queue::get_time_window() ) );
 		?>
 		<br/>
 		<?php
-		// translators: %d: batch size.
+		// translators: %d: the number of emails per minute.
 		print wp_kses_post( sprintf( __( 'Emails will be sent in batches of %d per minute, the trigger is a hit on the website, the admin panel or the cron (wp-cron.php).', 'email-essentials' ), Queue::get_batch_size() ) );
 		?>
 		<br/>

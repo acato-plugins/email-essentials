@@ -55,24 +55,89 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 		$wpes_view_next_page = false;
 	}
 	?>
+	<?php
+	// Generate page numbers with smart ellipsis.
+	$wpes_view_page_range = 2; // Show 2 pages on each side of current page.
+	$wpes_view_pages      = [];
+
+	for ( $i = 0; $i < $wpes_view_nr_pages; $i++ ) {
+		// Always show first page, last page, and pages around current page.
+		if ( 0 === $i || $i === $wpes_view_nr_pages - 1 || abs( $i - $wpes_view_current_page ) <= $wpes_view_page_range ) {
+			$wpes_view_pages[] = $i;
+		} elseif ( ! empty( $wpes_view_pages ) && end( $wpes_view_pages ) !== '...' ) {
+			$wpes_view_pages[] = '...';
+		}
+	}
+	?>
 	<div class="pager">
+		<?php if ( $wpes_view_current_page >= 2 ) { ?>
+			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
+		<?php } ?>
+
+		<?php if ( false !== $wpes_view_prev_page ) { ?>
+			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
+		<?php } ?>
+
+		<span>
+			<?php foreach ( $wpes_view_pages as $wpes_page_num ) : ?>
+				<?php if ( '...' === $wpes_page_num ) : ?>
+					<span class="ellipsis">...</span>
+				<?php else : ?>
+					<?php if ( $wpes_page_num === $wpes_view_current_page ) : ?>
+						<strong><?php print esc_html( $wpes_page_num + 1 ); ?></strong>
+					<?php else : ?>
+						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_page_num ) ); ?>"><?php print esc_html( $wpes_page_num + 1 ); ?></a>
+					<?php endif; ?>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</span>
+
+		<?php if ( false !== $wpes_view_next_page ) { ?>
+			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
+		<?php } ?>
+
+		<?php if ( $wpes_view_current_page < $wpes_view_nr_pages - 2 ) { ?>
+			<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
+		<?php } ?>
+
 		<span>
 			<?php
-			if ( false !== $wpes_view_prev_page ) {
+			// Show reset button if custom sorting is active.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation.
+			if ( isset( $_GET['_ofield'] ) ) {
+				$wpes_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
 				?>
-				<a
-					class="button"
-					href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_prev_page ) ); ?>">
-					&lt; Previous page</a> <?php } ?></span>
-		<span>
-			<?php
-			if ( false !== $wpes_view_next_page ) {
-				?>
-				<a
-					class="button"
-					href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_next_page ) ); ?>">
-					Next page &gt;</a> <?php } ?></span>
+				<a class="button" href="<?php print esc_attr( $wpes_reset_url ); ?>">
+					<?php esc_html_e( 'Reset Sorting', 'email-essentials' ); ?>
+				</a>
+				<?php
+			}
+			?>
+			<label for="wpes-page-size"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
+			<select id="wpes-page-size" name="_limit">
+				<?php foreach ( [ 25, 50, 100, 250 ] as $wpes_page_size ) : ?>
+					<option value="<?php print esc_attr( $wpes_page_size ); ?>" <?php selected( $wpes_view_items_per_page, $wpes_page_size ); ?>>
+						<?php print esc_html( $wpes_page_size ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</span>
 	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var pageSizeSelects = document.querySelectorAll('#wpes-page-size, #wpes-page-size-bottom');
+		pageSizeSelects.forEach(function(select) {
+			if (select) {
+				select.addEventListener('change', function() {
+					var currentUrl = new URL(window.location.href);
+					currentUrl.searchParams.set('_limit', this.value);
+					currentUrl.searchParams.set('_page', '0'); // Reset to first page
+					window.location.href = currentUrl.toString();
+				});
+			}
+		});
+	});
+	</script>
 
 	<div id="poststuff">
 		<div class="postbox">
@@ -87,10 +152,37 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						<thead>
 						<tr>
 							<td class="eml"><span class="dashicons dashicons-email-alt"></span></td>
-							<td class="thedatetime"><?php esc_html_e( 'Date/Time', 'email-essentials' ); ?></td>
-							<td class="recipient"><?php esc_html_e( 'Recipient', 'email-essentials' ); ?></td>
-							<td class="sender"><?php esc_html_e( 'Sender', 'email-essentials' ); ?></td>
-							<td class="subject"><?php esc_html_e( 'Subject', 'email-essentials' ); ?></td>
+							<?php
+							// Sortable columns.
+							$wpes_sortable_columns = [
+								'thedatetime' => __( 'Date/Time', 'email-essentials' ),
+								'recipient'   => __( 'Recipient', 'email-essentials' ),
+								'sender'      => __( 'Sender', 'email-essentials' ),
+								'subject'     => __( 'Subject', 'email-essentials' ),
+							];
+							foreach ( $wpes_sortable_columns as $wpes_column_key => $wpes_column_label ) {
+								$wpes_is_active_sort = ( $wpes_view_order_field === $wpes_column_key );
+								// Toggle direction if clicking on active column.
+								$wpes_new_direction  = $wpes_is_active_sort ? ( 'ASC' === $wpes_view_order_direction ? 'DESC' : 'ASC' ) : 'ASC';
+								$wpes_sort_url       = add_query_arg(
+									[
+										'_ofield' => $wpes_column_key,
+										'_order'  => $wpes_new_direction,
+									]
+								);
+								$wpes_direction_icon = '';
+								if ( $wpes_is_active_sort ) {
+									$wpes_direction_icon = 'ASC' === $wpes_view_order_direction ? ' <span class="dashicons dashicons-arrow-up-alt2"></span>' : ' <span class="dashicons dashicons-arrow-down-alt2"></span>';
+								}
+								?>
+								<td class="<?php print esc_attr( $wpes_column_key ); ?>">
+									<a href="<?php print esc_attr( $wpes_sort_url ); ?>">
+										<?php print esc_html( $wpes_column_label ); ?><?php print wp_kses_post( $wpes_direction_icon ); ?>
+									</a>
+								</td>
+								<?php
+							}
+							?>
 							<td class="status"><?php esc_html_e( 'Status', 'email-essentials' ); ?></td>
 							<td></td>
 						</tr>
@@ -251,6 +343,61 @@ $wpes_wp_admin_email = get_option( 'admin_email' );
 						opacity: 0.5;
 					}
 				</style>
+
+				<div class="pager">
+					<?php if ( $wpes_view_current_page >= 2 ) { ?>
+						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', 0 ) ); ?>"><?php echo esc_html_x( '« First', 'Paginator', 'email-essentials' ); ?></a>
+					<?php } ?>
+
+					<?php if ( false !== $wpes_view_prev_page ) { ?>
+						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_prev_page ) ); ?>"><?php echo esc_html_x( '< Previous', 'Paginator', 'email-essentials' ); ?></a>
+					<?php } ?>
+
+					<span>
+						<?php foreach ( $wpes_view_pages as $wpes_page_num ) : ?>
+							<?php if ( '...' === $wpes_page_num ) : ?>
+								<span class="ellipsis">...</span>
+							<?php else : ?>
+								<?php if ( $wpes_page_num === $wpes_view_current_page ) : ?>
+									<strong><?php print esc_html( $wpes_page_num + 1 ); ?></strong>
+								<?php else : ?>
+									<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_page_num ) ); ?>"><?php print esc_html( $wpes_page_num + 1 ); ?></a>
+								<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</span>
+
+					<?php if ( false !== $wpes_view_next_page ) { ?>
+						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_next_page ) ); ?>"><?php echo esc_html_x( 'Next >', 'Paginator', 'email-essentials' ); ?></a>
+					<?php } ?>
+
+					<?php if ( $wpes_view_current_page < $wpes_view_nr_pages - 2 ) { ?>
+						<a class="button" href="<?php print esc_attr( add_query_arg( '_page', $wpes_view_nr_pages - 1 ) ); ?>"><?php echo esc_html_x( 'Last »', 'Paginator', 'email-essentials' ); ?></a>
+					<?php } ?>
+
+					<span>
+						<?php
+						// Show reset button if custom sorting is active.
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation.
+						if ( isset( $_GET['_ofield'] ) ) {
+							$wpes_reset_url = remove_query_arg( [ '_ofield', '_order' ] );
+							?>
+							<a class="button" href="<?php print esc_attr( $wpes_reset_url ); ?>">
+								<?php esc_html_e( 'Reset Sorting', 'email-essentials' ); ?>
+							</a>
+							<?php
+						}
+						?>
+						<label for="wpes-page-size-bottom"><?php echo esc_html_x( 'Page size:', 'Paginator', 'email-essentials' ); ?></label>
+						<select id="wpes-page-size-bottom" name="_limit">
+							<?php foreach ( [ 25, 50, 100, 250 ] as $wpes_page_size ) : ?>
+								<option value="<?php print esc_attr( $wpes_page_size ); ?>" <?php selected( $wpes_view_items_per_page, $wpes_page_size ); ?>>
+									<?php print esc_html( $wpes_page_size ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</span>
+				</div>
 
 				<div id="mail-viewer">
 					<nav class="mail-viewer-tabs" role="tablist" style="display: none">

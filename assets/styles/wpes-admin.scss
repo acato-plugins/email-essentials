@@ -354,6 +354,26 @@ $tools-width: 200px;
 		position: sticky;
 		top: 0;
 		background: white;
+
+		td {
+			a {
+				color: inherit;
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+
+				&:hover {
+					color: #2271b1;
+				}
+
+				.dashicons {
+					font-size: 16px;
+					width: 16px;
+					height: 16px;
+				}
+			}
+		}
 	}
 
 	table {
@@ -382,8 +402,53 @@ $tools-width: 200px;
 .wpes-emails {
 	.pager {
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+		align-items: center;
+		gap: $spacing;
+		margin-bottom: $spacing * 1.5;
+
+		&:last-of-type {
+			margin-top: $spacing * 1.5;
+			margin-bottom: 0;
+		}
+
+		> span {
+			&:first-of-type {
+				display: flex;
+				gap: $spacing / 2;
+			}
+
+			&:last-of-type {
+				margin-left: auto;
+				display: flex;
+				align-items: center;
+				gap: $spacing;
+			}
+		}
+
+		.button {
+			min-width: 38px;
+			text-align: center;
+			box-sizing: border-box;
+		}
+
+		strong {
+			min-width: 38px;
+			padding: 4px 8px;
+			background: #2271b1;
+			color: #fff;
+			border-radius: 3px;
+			text-align: center;
+			display: inline-block;
+			box-sizing: border-box;
+		}
+
+		.ellipsis {
+			padding: 4px 8px;
+		}
+
+		select {
+			height: auto;
+		}
 	}
 
 	#mail-viewer {

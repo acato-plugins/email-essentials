@@ -66,7 +66,8 @@ if ( ! get_option( 'moderation_notify' ) ) {
 					<div class="wpes-notice--info">
 						<p>
 							<?php
-							esc_html_e( 'Moderation for pingbacks and comments is', 'email-essentials' ) . ': ';
+							esc_html_e( 'Moderation for pingbacks and comments is', 'email-essentials' );
+							print ': ';
 							print wp_kses_post( '<strong>' . ( get_option( 'moderation_notify' ) ? __( 'enabled', 'email-essentials' ) : __( 'disabled', 'email-essentials' ) ) . '</strong>.' );
 							?>
 							<a href="<?php print esc_attr( admin_url( 'options-discussion.php' ) ); ?>#comment_order">
