@@ -44,6 +44,54 @@ class Plugin {
 	public static $debug;
 
 	/**
+	 * The base path of the plugin.
+	 *
+	 * @var string
+	 */
+	private $base_path;
+
+	/**
+	 * The base file of the plugin.
+	 *
+	 * @var string
+	 */
+	private $base_file;
+
+	/**
+	 * The full path of the plugin.
+	 *
+	 * @var mixed
+	 */
+	private $plugin_path;
+
+	/**
+	 * Get the base path, the directory the plugin is in.
+	 *
+	 * @return string
+	 */
+	public function get_base_path() {
+		return $this->base_path;
+	}
+
+	/**
+	 * Get the base file, the filename of the main plugin file.
+	 *
+	 * @return string
+	 */
+	public function get_base_file() {
+		return $this->base_file;
+	}
+
+	/**
+	 * Get the full path of the plugin.
+	 *
+	 * @return mixed
+	 */
+	public function get_plugin_path() {
+		return $this->plugin_path;
+	}
+
+	/**
 	 * List of supported encodings.
 	 */
 	const ENCODINGS = 'utf-8,utf-16,utf-32,latin-1,iso-8859-1';
@@ -51,8 +99,11 @@ class Plugin {
 	/**
 	 * Constructor.
 	 */
-	public function __construct() {
-		self::$message = get_transient( 'acato_email_essentials_admin_message' ) ?: '';
+	public function __construct( $plugin_base_path ) {
+		$this->plugin_path = $plugin_base_path;
+		$this->base_path   = dirname( $plugin_base_path );
+		$this->base_file   = basename( $plugin_base_path );
+		self::$message     = get_transient( 'acato_email_essentials_admin_message' ) ?: '';
 		add_action( 'admin_notices', [ $this, 'admin_notices' ] );
 
 		if ( class_exists( Migrations::class ) ) {
@@ -61,6 +112,18 @@ class Plugin {
 		}
 
 		self::init();
+	}
+
+	public static function instance( $filepath = null ) {
+		static $instance = null;
+		if ( null === $instance ) {
+			if ( null === $filepath ) {
+				throw new Exception( 'First time instantiation requires the plugin filepath.' );
+			}
+			$instance = new self( $filepath );
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -76,7 +139,7 @@ class Plugin {
 				if ( ! function_exists( 'get_plugin_data' ) ) {
 					require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
 				}
-				$plugin_data = get_plugin_data( __DIR__ . '/../email-essentials.php' );
+				$plugin_data = get_plugin_data( self::instance()->get_plugin_path(), false, false );
 			}
 			set_transient( 'acato_email_essentials_plugin_data', $plugin_data, WEEK_IN_SECONDS );
 		}
@@ -204,7 +267,10 @@ class Plugin {
 		// Public API filters.
 		add_filter( 'acato_email_essentials_minify_css', [ self::class, 'minify_css' ] );
 
-		add_action( 'wp_ajax_acato_email_essentials_dismiss_deprecation_notice', [ self::class, 'dismiss_deprecation_notice' ] );
+		add_action( 'wp_ajax_acato_email_essentials_dismiss_deprecation_notice', [
+			self::class,
+			'dismiss_deprecation_notice',
+		] );
 	}
 
 	/**

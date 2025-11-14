@@ -83,4 +83,4 @@ spl_autoload_register(
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
 require_once __DIR__ . '/lib/filter-deprecation.php';
 
-new Plugin();
+Plugin::instance( __FILE__ );
