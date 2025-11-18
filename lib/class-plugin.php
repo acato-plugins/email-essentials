@@ -1645,8 +1645,8 @@ class Plugin {
 	public static function build_html( $mailer, $subject, $should_be_html, $charset = 'utf-8' ) {
 		// at this stage we will convert raw HTML part to a full HTML page.
 
-		// you can define a file  wpes-email-template.php  in your theme to define the filters.
-		locate_template( [ 'wpes-email-template.php' ], true );
+		// you can define a file  email-essentials-email-template.php  in your theme to define the filters.
+		locate_template( [ 'email-essentials-email-template.php' ], true );
 
 		$subject = apply_filters_ref_array( 'acato_email_essentials_subject', [ $subject, &$mailer ] );
 
@@ -3540,6 +3540,23 @@ Item 2
 		$services = apply_filters( 'acato_email_essentials_ip_services', [] );
 
 		return apply_filters( 'acato_email_essentials_ip_service', $services[ $type ] ?? '', $type );
+	}
+
+	/**
+	 * Check if the WordPress version is at least 6.2.
+	 *
+	 * @return bool
+	 */
+	public static function wp_version_at_least_62() {
+		static $version;
+		if ( ! isset( $version ) ) {
+			$version = get_bloginfo( 'version' );
+		}
+		if ( version_compare( $version, '6.2', '>=' ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

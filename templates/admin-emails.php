@@ -212,16 +212,33 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 						 *
 						 * Also; an ORDER BY direction indicator cannot be parameterized, so we have to inject those directly.
 						 */
-						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
-						$acato_email_essentials_view_emails_list = $wpdb->get_results(
-							$wpdb->prepare(
-							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- give me a way to parameterize ORDER BY direction indicators and I'll use it.
-								"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}acato_email_essentials_history ORDER BY %i $acato_email_essentials_view_order_direction LIMIT %d,%d",
-								$acato_email_essentials_view_order_field,
-								$acato_email_essentials_view_first_item,
-								$acato_email_essentials_view_items_per_page
-							)
-						);
+
+						// If WP Version >= 6.2, we can use %i for identifiers.
+						if ( Plugin::wp_version_at_least_62() ) {
+							// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
+							$acato_email_essentials_view_emails_list = $wpdb->get_results(
+								$wpdb->prepare(
+								// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- give me a way to parameterize ORDER BY direction indicators and I'll use it.
+									"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}acato_email_essentials_history ORDER BY %i $acato_email_essentials_view_order_direction LIMIT %d,%d",
+									$acato_email_essentials_view_order_field,
+									$acato_email_essentials_view_first_item,
+									$acato_email_essentials_view_items_per_page
+								)
+							);
+						}
+						else {
+							$acato_email_essentials_view_order_field = esc_sql( $acato_email_essentials_view_order_field );
+							// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All data is sanitized before injection.
+							$acato_email_essentials_view_emails_list = $wpdb->get_results(
+								$wpdb->prepare(
+								// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- WP 6.2 supports %i, but older does not. We have no choice but to inject directly after sanitization. Note that we wrap it in backticks to prevent SQL injection.
+									"SELECT subject, sender, thedatetime, recipient, ID, body, alt_body, headers, status, `debug`, errinfo, eml FROM {$wpdb->prefix}acato_email_essentials_history ORDER BY `$acato_email_essentials_view_order_field` $acato_email_essentials_view_order_direction LIMIT %d,%d",
+									$acato_email_essentials_view_order_field,
+									$acato_email_essentials_view_first_item,
+									$acato_email_essentials_view_items_per_page
+								)
+							);
+						}
 
 						$acato_email_essentials_view_email_stati = [
 							History::MAIL_NEW    => _x( 'Sent ??', 'Email log: this email is Sent', 'email-essentials' ),

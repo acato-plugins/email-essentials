@@ -42,3 +42,12 @@ spl_autoload_register(
 );
 
 require_once __DIR__ . '/filter-deprecation.php';
+
+add_action( 'after_setup_theme', function () {
+	$tpl = locate_template( [ 'wpes-email-template.php' ], false, false );
+	if ( $tpl ) {
+		_deprecated_file( $tpl, '6.0.0', 'Use the `email-essentials-email-template.php` filename instead.' );
+		// and rename the file to prevent further usage.
+		rename( $tpl, str_replace( 'wpes-', 'email-essentials-', $tpl ) );
+	}
+} );
