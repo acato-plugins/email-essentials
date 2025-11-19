@@ -7,6 +7,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use Sabberworm\CSS\Parser;
 use Sabberworm\CSS\CSSList\Document;
 use Sabberworm\CSS\Value\CSSFunction;

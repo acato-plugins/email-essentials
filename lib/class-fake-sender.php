@@ -1,5 +1,4 @@
 <?php // phpcs:ignore library_core_files -- False positive. We're not including our own version, we're wrapping the core version.
-
 /**
  * Overloading the phpMailer object - When we want to block all outgoing email -- we're throttling email sending -- we use this class.
  *
@@ -7,6 +6,8 @@
  */
 
 namespace Acato\Email_Essentials;
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * The class that allows a phpMailer object that cannot send an email.

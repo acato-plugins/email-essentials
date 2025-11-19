@@ -12,6 +12,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use DOMDocument;
 use DOMXPath;
 use Exception;

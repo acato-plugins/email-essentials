@@ -1,5 +1,4 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-
 /**
  * A normalised class for PHPMailer.
  *
@@ -7,6 +6,8 @@
  */
 
 namespace Acato\Email_Essentials;
+
+defined( 'ABSPATH' ) || exit;
 
 // phpcs:disable Generic.Classes.DuplicateClassName.Found
 

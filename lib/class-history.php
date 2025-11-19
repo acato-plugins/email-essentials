@@ -7,6 +7,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 /**

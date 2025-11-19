@@ -7,6 +7,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_List_Table;
 
 if ( ! class_exists( WP_List_Table::class ) ) {

@@ -9,6 +9,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Logger class for logging messages to a file.
  *

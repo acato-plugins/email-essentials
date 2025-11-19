@@ -2,6 +2,8 @@
 // This file holds all classes in the deprecated namespace.
 namespace WP_Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * This file is used to load the deprecated classes.
  * It is used to ensure that the old plugin can be replaced by the new plugin.

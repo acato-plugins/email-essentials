@@ -7,6 +7,8 @@
  * @author  Remon Pel <remon@acato.nl>
  */
 
+defined( 'ABSPATH' ) || exit;
+
 spl_autoload_register(
 	function ( $class_name ) {
 		$n = 'Acato\\Email_Essentials';
