@@ -2013,6 +2013,10 @@ class Plugin {
 	 * Process settings when POSTed.
 	 */
 	public static function save_admin_settings() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		$html = null;
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
 		$the_nonce = isset( $_POST['wpes-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpes-nonce'] ) ) : '';

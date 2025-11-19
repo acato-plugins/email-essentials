@@ -259,7 +259,7 @@ class Migrations {
 			// Check if old table exists.
 			$old_table_exists = $wpdb->get_var(
 				$wpdb->prepare(
-					"SHOW TABLES LIKE %s",
+					'SHOW TABLES LIKE %s',
 					$old_table_full_name
 				)
 			);
@@ -270,9 +270,18 @@ class Migrations {
 			}
 
 			// Rename old table to new table.
-			$wpdb->query( "CREATE TABLE IF NOT EXISTS `{$new_table_full_name}` LIKE `{$old_table_full_name}`;" );
-			$wpdb->query( "INSERT INTO `{$new_table_full_name}` SELECT * FROM `{$old_table_full_name}`;" );
-			$wpdb->query( "DROP TABLE `{$old_table_full_name}`;" );
+			if ( Plugin::wp_version_at_least_62() ) {
+				$wpdb->query( $wpdb->prepare( 'CREATE TABLE IF NOT EXISTS %i LIKE %i;', $new_table_full_name, $old_table_full_name ) );
+				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i SELECT * FROM %i;', $new_table_full_name, $old_table_full_name ) );
+				$wpdb->query( $wpdb->prepare( 'DROP TABLE %i;', $old_table_full_name ) );
+			} else {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "CREATE TABLE IF NOT EXISTS `{$new_table_full_name}` LIKE `{$old_table_full_name}`;" );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "INSERT INTO `{$new_table_full_name}` SELECT * FROM `{$old_table_full_name}`;" );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "DROP TABLE `{$old_table_full_name}`;" );
+			}
 		}
 	}
 }

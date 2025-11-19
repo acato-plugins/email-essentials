@@ -1,5 +1,4 @@
-<?php // phpcs:disable -- imported code. Needs refactoring.
-
+<?php
 /**
  * Evaluate CSS variables to their final values.
  *
@@ -33,18 +32,19 @@ class CssVarEval {
 
 		$globalVars = [];
 
-		// Extract variables from :root
+		// Extract variables from :root .
 		foreach ( $document->getAllDeclarationBlocks() as $block ) {
 			if ( $block->getSelectors() && ! empty( $block->getSelectors()[0] ) && $block->getSelectors()[0]->getSelector() === ':root' ) {
 				foreach ( $block->getRules() as $rule ) {
-					if ( str_starts_with( $rule->getRule(), '--' ) ) {
+					// At this time, we employ a WP 5.x compatibility, so we can not (yet) use str_starts_with.
+					if ( 0 === strpos( $rule->getRule(), '--' ) ) {
 						$globalVars[ $rule->getRule() ] = $rule->getValue();
 					}
 				}
 			}
 		}
 
-		// Function to resolve a value, recursively handling var() functions
+		// Function to resolve a value, recursively handling var() functions.
 		$resolveValue = function ( $value, $localVars = [] ) use ( &$resolveValue, $globalVars ) {
 			if ( $value instanceof CSSFunction && $value->getName() === 'var' ) {
 				$args     = $value->getArguments();
@@ -63,7 +63,7 @@ class CssVarEval {
 				}
 			}
 
-			// Handle lists like font: var(--font-family), sans-serif
+			// Handle lists like font: var(--font-family), sans-serif.
 			if ( $value instanceof RuleValueList ) {
 				$newList     = clone $value;
 				$aComponents = [];
@@ -84,7 +84,8 @@ class CssVarEval {
 			foreach ( $block->getRules() as $rule ) {
 				$name = $rule->getRule();
 
-				if ( str_starts_with( $name, '--' ) ) {
+				// At this time, we employ a WP 5.x compatibility, so we can not (yet) use str_starts_with.
+				if ( 0 === strpos( $name, '--' ) ) {
 					$localVars[ $name ] = $rule->getValue();
 				} else {
 					$resolved = $resolveValue( $rule->getValue(), $localVars );
