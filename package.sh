@@ -24,14 +24,16 @@ for i in \
 	./.git ./.gitignore .claude \
 	package.sh SUBMISSION_NOTES.txt \
 	assets/wordpress_org \
-	wp_mail_key.patch \
+	wp_mail_key.patch tools/generate_dkim.php \
 	lib/class-migrations.php lib/class-deprecation.php lib/filter-deprecation.php lib/deprecation.php \
 	bitbucket-pipelines.yml; do
 	echo "Removing $i" ; rm -rf $i
 done
 
-mv tools/generate_dkim.sh{,-example.txt}
-mv tools/generate_dkim.php{,-example.txt}
+echo "#!/bin/bash" > tools/generate_dkim.sh.txt
+echo "echo 'Before you can use this tool, please read it and remove this line and the one above. Doing so is accepting responsibility.'; exit 1;" >> tools/generate_dkim.sh.txt
+cat tools/generate_dkim.sh >> tools/generate_dkim.sh.txt
+rm tools/generate_dkim.sh
 
 cd "$(dirname "$0")"/..
 
