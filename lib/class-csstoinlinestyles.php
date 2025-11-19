@@ -12,6 +12,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use DOMDocument;
 use DOMXPath;
 use Exception;
@@ -80,8 +82,8 @@ class CssToInlineStyles {
 	 * Creates an instance, you could set the HTML and CSS here, or load it
 	 * later.
 	 *
-	 * @param string[optional] $html The HTML to process.
-	 * @param string[optional] $css  The CSS to use.
+	 * @param string $html [optional] The HTML to process.
+	 * @param string $css  [optional] The CSS to use.
 	 *
 	 * @return void
 	 */
@@ -160,9 +162,9 @@ class CssToInlineStyles {
 	}
 
 	/**
-	 * Calculate the specifity for the CSS-selector
+	 * Calculate the specificity for the CSS-selector
 	 *
-	 * @param string $selector The selector to calculate the specifity for.
+	 * @param string $selector The selector to calculate the specificity for.
 	 *
 	 * @return int
 	 */
@@ -171,7 +173,7 @@ class CssToInlineStyles {
 		$selector = str_replace( [ '>', '+' ], [ ' > ', ' + ' ], $selector );
 
 		// init var.
-		$specifity = 0;
+		$specificity = 0;
 
 		// split the selector into chunks based on spaces.
 		$chunks = explode( ' ', $selector );
@@ -179,19 +181,19 @@ class CssToInlineStyles {
 		// loop chunks.
 		foreach ( $chunks as $chunk ) {
 			if ( strstr( $chunk, '#' ) !== false ) {
-				// an ID is important, so give it a high specifity.
-				$specifity += 100;
+				// an ID is important, so give it a high specificity.
+				$specificity += 100;
 			} elseif ( strstr( $chunk, '.' ) ) {
 				// classes are more important than a tag, but less important then an ID.
-				$specifity += 10;
+				$specificity += 10;
 			} else {
 				// anything else isn't that important.
-				++$specifity;
+				++$specificity;
 			}
 		}
 
 		// return.
-		return $specifity;
+		return $specificity;
 	}
 
 
@@ -217,7 +219,7 @@ class CssToInlineStyles {
 	/**
 	 * Converts the loaded HTML into an HTML-string with inline styles based on the loaded CSS
 	 *
-	 * @param bool $output_xhtml (optional) Should we output valid XHTML?..
+	 * @param bool $output_xhtml [optional] Should we output valid XHTML?..
 	 *
 	 * @return string
 	 *
@@ -587,8 +589,8 @@ class CssToInlineStyles {
 					$css_properties
 				);
 
-				// calculate specifity.
-				$rule_set['specifity'] = $this->calculate_css_specificity( $selector ) + $i;
+				// calculate specificity.
+				$rule_set['specificity'] = $this->calculate_css_specificity( $selector ) + $i;
 
 				// add into global rules.
 				$this->css_rules[] = $rule_set;
@@ -598,7 +600,7 @@ class CssToInlineStyles {
 			++$i;
 		}
 
-		// sort based on specifity.
+		// sort based on specificity.
 		if ( ! empty( $this->css_rules ) ) {
 			usort( $this->css_rules, [ self::class, 'sort_on_specificity' ] );
 		}
@@ -648,7 +650,7 @@ class CssToInlineStyles {
 	/**
 	 * Should the IDs and classes be removed?
 	 *
-	 * @param bool $on (optional) Should we enable cleanup?.
+	 * @param bool $on [optional] Should we enable cleanup?.
 	 *
 	 * @return void
 	 */
@@ -693,7 +695,7 @@ class CssToInlineStyles {
 	 * Set use of inline styles block
 	 * If this is enabled the class will use the style-block in the HTML.
 	 *
-	 * @param bool $on (optional) Should we process inline styles?.
+	 * @param bool $on [optional] Should we process inline styles?.
 	 *
 	 * @return void
 	 */
@@ -705,7 +707,7 @@ class CssToInlineStyles {
 	 * Set strip original style tags
 	 * If this is enabled the class will remove all style tags in the HTML.
 	 *
-	 * @param bool $on (optional) Should we process inline styles?.
+	 * @param bool $on [optional] Should we process inline styles?.
 	 *
 	 * @return void
 	 */
@@ -718,7 +720,7 @@ class CssToInlineStyles {
 	 *
 	 * If this is enabled the media queries will be removed before inlining the rules
 	 *
-	 * @param bool $on (optional).
+	 * @param bool $on [optional].
 	 *
 	 * @return void
 	 */
@@ -738,7 +740,7 @@ class CssToInlineStyles {
 	}
 
 	/**
-	 * Sort an array on the specifity element
+	 * Sort an array on the specificity element
 	 *
 	 * @param array $e1 The first element.
 	 * @param array $e2 The second element.
@@ -747,17 +749,17 @@ class CssToInlineStyles {
 	 */
 	private static function sort_on_specificity( $e1, $e2 ) {
 		// validate.
-		if ( ! isset( $e1['specifity'] ) || ! isset( $e2['specifity'] ) ) {
+		if ( ! isset( $e1['specificity'] ) || ! isset( $e2['specificity'] ) ) {
 			return 0;
 		}
 
 		// lower.
-		if ( $e1['specifity'] < $e2['specifity'] ) {
+		if ( $e1['specificity'] < $e2['specificity'] ) {
 			return -1;
 		}
 
 		// higher.
-		if ( $e1['specifity'] > $e2['specifity'] ) {
+		if ( $e1['specificity'] > $e2['specificity'] ) {
 			return 1;
 		}
 

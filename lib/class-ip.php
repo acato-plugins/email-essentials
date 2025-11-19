@@ -7,6 +7,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * The PHP 5.4 and earlier version of this class, also used as the base for the PHP 5.5+ version.
  */

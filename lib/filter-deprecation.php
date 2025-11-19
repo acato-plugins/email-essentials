@@ -10,6 +10,8 @@
  * @author  Remon Pel <remon@acato.nl>
  */
 
+defined( 'ABSPATH' ) || exit;
+
 add_filter(
 	'acato_email_essentials_mail_is_throttled',
 	function ( $is_throttled, $ip, $mails_recently_sent ) {

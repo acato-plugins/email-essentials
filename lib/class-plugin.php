@@ -7,6 +7,8 @@
 
 namespace Acato\Email_Essentials;
 
+defined( 'ABSPATH' ) || exit;
+
 use Exception;
 use WP_Comment;
 use WPCF7_ContactForm;
