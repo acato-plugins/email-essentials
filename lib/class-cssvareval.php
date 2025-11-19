@@ -13,6 +13,9 @@ use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\RuleValueList;
 use Sabberworm\CSS\OutputFormat;
 
+/**
+ * Class to evaluate CSS variables to their final values.
+ */
 class CssVarEval {
 	/**
 	 * Evaluate CSS variables to their final values.
@@ -21,43 +24,54 @@ class CssVarEval {
 	 *
 	 * @return string The evaluated CSS string.
 	 */
-	public static function evaluate( string $css ): string {
-		return self::resolveCssVariables( $css );
+	public static function evaluate( $css ) {
+		return self::resolve_css_variables( $css );
 	}
 
-	public static function resolveCssVariables( string $css ): string {
+	/**
+	 * Resolve CSS variables in the given CSS string.
+	 *
+	 * @param string $css The CSS string to process.
+	 *
+	 * @return string The CSS string with variables resolved.
+	 */
+	public static function resolve_css_variables( $css ) {
 		$parser = new Parser( $css );
-		/** @var Document $document */
+		/**
+		 * The parsed CSS document.
+		 *
+		 * @var Document $document
+		 */
 		$document = $parser->parse();
 
-		$globalVars = [];
+		$global_vars = [];
 
-		// Extract variables from :root .
+		// Extract variables from :root.
 		foreach ( $document->getAllDeclarationBlocks() as $block ) {
-			if ( $block->getSelectors() && ! empty( $block->getSelectors()[0] ) && $block->getSelectors()[0]->getSelector() === ':root' ) {
+			if ( $block->getSelectors() && ! empty( $block->getSelectors()[0] ) && ':root' === $block->getSelectors()[0]->getSelector() ) {
 				foreach ( $block->getRules() as $rule ) {
 					// At this time, we employ a WP 5.x compatibility, so we can not (yet) use str_starts_with.
 					if ( 0 === strpos( $rule->getRule(), '--' ) ) {
-						$globalVars[ $rule->getRule() ] = $rule->getValue();
+						$global_vars[ $rule->getRule() ] = $rule->getValue();
 					}
 				}
 			}
 		}
 
 		// Function to resolve a value, recursively handling var() functions.
-		$resolveValue = function ( $value, $localVars = [] ) use ( &$resolveValue, $globalVars ) {
-			if ( $value instanceof CSSFunction && $value->getName() === 'var' ) {
+		$resolve_value = function ( $value, $local_vars = [] ) use ( &$resolve_value, $global_vars ) {
+			if ( $value instanceof CSSFunction && 'var' === $value->getName() ) {
 				$args     = $value->getArguments();
-				$varName  = trim( (string) $args[0] );
+				$var_name = trim( (string) $args[0] );
 				$fallback = count( $args ) > 1 ? $args[1] : null;
 
-				// Check local, then global
-				if ( array_key_exists( $varName, $localVars ) ) {
-					return $resolveValue( $localVars[ $varName ], $localVars );
-				} elseif ( array_key_exists( $varName, $globalVars ) ) {
-					return $resolveValue( $globalVars[ $varName ], $localVars );
-				} elseif ( $fallback !== null ) {
-					return $resolveValue( $fallback, $localVars );
+				// Check local, then global.
+				if ( array_key_exists( $var_name, $local_vars ) ) {
+					return $resolve_value( $local_vars[ $var_name ], $local_vars );
+				} elseif ( array_key_exists( $var_name, $global_vars ) ) {
+					return $resolve_value( $global_vars[ $var_name ], $local_vars );
+				} elseif ( null !== $fallback ) {
+					return $resolve_value( $fallback, $local_vars );
 				} else {
 					return 'unset';
 				}
@@ -65,30 +79,30 @@ class CssVarEval {
 
 			// Handle lists like font: var(--font-family), sans-serif.
 			if ( $value instanceof RuleValueList ) {
-				$newList     = clone $value;
-				$aComponents = [];
-				foreach ( $newList->getListComponents() as $i => $component ) {
-					$aComponents[ $i ] = $resolveValue( $component, $localVars );
+				$new_list     = clone $value;
+				$a_components = [];
+				foreach ( $new_list->getListComponents() as $i => $component ) {
+					$a_components[ $i ] = $resolve_value( $component, $local_vars );
 				}
-				$newList->setListComponents( $aComponents );
+				$new_list->setListComponents( $a_components );
 
-				return $newList;
+				return $new_list;
 			}
 
 			return $value;
 		};
 
-		// Apply resolution
+		// Apply resolution.
 		foreach ( $document->getAllDeclarationBlocks() as $block ) {
-			$localVars = [];
+			$local_vars = [];
 			foreach ( $block->getRules() as $rule ) {
 				$name = $rule->getRule();
 
 				// At this time, we employ a WP 5.x compatibility, so we can not (yet) use str_starts_with.
 				if ( 0 === strpos( $name, '--' ) ) {
-					$localVars[ $name ] = $rule->getValue();
+					$local_vars[ $name ] = $rule->getValue();
 				} else {
-					$resolved = $resolveValue( $rule->getValue(), $localVars );
+					$resolved = $resolve_value( $rule->getValue(), $local_vars );
 					$rule->setValue( $resolved );
 				}
 			}
