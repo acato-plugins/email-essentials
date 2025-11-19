@@ -2,7 +2,7 @@
 /**
  * View: admin interface.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -11,16 +11,16 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die( wp_kses_post( __( 'Uh uh uh! You didn\'t say the magic word!', 'email-essentials' ) ) );
 }
 
-$wpes_config = Plugin::get_config();
-if ( empty( $wpes_config['dkimfolder'] ) ) {
-	$wpes_config['dkimfolder'] = '';
+$acato_email_essentials_config = Plugin::get_config();
+if ( empty( $acato_email_essentials_config['dkimfolder'] ) ) {
+	$acato_email_essentials_config['dkimfolder'] = '';
 }
-if ( empty( $wpes_config['certfolder'] ) ) {
-	$wpes_config['certfolder'] = '';
+if ( empty( $acato_email_essentials_config['certfolder'] ) ) {
+	$acato_email_essentials_config['certfolder'] = '';
 }
-$wpes_host             = Plugin::get_hostname_by_blogurl();
-$wpes_smime_identities = [];
-$wpes_dkim_identities  = [];
+$acato_email_essentials_host             = Plugin::get_hostname_by_blogurl();
+$acato_email_essentials_smime_identities = [];
+$acato_email_essentials_dkim_identities  = [];
 
 ?>
 <div class="wrap wpes-wrap wpes-settings">
@@ -35,8 +35,8 @@ $wpes_dkim_identities  = [];
 	?>
 
 	<form id="outpost" class="wpes-admin" method='POST' action="" enctype="multipart/form-data">
-		<input type="hidden" name="form_id" value="wp-email-essentials"/>
-		<?php wp_nonce_field( 'wp-email-essentials--settings', 'wpes-nonce' ); ?>
+		<input type="hidden" name="form_id" value="acato-email-essentials"/>
+		<?php wp_nonce_field( 'acato-email-essentials--settings', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
@@ -55,7 +55,7 @@ $wpes_dkim_identities  = [];
 				</strong>
 
 				<?php
-				$wpes_blocks = [
+				$acato_email_essentials_blocks = [
 					'basic-information'                   => _x( 'Basic information', 'Item in jump-to list', 'email-essentials' ),
 					'how-to-validate-sender'              => _x( 'How to validate sender?', 'Item in jump-to list', 'email-essentials' ),
 					'what-to-do-in-case-sender-not-valid' => _x( 'What to do in case the sender is not valid for this domain?', 'Item in jump-to list', 'email-essentials' ),
@@ -72,10 +72,10 @@ $wpes_dkim_identities  = [];
 				];
 				?>
 				<ul class="toc">
-					<?php foreach ( $wpes_blocks as $wpes_block_id => $wpes_block_name ) { ?>
+					<?php foreach ( $acato_email_essentials_blocks as $acato_email_essentials_block_id => $acato_email_essentials_block_name ) { ?>
 						<li>
-							<a href="#<?php echo esc_attr( $wpes_block_id ); ?>">
-								<?php echo esc_html( $wpes_block_name ); ?>
+							<a href="#<?php echo esc_attr( $acato_email_essentials_block_id ); ?>">
+								<?php echo esc_html( $acato_email_essentials_block_name ); ?>
 							</a>
 						</li>
 					<?php } ?>
@@ -85,14 +85,14 @@ $wpes_dkim_identities  = [];
 				</strong>
 				<ul class="toc">
 					<?php
-					$wpes_urls = [
+					$acato_email_essentials_urls = [
 						__( 'Blog settings', 'email-essentials' )      => admin_url( 'options-general.php' ),
 						__( 'Site settings', 'email-essentials' )      => is_multisite() ? network_admin_url( 'settings.php' ) : false,
-						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'wpes-admins', admin_url( 'admin.php' ) ),
+						__( 'Alternative Admins', 'email-essentials' ) => add_query_arg( 'page', 'acato-email-essentials/admins', admin_url( 'admin.php' ) ),
 					];
-					$wpes_urls = array_filter( $wpes_urls );
-					foreach ( $wpes_urls as $wpes_url_name => $wpes_url ) {
-						print '<li><a target="_blank" href="' . esc_attr( $wpes_url ) . '">' . esc_html( $wpes_url_name ) . '</a></li>';
+					$acato_email_essentials_urls = array_filter( $acato_email_essentials_urls );
+					foreach ( $acato_email_essentials_urls as $acato_email_essentials_url_name => $acato_email_essentials_url ) {
+						print '<li><a target="_blank" href="' . esc_attr( $acato_email_essentials_url ) . '">' . esc_html( $acato_email_essentials_url_name ) . '</a></li>';
 					}
 					?>
 				</ul>
@@ -112,7 +112,7 @@ $wpes_dkim_identities  = [];
 							<div class="wpes-notice--info">
 								<?php
 								// translators: %s: hostname.
-								print wp_kses_post( sprintf( __( 'Out of the box, WordPress will use name "WordPress" and email "wordpress@%s" as default sender. This is far from optimal. Your first step is therefore to set an appropriate name and email address.', 'email-essentials' ), $wpes_host ) );
+								print wp_kses_post( sprintf( __( 'Out of the box, WordPress will use name "WordPress" and email "wordpress@%s" as default sender. This is far from optimal. Your first step is therefore to set an appropriate name and email address.', 'email-essentials' ), $acato_email_essentials_host ) );
 								?>
 							</div>
 							<label
@@ -120,7 +120,7 @@ $wpes_dkim_identities  = [];
 							<input
 								type="text"
 								name="settings[from_name]"
-								value="<?php print esc_attr( $wpes_config['from_name'] ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['from_name'] ); ?>"
 								placeholder="WordPress"
 								id="from-name"/>
 						</div>
@@ -130,8 +130,8 @@ $wpes_dkim_identities  = [];
 							</label>
 							<input
 								type="text" name="settings[from_email]"
-								value="<?php print esc_attr( $wpes_config['from_email'] ); ?>"
-								placeholder="wordpress@<?php print esc_attr( $wpes_host ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['from_email'] ); ?>"
+								placeholder="wordpress@<?php print esc_attr( $acato_email_essentials_host ); ?>"
 								id="from-email"/>
 							<div
 								class="wpes-notice--error on-regexp-test"
@@ -142,10 +142,10 @@ $wpes_dkim_identities  = [];
 						</div>
 
 						<?php
-						if ( $wpes_config['spf_lookup_enabled'] ) {
+						if ( $acato_email_essentials_config['spf_lookup_enabled'] ) {
 							// SPF match.
-							$wpes_spf_result = Plugin::i_am_allowed_to_send_in_name_of( $wpes_config['from_email'] );
-							if ( ! $wpes_spf_result ) {
+							$acato_email_essentials_spf_result = Plugin::i_am_allowed_to_send_in_name_of( $acato_email_essentials_config['from_email'] );
+							if ( ! $acato_email_essentials_spf_result ) {
 								?>
 								<div class="wpes-notice--error">
 									<strong class="title">
@@ -164,7 +164,7 @@ $wpes_dkim_identities  = [];
 												<?php print wp_kses_post( __( 'Old', 'email-essentials' ) ); ?>
 											</th>
 											<td>
-												<code><?php print wp_kses_post( Plugin::get_spf( $wpes_config['from_email'], false, true ) ); ?></code>
+												<code><?php print wp_kses_post( Plugin::get_spf( $acato_email_essentials_config['from_email'], false, true ) ); ?></code>
 											</td>
 										</tr>
 										<tr>
@@ -172,7 +172,7 @@ $wpes_dkim_identities  = [];
 												<?php print wp_kses_post( __( 'New', 'email-essentials' ) ); ?>
 											</th>
 											<td>
-												<code><?php print wp_kses_post( Plugin::get_spf( $wpes_config['from_email'], true, true ) ); ?></code>
+												<code><?php print wp_kses_post( Plugin::get_spf( $acato_email_essentials_config['from_email'], true, true ) ); ?></code>
 											</td>
 										</tr>
 									</table>
@@ -194,7 +194,7 @@ $wpes_dkim_identities  = [];
 
 									<p>
 										<code>
-											<?php print wp_kses_post( Plugin::get_spf( $wpes_config['from_email'], false, true ) ); ?>
+											<?php print wp_kses_post( Plugin::get_spf( $acato_email_essentials_config['from_email'], false, true ) ); ?>
 										</code>
 									</p>
 								</div>
@@ -222,13 +222,13 @@ $wpes_dkim_identities  = [];
 								<p>
 									<code>
 										<?php
-										print $wpes_spf_result ? wp_kses_post( $wpes_spf_result ) : esc_html_e( 'Nothing ;( - This IP is not found in any part of the SPF.', 'email-essentials' );
+										print $acato_email_essentials_spf_result ? wp_kses_post( $acato_email_essentials_spf_result ) : esc_html__( 'Nothing ;( - This IP is not found in any part of the SPF.', 'email-essentials' );
 										?>
 									</code>
 								</p>
 							</div>
 							<?php
-						} elseif ( ! Plugin::i_am_allowed_to_send_in_name_of( $wpes_config['from_email'] ) ) {
+						} elseif ( ! Plugin::i_am_allowed_to_send_in_name_of( $acato_email_essentials_config['from_email'] ) ) {
 							// domain match.
 							?>
 							<div class="wpes-notice--error">
@@ -261,7 +261,7 @@ $wpes_dkim_identities  = [];
 				<div class="inside">
 					<div class="wpes-radio-list">
 						<input
-							<?php checked( isset( $wpes_config['smtp'] ) && $wpes_config['smtp'] ); ?>
+							<?php checked( isset( $acato_email_essentials_config['smtp'] ) && $acato_email_essentials_config['smtp'] ); ?>
 							type="checkbox" name="settings[smtp-enabled]"
 							value="1"
 							id="smtp-enabled"/>
@@ -282,7 +282,7 @@ $wpes_dkim_identities  = [];
 							<input
 								type="text"
 								name="settings[host]"
-								value="<?php print esc_attr( $wpes_config['smtp'] ? $wpes_config['smtp']['host'] : '' ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['smtp'] ? $acato_email_essentials_config['smtp']['host'] : '' ); ?>"
 								id="smtp-hostname"/>
 						</div>
 						<div class="wpes-form-item">
@@ -292,7 +292,7 @@ $wpes_dkim_identities  = [];
 							<input
 								type="text"
 								name="settings[port]"
-								value="<?php print esc_attr( $wpes_config['smtp'] ? $wpes_config['smtp']['port'] : '' ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['smtp'] ? $acato_email_essentials_config['smtp']['port'] : '' ); ?>"
 								id="smtp-port"/>
 						</div>
 						<div class="wpes-form-item">
@@ -302,7 +302,7 @@ $wpes_dkim_identities  = [];
 							<input
 								type="text"
 								name="settings[username]"
-								value="<?php print esc_attr( $wpes_config['smtp'] ? $wpes_config['smtp']['username'] : '' ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['smtp'] ? $acato_email_essentials_config['smtp']['username'] : '' ); ?>"
 								id="smtp-username"/>
 						</div>
 						<div class="wpes-form-item">
@@ -312,7 +312,7 @@ $wpes_dkim_identities  = [];
 							<input
 								type="password"
 								name="settings[password]"
-								value="<?php print esc_attr( $wpes_config['smtp'] ? str_repeat( '*', strlen( $wpes_config['smtp']['password'] ) ) : '' ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['smtp'] ? str_repeat( '*', strlen( $acato_email_essentials_config['smtp']['password'] ) ) : '' ); ?>"
 								id="smtp-password"/>
 						</div>
 						<div class="wpes-form-item">
@@ -332,12 +332,12 @@ $wpes_dkim_identities  = [];
 								</option>
 								<option
 									data-smtp-port="465"
-									value="ssl" <?php selected( $wpes_config['smtp'] && 'ssl' === $wpes_config['smtp']['secure'] ); ?>>
+									value="ssl" <?php selected( $acato_email_essentials_config['smtp'] && 'ssl' === $acato_email_essentials_config['smtp']['secure'] ); ?>>
 									<?php print wp_kses_post( __( 'SSL', 'email-essentials' ) ); ?>
 								</option>
 								<option
 									data-smtp-port="587"
-									value="tls" <?php selected( $wpes_config['smtp'] && 'tls' === $wpes_config['smtp']['secure'] ); ?>>
+									value="tls" <?php selected( $acato_email_essentials_config['smtp'] && 'tls' === $acato_email_essentials_config['smtp']['secure'] ); ?>>
 									<?php print wp_kses_post( __( 'StartTLS', 'email-essentials' ) ); ?>
 								</option>
 								<option disabled>
@@ -349,18 +349,18 @@ $wpes_dkim_identities  = [];
 								</option>
 								<option
 									data-smtp-port="465"
-									value="ssl-" <?php selected( $wpes_config['smtp'] && 'ssl-' === $wpes_config['smtp']['secure'] ); ?>>
+									value="ssl-" <?php selected( $acato_email_essentials_config['smtp'] && 'ssl-' === $acato_email_essentials_config['smtp']['secure'] ); ?>>
 									<?php print wp_kses_post( __( 'SSL', 'email-essentials' ) ); ?>
 								</option>
 								<option
 									data-smtp-port="587"
-									value="tls-" <?php selected( $wpes_config['smtp'] && 'tls-' === $wpes_config['smtp']['secure'] ); ?>>
+									value="tls-" <?php selected( $acato_email_essentials_config['smtp'] && 'tls-' === $acato_email_essentials_config['smtp']['secure'] ); ?>>
 									<?php print wp_kses_post( __( 'StartTLS', 'email-essentials' ) ); ?>
 								</option>
 							</select>
 						</div>
 						<script>
-							jQuery(document).ready(function ($) {
+							jQuery(document).ready(function () {
 								const smtpPort = document.getElementById('smtp-port');
 								const smtpSecure = document.getElementById('smtp-secure');
 								smtpSecure.addEventListener('change', function () {
@@ -375,16 +375,16 @@ $wpes_dkim_identities  = [];
 							</label>
 							<select id="timeout" name="settings[timeout]">
 								<?php
-								$wpes_timeouts = [
+								$acato_email_essentials_timeouts = [
 									60  => __( '1 minute', 'email-essentials' ),
 									300 => __( '5 minutes (default)', 'email-essentials' ),
 									600 => __( '10 minutes (for very slow hosts)', 'email-essentials' ),
 								];
-								if ( ! isset( $wpes_config['timeout'] ) || ! $wpes_config['timeout'] ) {
-									$wpes_config['timeout'] = 300;
+								if ( ! isset( $acato_email_essentials_config['timeout'] ) || ! $acato_email_essentials_config['timeout'] ) {
+									$acato_email_essentials_config['timeout'] = 300;
 								}
-								foreach ( $wpes_timeouts as $wpes_key => $wpes_val ) {
-									print '<option value="' . esc_attr( $wpes_key ) . '" ' . selected( (int) $wpes_config['timeout'], $wpes_key, false ) . '>' . esc_html( $wpes_val ) . '</option>';
+								foreach ( $acato_email_essentials_timeouts as $acato_email_essentials_key => $acato_email_essentials_val ) {
+									print '<option value="' . esc_attr( $acato_email_essentials_key ) . '" ' . selected( (int) $acato_email_essentials_config['timeout'], $acato_email_essentials_key, false ) . '>' . esc_html( $acato_email_essentials_val ) . '</option>';
 								}
 								?>
 							</select>
@@ -393,7 +393,7 @@ $wpes_dkim_identities  = [];
 
 					<div class="wpes-radio-list">
 						<input
-							<?php checked( isset( $wpes_config['SingleTo'] ) && $wpes_config['SingleTo'] ); ?>
+							<?php checked( isset( $acato_email_essentials_config['SingleTo'] ) && $acato_email_essentials_config['SingleTo'] ); ?>
 							type="checkbox"
 							name="settings[SingleTo]"
 							value="1"
@@ -424,7 +424,7 @@ $wpes_dkim_identities  = [];
 
 					<div class="wpes-radio-list">
 						<input
-							<?php checked( ! isset( $wpes_config['spf_lookup_enabled'] ) || ! $wpes_config['spf_lookup_enabled'] ); ?>
+							<?php checked( ! isset( $acato_email_essentials_config['spf_lookup_enabled'] ) || ! $acato_email_essentials_config['spf_lookup_enabled'] ); ?>
 							type="radio"
 							name="settings[spf_lookup_enabled]"
 							value="0"
@@ -434,7 +434,7 @@ $wpes_dkim_identities  = [];
 						</label>
 
 						<input
-							<?php checked( isset( $wpes_config['spf_lookup_enabled'] ) && $wpes_config['spf_lookup_enabled'] ); ?>
+							<?php checked( isset( $acato_email_essentials_config['spf_lookup_enabled'] ) && $acato_email_essentials_config['spf_lookup_enabled'] ); ?>
 							type="radio" name="settings[spf_lookup_enabled]" value="1"
 							id="spf_lookup_enabled_1"/>
 						<label for="spf_lookup_enabled_1">
@@ -475,7 +475,7 @@ $wpes_dkim_identities  = [];
 
 					<div class="wpes-radio-list arrow-down">
 						<input
-							<?php checked( 'when_sender_invalid', $wpes_config['make_from_valid_when'] ); ?>
+							<?php checked( 'when_sender_invalid', $acato_email_essentials_config['make_from_valid_when'] ); ?>
 							id="wpes-settings-make_from_valid_when-when_sender_invalid"
 							type="radio"
 							name="settings[make_from_valid_when]"
@@ -498,7 +498,7 @@ $wpes_dkim_identities  = [];
 						</label>
 
 						<input
-							<?php checked( 'when_sender_not_as_set', $wpes_config['make_from_valid_when'] ); ?>
+							<?php checked( 'when_sender_not_as_set', $acato_email_essentials_config['make_from_valid_when'] ); ?>
 							id="wpes-settings-make_from_valid_when-when_sender_not_as_set"
 							type="radio"
 							name="settings[make_from_valid_when]"
@@ -515,29 +515,30 @@ $wpes_dkim_identities  = [];
 							<option
 								value=""><?php print wp_kses_post( __( 'Keep the possibly-invalid sender as is. (might cause your mails to be marked as spam!)', 'email-essentials' ) ); ?></option>
 							<option disabled>────────────────────────────────────────────────────────────</option>
-							<option value="-at-" <?php selected( '-at-', $wpes_config['make_from_valid'] ); ?>>
+							<option
+								value="-at-" <?php selected( '-at-', $acato_email_essentials_config['make_from_valid'] ); ?>>
 								<?php
 								// translators: %s: the hostname of the website.
-								print esc_html( sprintf( __( 'Rewrite email@addre.ss to email-at-addre-dot-ss@%s', 'email-essentials' ), $wpes_host ) );
+								print esc_html( sprintf( __( 'Rewrite email@addre.ss to email-at-addre-dot-ss@%s', 'email-essentials' ), $acato_email_essentials_host ) );
 								?>
 							</option>
 							<option
-								value="noreply" <?php selected( 'noreply', $wpes_config['make_from_valid'] ); ?>>
+								value="noreply" <?php selected( 'noreply', $acato_email_essentials_config['make_from_valid'] ); ?>>
 								<?php
 								// translators: %s: the hostname of the website.
-								print esc_html( sprintf( __( 'Rewrite email@addre.ss to noreply@%s', 'email-essentials' ), $wpes_host ) );
+								print esc_html( sprintf( __( 'Rewrite email@addre.ss to noreply@%s', 'email-essentials' ), $acato_email_essentials_host ) );
 								print esc_html( __( '(Not GDPR Compliant)', 'email-essentials' ) );
 								?>
 							</option>
 							<?php
-							$wpes_default_sender_mail = Plugin::wp_mail_from( $wpes_config['from_email'] );
-							if ( Plugin::i_am_allowed_to_send_in_name_of( $wpes_default_sender_mail ) ) {
+							$acato_email_essentials_default_sender_mail = Plugin::wp_mail_from( $acato_email_essentials_config['from_email'] );
+							if ( Plugin::i_am_allowed_to_send_in_name_of( $acato_email_essentials_default_sender_mail ) ) {
 								?>
 								<option
-									value="default" <?php selected( 'default', $wpes_config['make_from_valid'] ); ?>>
+									value="default" <?php selected( 'default', $acato_email_essentials_config['make_from_valid'] ); ?>>
 									<?php
 									// translators: %s: the default sender email address.
-									print esc_html( sprintf( __( 'Rewrite email@addre.ss to %s', 'email-essentials' ), $wpes_default_sender_mail ) );
+									print esc_html( sprintf( __( 'Rewrite email@addre.ss to %s', 'email-essentials' ), $acato_email_essentials_default_sender_mail ) );
 									?>
 								</option>
 							<?php } ?>
@@ -555,7 +556,7 @@ $wpes_dkim_identities  = [];
 				<div class="inside">
 					<div class="wpes-radio-list">
 						<input
-							<?php checked( $wpes_config['enable_history'] ); ?>
+							<?php checked( $acato_email_essentials_config['enable_history'] ); ?>
 							type="checkbox" name="settings[enable_history]"
 							value="1"
 							id="enable_history"/>
@@ -589,7 +590,7 @@ $wpes_dkim_identities  = [];
 				<div class="inside">
 					<div class="wpes-radio-list">
 						<input
-							<?php checked( $wpes_config['enable_queue'] ); ?>
+							<?php checked( $acato_email_essentials_config['enable_queue'] ); ?>
 							type="checkbox" name="settings[enable_queue]"
 							value="1"
 							id="enable_queue"/>
@@ -629,7 +630,7 @@ $wpes_dkim_identities  = [];
 								<?php print wp_kses_post( __( 'Send as HTML?', 'email-essentials' ) ); ?>
 							</label>
 							<input
-								<?php checked( isset( $wpes_config['is_html'] ) && $wpes_config['is_html'] ); ?>
+								<?php checked( isset( $acato_email_essentials_config['is_html'] ) && $acato_email_essentials_config['is_html'] ); ?>
 								type="checkbox"
 								name="settings[is_html]"
 								value="1"
@@ -643,7 +644,7 @@ $wpes_dkim_identities  = [];
 								<?php print wp_kses_post( __( 'Convert CSS to Inline Styles', 'email-essentials' ) ); ?>
 							</label>
 							<input
-								<?php checked( isset( $wpes_config['css_inliner'] ) && $wpes_config['css_inliner'] ); ?>
+								<?php checked( isset( $acato_email_essentials_config['css_inliner'] ) && $acato_email_essentials_config['css_inliner'] ); ?>
 								type="checkbox"
 								name="settings[css_inliner]"
 								value="1"
@@ -670,19 +671,19 @@ $wpes_dkim_identities  = [];
 					<label for="content-precoding"></label><select
 						id="content-precoding" name="settings[content_precode]">
 						<?php
-						$wpes_encoding_table         = explode( ',', '0,auto,' . Plugin::ENCODINGS );
-						$wpes_encoding_table         = array_combine( $wpes_encoding_table, $wpes_encoding_table );
-						$wpes_encoding_table         = array_map(
+						$acato_email_essentials_encoding_table         = explode( ',', '0,auto,' . Plugin::ENCODINGS );
+						$acato_email_essentials_encoding_table         = array_combine( $acato_email_essentials_encoding_table, $acato_email_essentials_encoding_table );
+						$acato_email_essentials_encoding_table         = array_map(
 							function ( $item ) {
 								// translators: %s: a content-encoding, like UTF-8.
 								return sprintf( _x( 'From: %s', 'E.g.: From: UTF-8', 'email-essentials' ), strtoupper( $item ) );
 							},
-							$wpes_encoding_table
+							$acato_email_essentials_encoding_table
 						);
-						$wpes_encoding_table['0']    = __( 'No charset re-coding (default)', 'email-essentials' );
-						$wpes_encoding_table['auto'] = __( 'Autodetect with mb_check_encoding()', 'email-essentials' );
-						foreach ( $wpes_encoding_table as $wpes_encoding => $wpes_nice_encoding ) {
-							print '<option value="' . esc_attr( $wpes_encoding ) . '" ' . selected( $wpes_config['content_precode'], $wpes_encoding, false ) . '>' . esc_html( $wpes_nice_encoding ) . '</option>';
+						$acato_email_essentials_encoding_table['0']    = __( 'No charset re-coding (default)', 'email-essentials' );
+						$acato_email_essentials_encoding_table['auto'] = __( 'Autodetect with mb_check_encoding()', 'email-essentials' );
+						foreach ( $acato_email_essentials_encoding_table as $acato_email_essentials_encoding => $acato_email_essentials_nice_encoding ) {
+							print '<option value="' . esc_attr( $acato_email_essentials_encoding ) . '" ' . selected( $acato_email_essentials_config['content_precode'], $acato_email_essentials_encoding, false ) . '>' . esc_html( $acato_email_essentials_nice_encoding ) . '</option>';
 						}
 						?>
 					</select>
@@ -702,7 +703,7 @@ $wpes_dkim_identities  = [];
 								<?php print wp_kses_post( __( 'Derive plain-text alternative?', 'email-essentials' ) ); ?>
 							</label>
 							<input
-								<?php checked( isset( $wpes_config['alt_body'] ) && $wpes_config['alt_body'] ); ?>
+								<?php checked( isset( $acato_email_essentials_config['alt_body'] ) && $acato_email_essentials_config['alt_body'] ); ?>
 								type="checkbox"
 								name="settings[alt_body]"
 								value="1"
@@ -716,7 +717,7 @@ $wpes_dkim_identities  = [];
 								<?php print wp_kses_post( __( 'Process the body with <code>do_shortcode()</code>', 'email-essentials' ) ); ?>
 							</label>
 							<input
-								<?php checked( isset( $wpes_config['do_shortcodes'] ) && $wpes_config['do_shortcodes'] ); ?>
+								<?php checked( isset( $acato_email_essentials_config['do_shortcodes'] ) && $acato_email_essentials_config['do_shortcodes'] ); ?>
 								type="checkbox"
 								name="settings[do_shortcodes]"
 								value="1"
@@ -740,7 +741,7 @@ $wpes_dkim_identities  = [];
 									<?php print wp_kses_post( __( 'Sign emails with S/MIME certificate', 'email-essentials' ) ); ?>
 								</label>
 								<input
-									<?php checked( isset( $wpes_config['enable_smime'] ) && $wpes_config['enable_smime'] ); ?>
+									<?php checked( isset( $acato_email_essentials_config['enable_smime'] ) && $acato_email_essentials_config['enable_smime'] ); ?>
 									type="checkbox"
 									name="settings[enable_smime]"
 									value="1"
@@ -754,12 +755,12 @@ $wpes_dkim_identities  = [];
 								<input
 									type="text"
 									name="settings[certfolder]"
-									value="<?php print esc_attr( $wpes_config['certfolder'] ); ?>"
+									value="<?php print esc_attr( $acato_email_essentials_config['certfolder'] ); ?>"
 									id="certfolder"/>
 							</div>
 
 							<?php
-							if ( Plugin::path_is_in_web_root( $wpes_config['certificate_folder'] ) ) {
+							if ( Plugin::path_is_in_web_root( $acato_email_essentials_config['certificate_folder'] ) ) {
 								?>
 								<div class="wpes-notice--error on-enable-smime">
 									<strong class="title">
@@ -774,24 +775,24 @@ $wpes_dkim_identities  = [];
 							?>
 
 							<?php
-							if ( isset( $wpes_config['certfolder'] ) ) {
-								$wpes_smime_certificate_folder = $wpes_config['certificate_folder'];
-								if ( is_dir( $wpes_smime_certificate_folder ) ) {
-									$wpes_smime_identities = Plugin::list_smime_identities();
-									$wpes_smime_identities = array_keys( $wpes_smime_identities );
+							if ( isset( $acato_email_essentials_config['certfolder'] ) ) {
+								$acato_email_essentials_smime_certificate_folder = $acato_email_essentials_config['certificate_folder'];
+								if ( is_dir( $acato_email_essentials_smime_certificate_folder ) ) {
+									$acato_email_essentials_smime_identities = Plugin::list_smime_identities();
+									$acato_email_essentials_smime_identities = array_keys( $acato_email_essentials_smime_identities );
 									?>
 								<?php } else { ?>
 									<div class="wpes-notice--error on-enable-smime">
 										<strong class="title">
 											<?php
 											// translators: %s: a path.
-											print wp_kses_post( sprintf( __( 'Set folder <code>%s</code> not found.', 'email-essentials' ), $wpes_config['certfolder'] ) );
-											if ( $wpes_smime_certificate_folder !== $wpes_config['certfolder'] ) {
+											print wp_kses_post( sprintf( __( 'Set folder <code>%s</code> not found.', 'email-essentials' ), $acato_email_essentials_config['certfolder'] ) );
+											if ( $acato_email_essentials_smime_certificate_folder !== $acato_email_essentials_config['certfolder'] ) {
 												// translators: %s: a path.
-												print ' ' . wp_kses_post( sprintf( __( 'Expanded path: <code>%s</code>', 'email-essentials' ), $wpes_smime_certificate_folder ) );
+												print ' ' . wp_kses_post( sprintf( __( 'Expanded path: <code>%s</code>', 'email-essentials' ), $acato_email_essentials_smime_certificate_folder ) );
 											}
 											// translators: %s: a path.
-											print ' ' . wp_kses_post( sprintf( __( 'Evaluated path: <code>%s</code>', 'email-essentials' ), realpath( $wpes_smime_certificate_folder ) ) );
+											print ' ' . wp_kses_post( sprintf( __( 'Evaluated path: <code>%s</code>', 'email-essentials' ), realpath( $acato_email_essentials_smime_certificate_folder ) ) );
 											?>
 										</strong>
 									</div>
@@ -863,13 +864,13 @@ $wpes_dkim_identities  = [];
 									</tr>
 								</table>
 
-								<?php if ( isset( $wpes_config['certfolder'] ) ) { ?>
-									<?php if ( $wpes_smime_identities ) { ?>
+								<?php if ( isset( $acato_email_essentials_config['certfolder'] ) ) { ?>
+									<?php if ( $acato_email_essentials_smime_identities ) { ?>
 										<div class="wpes-notice--info on-enable-smime">
 											<p>
 												<?php
 												// translators: %s: a list of S/MIME identities.
-												print wp_kses_post( sprintf( __( 'Found S/MIME identities for the following senders: <code>%s</code>', 'email-essentials' ), implode( '</code>, <code>', $wpes_smime_identities ) ) );
+												print wp_kses_post( sprintf( __( 'Found S/MIME identities for the following senders: <code>%s</code>', 'email-essentials' ), implode( '</code>, <code>', $acato_email_essentials_smime_identities ) ) );
 												?>
 											</p>
 										</div>
@@ -896,7 +897,7 @@ $wpes_dkim_identities  = [];
 								<?php print wp_kses_post( __( 'Sign emails with DKIM certificate', 'email-essentials' ) ); ?>
 							</label>
 							<input
-								<?php checked( isset( $wpes_config['enable_dkim'] ) && $wpes_config['enable_dkim'] ); ?>
+								<?php checked( isset( $acato_email_essentials_config['enable_dkim'] ) && $acato_email_essentials_config['enable_dkim'] ); ?>
 								type="checkbox"
 								name="settings[enable_dkim]"
 								value="1"
@@ -909,11 +910,11 @@ $wpes_dkim_identities  = [];
 							<input
 								type="text"
 								name="settings[dkimfolder]"
-								value="<?php print esc_attr( $wpes_config['dkimfolder'] ); ?>"
+								value="<?php print esc_attr( $acato_email_essentials_config['dkimfolder'] ); ?>"
 								id="dkimfolder"/>
 						</div>
 
-						<?php if ( Plugin::path_is_in_web_root( $wpes_config['dkim_certificate_folder'] ) ) { ?>
+						<?php if ( Plugin::path_is_in_web_root( $acato_email_essentials_config['dkim_certificate_folder'] ) ) { ?>
 							<div class="wpes-notice--error on-enable-dkim">
 								<strong class="title">
 									<?php
@@ -925,24 +926,24 @@ $wpes_dkim_identities  = [];
 						<?php } ?>
 
 						<?php
-						if ( isset( $wpes_config['dkimfolder'] ) ) {
-							$wpes_dkim_certificate_folder = $wpes_config['dkim_certificate_folder'];
-							if ( is_dir( $wpes_dkim_certificate_folder ) ) {
-								$wpes_dkim_identities = Plugin::list_dkim_identities();
-								$wpes_dkim_identities = array_keys( $wpes_dkim_identities );
+						if ( isset( $acato_email_essentials_config['dkimfolder'] ) ) {
+							$acato_email_essentials_dkim_certificate_folder = $acato_email_essentials_config['dkim_certificate_folder'];
+							if ( is_dir( $acato_email_essentials_dkim_certificate_folder ) ) {
+								$acato_email_essentials_dkim_identities = Plugin::list_dkim_identities();
+								$acato_email_essentials_dkim_identities = array_keys( $acato_email_essentials_dkim_identities );
 							} else {
 								?>
 								<div class="wpes-notice--error on-enable-dkim">
 									<strong class="title">
 										<?php
 										// translators: %s: a path.
-										print wp_kses_post( sprintf( __( 'Set folder <code>%s</code> not found.', 'email-essentials' ), $wpes_config['dkimfolder'] ) );
-										if ( $wpes_dkim_certificate_folder !== $wpes_config['dkimfolder'] ) {
+										print wp_kses_post( sprintf( __( 'Set folder <code>%s</code> not found.', 'email-essentials' ), $acato_email_essentials_config['dkimfolder'] ) );
+										if ( $acato_email_essentials_dkim_certificate_folder !== $acato_email_essentials_config['dkimfolder'] ) {
 											// translators: %s: a path.
-											print ' ' . wp_kses_post( sprintf( __( 'Expanded path: <code>%s</code>', 'email-essentials' ), $wpes_dkim_certificate_folder ) );
+											print ' ' . wp_kses_post( sprintf( __( 'Expanded path: <code>%s</code>', 'email-essentials' ), $acato_email_essentials_dkim_certificate_folder ) );
 										}
 										// translators: %s: a path.
-										print ' ' . wp_kses_post( sprintf( __( 'Evaluated path: <code>%s</code>', 'email-essentials' ), realpath( $wpes_dkim_certificate_folder ) ) );
+										print ' ' . wp_kses_post( sprintf( __( 'Evaluated path: <code>%s</code>', 'email-essentials' ), realpath( $acato_email_essentials_dkim_certificate_folder ) ) );
 										?>
 									</strong>
 								</div>
@@ -1084,13 +1085,13 @@ $wpes_dkim_identities  = [];
 							</p>
 						</div>
 						<?php
-						if ( isset( $wpes_config['dkimfolder'] ) && $wpes_dkim_identities ) {
+						if ( isset( $acato_email_essentials_config['dkimfolder'] ) && $acato_email_essentials_dkim_identities ) {
 							?>
 							<div class="wpes-notice--info on-enable-dkim">
 								<p>
 									<?php
 									// translators: %s: a list of domains.
-									print wp_kses_post( sprintf( __( 'Found DKIM certificates for the following sender-domains: %s', 'email-essentials' ), '<code>' . implode( '</code>, <code>', $wpes_dkim_identities ) . '</code>' ) );
+									print wp_kses_post( sprintf( __( 'Found DKIM certificates for the following sender-domains: %s', 'email-essentials' ), '<code>' . implode( '</code>, <code>', $acato_email_essentials_dkim_identities ) . '</code>' ) );
 									?>
 								</p>
 							</div>
@@ -1128,29 +1129,35 @@ $wpes_dkim_identities  = [];
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin defaults', 'email-essentials' ); ?></td>
-							<td><code>wpes_defaults</code></td>
+							<td><code>acato_email_essentials_defaults</code></td>
 							<td colspan="2"><code>array $defaults</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Plugin settings', 'email-essentials' ); ?></td>
-							<td><code>wpes_settings</code></td>
+							<td><code>acato_email_essentials_settings</code></td>
 							<td colspan="2"><code>array $settings</code></td class=last>
 						</tr>
 						<tr>
 							<td><?php esc_html_e( 'Email subject', 'email-essentials' ); ?></td>
-							<td><code>wpes_subject</code></td>
+							<td><code>acato_email_essentials_subject</code></td>
 							<td colspan="2"><code>string $subject</code>, <code>PHPMailer $mailer</code></td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <head>', 'email-essentials' ); ?></td>
-							<td><code>wpes_head</code></td>
+							<td><code>acato_email_essentials_head</code></td>
 							<td colspan="2"><code>string $head_content</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
 						<tr class="on-smtp-is_html">
 							<td><?php esc_html_e( 'Email <body>', 'email-essentials' ); ?></td>
-							<td><code>wpes_body</code></td>
+							<td><code>acato_email_essentials_body</code></td>
 							<td colspan="2"><code>string $body_content</code>, <code>PHPMailer $mailer</code>
+							</td class=last>
+						</tr>
+						<tr class="on-smtp-is_html">
+							<td><?php esc_html_e( 'Email CSS styles', 'email-essentials' ); ?></td>
+							<td><code>acato_email_essentials_css</code></td>
+							<td colspan="2"><code>string $css</code>, <code>PHPMailer $mailer</code>
 							</td class=last>
 						</tr>
 						<tr class="not-smtp-is_html">
@@ -1182,42 +1189,42 @@ $wpes_dkim_identities  = [];
 					</h2>
 				</div>
 				<?php
-				$wpes_blog_admin       = get_option( 'admin_email', false );
-				$wpes_site_admin       = is_multisite() ? get_site_option( 'admin_email', false ) : false;
-				$wpes_sample_email     = [
-					'to'      => $wpes_blog_admin,
+				$acato_email_essentials_blog_admin       = get_option( 'admin_email', false );
+				$acato_email_essentials_site_admin       = is_multisite() ? get_site_option( 'admin_email', false ) : false;
+				$acato_email_essentials_sample_email     = [
+					'to'      => $acato_email_essentials_blog_admin,
 					'subject' => Plugin::dummy_subject(),
 				];
-				$wpes_sample_email     = Plugin::alternative_to( $wpes_sample_email );
-				$wpes_configured_email = reset( $wpes_sample_email['to'] );
-				$wpes_configured_email = Plugin::rfc_decode( $wpes_configured_email )['email'] ?? false;
+				$acato_email_essentials_sample_email     = Plugin::alternative_to( $acato_email_essentials_sample_email );
+				$acato_email_essentials_configured_email = reset( $acato_email_essentials_sample_email['to'] );
+				$acato_email_essentials_configured_email = Plugin::rfc_decode( $acato_email_essentials_configured_email )['email'] ?? false;
 
-				$wpes_recipients = [
-					'The blog administrator: ' . $wpes_blog_admin => $wpes_blog_admin,
-					'The site administrator: ' . $wpes_site_admin => $wpes_site_admin,
+				$acato_email_essentials_recipients = [
+					'The blog administrator: ' . $acato_email_essentials_blog_admin => $acato_email_essentials_blog_admin,
+					'The site administrator: ' . $acato_email_essentials_site_admin => $acato_email_essentials_site_admin,
 				];
-				$wpes_recipients = array_filter( $wpes_recipients );
-				if ( ! in_array( $wpes_configured_email, $wpes_recipients, true ) ) {
-					$wpes_recipients[ 'Configured recipient: ' . $wpes_configured_email ] = $wpes_configured_email;
+				$acato_email_essentials_recipients = array_filter( $acato_email_essentials_recipients );
+				if ( ! in_array( $acato_email_essentials_configured_email, $acato_email_essentials_recipients, true ) ) {
+					$acato_email_essentials_recipients[ 'Configured recipient: ' . $acato_email_essentials_configured_email ] = $acato_email_essentials_configured_email;
 				}
 
-				$wpes_last_test_sent_to = get_option( 'wpes_last_test_sent_to', reset( $wpes_recipients ) );
+				$acato_email_essentials_last_test_sent_to = get_option( 'acato_email_essentials_last_test_to', reset( $acato_email_essentials_recipients ) );
 
-				$wpes_senders = [];
+				$acato_email_essentials_senders = [];
 				// Add 'default' as set in the settings.
-				$wpes_senders[ 'Default from email: ' . $wpes_config['from_email'] ] = $wpes_config['from_email'];
+				$acato_email_essentials_senders[ 'Default from email: ' . $acato_email_essentials_config['from_email'] ] = $acato_email_essentials_config['from_email'];
 				// Add the others, as determined at 'To'.
-				$wpes_senders = array_merge( $wpes_senders, $wpes_recipients );
+				$acato_email_essentials_senders = array_merge( $acato_email_essentials_senders, $acato_email_essentials_recipients );
 				// Check the last one used.
-				$wpes_last_test_sent_from = get_option( 'wpes_last_test_sent_from', reset( $wpes_recipients ) );
+				$acato_email_essentials_last_test_sent_from = get_option( 'acato_email_essentials_last_test_from', reset( $acato_email_essentials_recipients ) );
 				?>
 				<div class="inside cols">
 					<div class="inside col">
 						<strong><?php esc_html_e( 'Send test-email from:', 'email-essentials' ); ?></strong>
 						<?php
-						foreach ( $wpes_senders as $wpes_sender_name => $wpes_sender_email ) {
-							$wpes_checked = $wpes_last_test_sent_from === $wpes_sender_email ? 'checked' : '';
-							print '<label><input type="radio" name="send-test-email-from" value="' . esc_attr( $wpes_sender_email ) . '" ' . esc_attr( $wpes_checked ) . '/>' . esc_html( $wpes_sender_name ) . '</label>';
+						foreach ( $acato_email_essentials_senders as $acato_email_essentials_sender_name => $acato_email_essentials_sender_email ) {
+							$acato_email_essentials_checked = $acato_email_essentials_last_test_sent_from === $acato_email_essentials_sender_email ? 'checked' : '';
+							print '<label><input type="radio" name="send-test-email-from" value="' . esc_attr( $acato_email_essentials_sender_email ) . '" ' . esc_attr( $acato_email_essentials_checked ) . '/>' . esc_html( $acato_email_essentials_sender_name ) . '</label>';
 						}
 						?>
 						<em><?php esc_html_e( 'This setting will allow you to test the sender-replacement setting. Depending on your settings above, the chosen address will either be the actual sender-address, or the reply-to address.', 'email-essentials' ); ?></em>
@@ -1225,9 +1232,9 @@ $wpes_dkim_identities  = [];
 					<div class="inside col">
 						<strong><?php esc_html_e( 'Send test-email to:', 'email-essentials' ); ?></strong>
 						<?php
-						foreach ( $wpes_recipients as $wpes_recipient_name => $wpes_recipient_email ) {
-							$wpes_checked = $wpes_last_test_sent_to === $wpes_recipient_email ? 'checked' : '';
-							print '<label><input type="radio" name="send-test-email-to" value="' . esc_attr( $wpes_recipient_email ) . '" ' . esc_attr( $wpes_checked ) . '/>' . esc_html( $wpes_recipient_name ) . '</label>';
+						foreach ( $acato_email_essentials_recipients as $acato_email_essentials_recipient_name => $acato_email_essentials_recipient_email ) {
+							$acato_email_essentials_checked = $acato_email_essentials_last_test_sent_to === $acato_email_essentials_recipient_email ? 'checked' : '';
+							print '<label><input type="radio" name="send-test-email-to" value="' . esc_attr( $acato_email_essentials_recipient_email ) . '" ' . esc_attr( $acato_email_essentials_checked ) . '/>' . esc_html( $acato_email_essentials_recipient_name ) . '</label>';
 						}
 						?>
 						<em><?php esc_html_e( 'This setting will allow you to test the "Alternative Admins" settings.', 'email-essentials' ); ?></em>

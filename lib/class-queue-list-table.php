@@ -2,7 +2,7 @@
 /**
  * Handles mail queue display.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -11,14 +11,13 @@ use WP_List_Table;
 
 if ( ! class_exists( WP_List_Table::class ) ) {
 	// WP_List_Table is not loaded automatically so we need to load it in our application.
-	require_once ABSPATH . 'wp-admin/includes/screen.php';
-	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+	require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 /**
  * The Queue class.
  */
-class WPES_Queue_List_Table extends WP_List_Table {
+class Queue_List_Table extends WP_List_Table {
 
 	/**
 	 * Holds Column Header data.
@@ -30,7 +29,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	/**
 	 * Holds table items.
 	 *
-	 * @var mixed[]
+	 * @var array
 	 */
 	public $items;
 
@@ -119,7 +118,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}wpes_queue ORDER BY id DESC", ARRAY_A );
+		return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}acato_email_essentials_queue ORDER BY id DESC", ARRAY_A );
 	}
 
 	/**
@@ -205,7 +204,7 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
+		$wpdb->update( "{$wpdb->prefix}acato_email_essentials_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
 	/**
@@ -213,20 +212,22 @@ class WPES_Queue_List_Table extends WP_List_Table {
 	 */
 	public function process_bulk_action() {
 		// security check!
-		$the_nonce = Plugin::get_post_data( 'wpes-nonce' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified below.
+		$the_nonce = isset( $_POST['wpes-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpes-nonce'] ) ) : '';
 
-		// No nonce? No bulk action for you.
+		// No nonce? No bulk action for you. We keep it silent, as we might be doing something else.
 		if ( ! $the_nonce ) {
 			return;
 		}
 
 		// We have a nonce, but it is invalid.
-		if ( $the_nonce && ! wp_verify_nonce( $the_nonce, 'wp-email-essentials--queue' ) ) {
+		if ( ! wp_verify_nonce( $the_nonce, 'acato-email-essentials--queue' ) ) {
 			wp_die( 'Nope! Security check failed!' );
 		}
 
 		$action = $this->current_action();
-		$ids = Plugin::get_post_data( 'item', 'intval' ) ?: [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, sanitized below.
+		$ids = isset( $_POST['item'] ) ? array_map( 'intval', wp_unslash( $_POST['item'] ) ) : [];
 
 		switch ( $action ) {
 
@@ -286,13 +287,15 @@ class WPES_Queue_List_Table extends WP_List_Table {
 		$order   = 'desc';
 
 		// If orderby is set, use this as the sort column.
-		$_orderby = Plugin::get_get_data( 'orderby' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$_orderby = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : '';
 		if ( ! empty( $_orderby ) ) {
 			$orderby = $_orderby;
 		}
 
 		// If order is set use this as the order.
-		$_order = Plugin::get_get_data( 'order' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$_order = isset( $_GET['order'] ) ? sanitize_text_field( wp_unslash( $_GET['order'] ) ) : '';
 		if ( ! empty( $_order ) ) {
 			$order = $_order;
 		}

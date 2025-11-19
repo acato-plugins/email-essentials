@@ -2,7 +2,7 @@
 /**
  * Handles mail queueing.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -37,7 +37,7 @@ class Queue {
 	public function __construct() {
 		global $wpdb;
 
-		$schema = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}wpes_queue (
+		$schema = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}acato_email_essentials_queue (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `dt` datetime NOT NULL,
   `ip` varchar(256) NOT NULL DEFAULT '',
@@ -52,11 +52,11 @@ class Queue {
   KEY `ip` (`ip`(255))
 ) DEFAULT CHARSET=utf8mb4;";
 		$hash   = md5( $schema );
-		if ( get_option( 'wpes_queue_rev' ) !== $hash ) {
-			require_once ABSPATH . '/wp-admin/includes/upgrade.php';
+		if ( get_option( 'acato_email_essentials_queue_revision' ) !== $hash ) {
+			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/upgrade.php';
 			dbDelta( $schema );
 
-			update_option( 'wpes_queue_rev', $hash );
+			update_option( 'acato_email_essentials_queue_revision', $hash );
 		}
 
 		$enabled = Plugin::get_config();
@@ -138,7 +138,7 @@ class Queue {
 			$queue_item = array_merge(
 				[
 					'dt'     => gmdate( 'Y-m-d H:i:s' ),
-					'ip'     => self::server_remote_addr(),
+					'ip'     => Plugin::server_remote_addr(),
 					'status' => $throttle ? self::BLOCK : self::FRESH,
 				],
 				$queue_item
@@ -146,7 +146,7 @@ class Queue {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$wpdb->insert(
-				"{$wpdb->prefix}wpes_queue",
+				"{$wpdb->prefix}acato_email_essentials_queue",
 				$queue_item,
 				[
 					'%s',
@@ -190,24 +190,13 @@ class Queue {
 	private static function throttle() {
 		$me = self::instance();
 		global $wpdb;
-		$ip = $me->server_remote_addr();
+		$ip = Plugin::server_remote_addr();
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
-		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
+		$mails_recently_sent = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}acato_email_essentials_queue WHERE ip = %s AND dt >= %s", $ip, gmdate( 'Y-m-d H:i:s', time() - self::get_time_window() ) ) );
 
 		if ( $mails_recently_sent > self::get_max_count_per_time_window() ) {
-			return apply_filters(
-				'email_essentials_mail_is_throttled',
-				Plugin::apply_filters_deprecated(
-					'wpes_mail_is_throttled',
-					[ true, $ip, $mails_recently_sent ],
-					'5.0.0',
-					'email_essentials_mail_is_throttled'
-				),
-				true,
-				$ip,
-				$mails_recently_sent
-			);
+			return apply_filters( 'acato_email_essentials_mail_is_throttled', true, $ip, $mails_recently_sent );
 		}
 
 		return false;
@@ -219,7 +208,7 @@ class Queue {
 	 * @return mixed|null
 	 */
 	public static function get_time_window() {
-		$window = (int) apply_filters( 'email_essentials_mail_throttle_time_window', Plugin::apply_filters_deprecated( 'wpes_mail_throttle_time_window', [ 5 ], '5.0.0', 'email_essentials_mail_throttle_time_window' ), 5 );
+		$window = (int) apply_filters( 'acato_email_essentials_mail_throttle_time_window', 5 );
 
 		return $window > 0 ? $window : 5;
 	}
@@ -230,7 +219,7 @@ class Queue {
 	 * @return int
 	 */
 	public static function get_max_count_per_time_window() {
-		$max = (int) apply_filters( 'email_essentials_mail_throttle_max_count_per_time_window', Plugin::apply_filters_deprecated( 'wpes_mail_throttle_max_count_per_time_window', [ 10 ], '5.0.0', 'email_essentials_mail_throttle_max_count_per_time_window' ), 10 );
+		$max = (int) apply_filters( 'acato_email_essentials_mail_throttle_max_count_per_time_window', 10 );
 
 		return $max > 0 ? $max : 10;
 	}
@@ -241,7 +230,7 @@ class Queue {
 	 * @return int
 	 */
 	public static function get_batch_size() {
-		$max = (int) apply_filters( 'email_essentials_mail_throttle_batch_size', Plugin::apply_filters_deprecated( 'wpes_mail_throttle_batch_size', [ 25 ], '5.0.0', 'email_essentials_mail_throttle_batch_size' ), 25 );
+		$max = (int) apply_filters( 'acato_email_essentials_mail_throttle_batch_size', 25 );
 
 		return $max > 0 ? $max : 25;
 	}
@@ -308,31 +297,6 @@ class Queue {
 	}
 
 	/**
-	 * Get the real remote address.
-	 *
-	 * @param bool $return_htaccess_variable Return the variable used (true) or the value thereof (false).
-	 *
-	 * @return string
-	 */
-	public static function server_remote_addr( $return_htaccess_variable = false ) {
-		$possibilities = [
-			'HTTP_CF_CONNECTING_IP' => 'HTTP:CF-CONNECTING-IP',
-			'HTTP_X_FORWARDED_FOR'  => 'HTTP:X-FORWARDED-FOR',
-			'REMOTE_ADDR'           => false,
-		];
-		foreach ( $possibilities as $option => $htaccess_variable ) {
-			$possible_value = Plugin::get_server_data( $option, 'trim' );
-			if ( $possible_value ) {
-				$ip = explode( ',', $possible_value );
-
-				return $return_htaccess_variable ? $htaccess_variable : end( $ip );
-			}
-		}
-
-		return Plugin::get_server_data( 'REMOTE_ADDR' );
-	}
-
-	/**
 	 * Get database-ready attachments.
 	 *
 	 * @param array $mail_data A wp_mail data array.
@@ -371,16 +335,12 @@ class Queue {
 		$tmp = "$tmp/mail_queue_atts";
 		if ( ! is_dir( $tmp ) ) {
 			mkdir( $tmp );
-			if ( ! is_writable( ABSPATH . '/wp-load.php' ) ) {
-				chmod( $tmp, 0777 );
-			}
+			chmod( $tmp, 0777 );
 		}
 		$tmp .= '/' . $this->mail_token();
 		if ( ! is_dir( $tmp ) ) {
 			mkdir( $tmp );
-			if ( ! is_writable( ABSPATH . '/wp-load.php' ) ) {
-				chmod( $tmp, 0777 );
-			}
+			chmod( $tmp, 0777 );
 		}
 		foreach ( $mail_data['attachments'] as $filename => $data ) {
 			// @phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
@@ -409,7 +369,7 @@ class Queue {
 	private function mail_token() {
 		static $token;
 		if ( ! $token ) {
-			$remote_addr = Plugin::get_server_data( 'REMOTE_ADDR' );
+			$remote_addr = Plugin::server_remote_addr();
 			// We don't care about the value, as long as it is absolutely unique for this request.
 			$token = md5( microtime( true ) . $remote_addr . wp_rand( 0, PHP_INT_MAX ) );
 		}
@@ -430,7 +390,7 @@ class Queue {
 	public static function send_one_email() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC", self::FRESH ) );
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d ORDER BY dt ASC", self::FRESH ) );
 		self::send_now( $id );
 	}
 
@@ -438,10 +398,10 @@ class Queue {
 	 * Implementation of wp action wp_footer .
 	 */
 	public static function maybe_send_batch() {
-		$last = get_option( 'last_batch_sent', '0' );
+		$last = get_option( 'acato_email_essentials_last_batch_sent', '0' );
 		$now  = gmdate( 'YmdHi' );
 		if ( $last < $now ) {
-			update_option( 'last_batch_sent', $now );
+			update_option( 'acato_email_essentials_last_batch_sent', $now );
 			self::send_batch();
 		}
 	}
@@ -454,7 +414,7 @@ class Queue {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpes_queue WHERE status = %d ORDER BY dt ASC LIMIT %d", self::FRESH, self::get_batch_size() ) );
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d ORDER BY dt ASC LIMIT %d", self::FRESH, self::get_batch_size() ) );
 		foreach ( $ids as $id ) {
 			self::send_now( $id );
 		}
@@ -468,7 +428,7 @@ class Queue {
 	public static function send_now( $id ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $id ), ARRAY_A );
+		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}acato_email_essentials_queue WHERE id = %d", $id ), ARRAY_A );
 		self::instance()->set_skip_queue( true );
 		$mail_data = array_map( 'unserialize', $mail_data );
 		self::set_status( $id, self::SENDING );
@@ -493,7 +453,7 @@ class Queue {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}wpes_queue WHERE id = %d", $mail_id ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}acato_email_essentials_queue WHERE id = %d", $mail_id ) );
 	}
 
 	/**
@@ -515,7 +475,7 @@ class Queue {
 	private static function set_status( $mail_id, $status ) {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( "{$wpdb->prefix}wpes_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
+		$wpdb->update( "{$wpdb->prefix}acato_email_essentials_queue", [ 'status' => $status ], [ 'id' => $mail_id ] );
 	}
 
 	/**
@@ -541,11 +501,11 @@ class Queue {
 		}
 
 		add_submenu_page(
-			'wp-email-essentials',
+			'acato-email-essentials',
 			Plugin::plugin_data()['Name'] . ' - ' . __( 'Email Throttling', 'email-essentials' ),
 			__( 'Email Throttling', 'email-essentials' ) . $count,
 			'manage_options',
-			'wpes-queue',
+			'acato-email-essentials/queue',
 			[ self::class, 'admin_interface' ]
 		);
 	}
@@ -564,6 +524,6 @@ class Queue {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}wpes_queue WHERE status = %d", self::FRESH ) );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}acato_email_essentials_queue WHERE status = %d", self::FRESH ) );
 	}
 }

@@ -2,7 +2,7 @@
 /**
  * Class for IP operations compatible with all PHP versions.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;

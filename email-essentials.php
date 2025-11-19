@@ -2,7 +2,7 @@
 /**
  * The main plugin file.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -13,7 +13,7 @@ namespace Acato\Email_Essentials;
  * Plugin URI: https://github.com/acato-plugins/email-essentials
  * Author: Remon Pel <remon@acato.nl>
  * Author URI: https://acato.nl
- * Version: 5.4.7
+ * Version: 5.5.0
  * Requires PHP: 7.4
  * Requires at least: 5.0
  * Tested up to: 6.8
@@ -29,16 +29,16 @@ spl_autoload_register(
 		$n = __NAMESPACE__;
 
 		$class_map = [
-			$n . '\\Plugin'                => __DIR__ . '/lib/class-plugin.php',
-			$n . '\\Migrations'            => __DIR__ . '/lib/class-migrations.php',
-			$n . '\\IP'                    => __DIR__ . '/lib/class-ip.php',
-			$n . '\\History'               => __DIR__ . '/lib/class-history.php',
-			$n . '\\Queue'                 => __DIR__ . '/lib/class-queue.php',
-			$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-fake-sender.php',
-			$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-wpes-queue-list-table.php',
-			$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-css-inliner.php',
-			$n . '\\CssVarEval'            => __DIR__ . '/lib/class-cssvareval.php',
-			$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-csstoinlinestyles.php',
+			$n . '\\Plugin'            => __DIR__ . '/lib/class-plugin.php',
+			$n . '\\IP'                => __DIR__ . '/lib/class-ip.php',
+			$n . '\\History'           => __DIR__ . '/lib/class-history.php',
+			$n . '\\Queue'             => __DIR__ . '/lib/class-queue.php',
+			$n . '\\Fake_Sender'       => __DIR__ . '/lib/class-fake-sender.php',
+			$n . '\\Queue_List_Table'  => __DIR__ . '/lib/class-queue-list-table.php',
+			$n . '\\CSS_Inliner'       => __DIR__ . '/lib/class-css-inliner.php',
+			$n . '\\CssVarEval'        => __DIR__ . '/lib/class-cssvareval.php',
+			$n . '\\CssToInlineStyles' => __DIR__ . '/lib/class-csstoinlinestyles.php',
+			$n . '\\Logger'            => __DIR__ . '/lib/class-logger.php',
 		];
 
 		/**
@@ -46,28 +46,11 @@ spl_autoload_register(
 		 */
 		if ( version_compare( $wp_version, '5.4.99', '<' ) ) {
 			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp54.php';
+		} elseif ( version_compare( $wp_version, '6.8', '>=' ) ) {
+			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp68.php';
 		} else {
 			$class_map[ $n . '\\EEMailer' ] = __DIR__ . '/lib/class-eemailer.wp55.php';
 		}
-
-		// Deprecation support.
-		$n         = 'WP_Email_Essentials';
-		$class_map = array_merge(
-			$class_map,
-			[
-				$n . '\\Plugin'                => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Migrations'            => __DIR__ . '/lib/deprecation.php',
-				$n . '\\IP'                    => __DIR__ . '/lib/deprecation.php',
-				$n . '\\History'               => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Queue'                 => __DIR__ . '/lib/deprecation.php',
-				$n . '\\Fake_Sender'           => __DIR__ . '/lib/deprecation.php',
-				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CssVarEval'            => __DIR__ . '/lib/deprecation.php',
-				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/deprecation.php',
-				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/deprecation.php',
-			]
-		);
 
 		if ( ! empty( $class_map[ $class_name ] ) && is_file( $class_map[ $class_name ] ) ) {
 			require_once $class_map[ $class_name ];
@@ -77,6 +60,9 @@ spl_autoload_register(
 
 require_once __DIR__ . '/lib/sabberworm/autoload.php';
 
-new Plugin();
+// This file is only used for migration from older versions, not applicable to the public version on WordPress.org.
+if ( file_exists( __DIR__ . '/lib/deprecation.php' ) ) {
+	require_once __DIR__ . '/lib/deprecation.php';
+}
 
-register_activation_hook( __FILE__, [ Migrations::class, 'plugin_activation_hook' ] );
+Plugin::instance( __FILE__ );

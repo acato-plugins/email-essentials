@@ -10,8 +10,7 @@ namespace Acato\Email_Essentials;
 
 // phpcs:disable Generic.Classes.DuplicateClassName.Found
 
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\PHPMailer;
+use WP_PHPMailer;
 
 /**
  * Attention Reviewers;
@@ -20,7 +19,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  * For example; for WP_List_Table it is explicitly required to load the class file directly from the WordPress core files, without it, they don't work.
  * So I am sorry, I have tried to do this another way, like using  `wp_mail( null, null, null )` to trick WordPress into loading the class, but that does not work without errors.
  *
- * Please note the current file is for WordPress 5.5 up til 6.8 non-inclusive.
+ * Please note the current file is for WordPress 6.8 and later, because of the use of the WP_PHPMailer class.
  *
  * Precedence for this modus-operandi can be found in the following plugins;
  * Post SMTP
@@ -32,12 +31,13 @@ use PHPMailer\PHPMailer\PHPMailer;
 require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
 require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+require_once ABSPATH . WPINC . '/class-wp-phpmailer.php';
 
 /**
  * A wrapper for the WP 5.5 and later version of PHPMailer
  */
-class EEMailer extends PHPMailer {
-	const ACATO_MAILER_VERSION = '5.5-6.7.99';
+class EEMailer extends WP_PHPMailer {
+	const ACATO_MAILER_VERSION = 'post-6.8';
 
 	/**
 	 * Method Send overloaded to keep the SingleTo functionality that will be deprecated in phpMailer version 6.
@@ -48,7 +48,7 @@ class EEMailer extends PHPMailer {
 	 *
 	 * @return bool
 	 *
-	 * @throws Exception This is explained in the parent method.
+	 * @throws \PHPMailer\PHPMailer\Exception This is explained in the parent method.
 	 */
 	public function send() {
 		$single_to = false;

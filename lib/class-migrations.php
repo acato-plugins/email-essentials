@@ -2,7 +2,7 @@
 /**
  * Class for Migrating other plugins settings
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -11,13 +11,28 @@ namespace Acato\Email_Essentials;
  * The PHP 5.4 and earlier version of this class, also used as the base for the PHP 5.5+ version.
  */
 class Migrations {
-
 	/**
 	 * Implementation of register_activation_hook().
 	 */
 	public static function plugin_activation_hook() {
 		self::migrate_from_smtp_connect();
 		self::migrate_from_post_smtp();
+	}
+
+	/**
+	 * Runs on init, implement filters for Acato specific services.
+	 */
+	public static function init() {
+		add_filter( 'acato_email_essentials_ip_services', [ self::class, 'acato_email_essentials_ip_services' ] );
+		add_filter(
+			'acato_email_essentials_website_root_path',
+			[
+				self::class,
+				'acato_email_essentials_website_root_path',
+			]
+		);
+
+		self::maybe_migrate_from_wp_email_essentials();
 	}
 
 	/**
@@ -112,5 +127,161 @@ class Migrations {
 		// log the deactivation.
 		update_option( 'recently_activated', array_merge( get_option( 'recently_activated', [] ) ?: [], [ $plugin => time() ] ) );
 		update_site_option( 'recently_activated', array_merge( get_site_option( 'recently_activated', [] ) ?: [], [ $plugin => time() ] ) );
+	}
+
+	/**
+	 * Provide Acato IP services.
+	 *
+	 * @return array
+	 */
+	public static function email_essentials_ip_services() {
+		$services = [
+			'ipv4'       => 'https://ip4.acato.nl',
+			'ipv6'       => 'https://ip6.acato.nl',
+			'dual-stack' => 'https://ip.acato.nl',
+		];
+
+		return $services;
+	}
+
+	/**
+	 * Provide the website root path, considering WordPress being in a subdirectory.
+	 *
+	 * @param string $root_path The current root path.
+	 *
+	 * @return string
+	 */
+	public static function email_essentials_website_root_path( $root_path ) {
+		$wp_path_rel_to_home = self::email_essentials_get_wp_subdir();
+
+		if ( '' !== $wp_path_rel_to_home ) {
+			$pos       = strripos( str_replace( '\\', '/', ABSPATH ), trailingslashit( $wp_path_rel_to_home ) );
+			$home_path = substr( ABSPATH, 0, $pos );
+			$home_path = trailingslashit( $home_path );
+			$root_path = self::email_essentials_nice_path( $home_path );
+		}
+
+		// Support Deployer style paths.
+		if ( preg_match( '@/releases/(\d+)/@', $root_path, $matches ) ) {
+			$path_named_current = str_replace( '/releases/' . $matches[1] . '/', '/current/', $root_path );
+			if ( is_dir( $path_named_current ) && realpath( $path_named_current ) === realpath( $root_path ) ) {
+				$root_path = $path_named_current;
+			}
+		}
+
+		return $root_path;
+	}
+
+	/**
+	 * Get the WordPress subdirectory relative to home URL.
+	 *
+	 * @return string The subdirectory path, or empty string if WordPress is installed in the root.
+	 */
+	private static function email_essentials_get_wp_subdir() {
+		$home    = preg_replace( '@https?://@', 'http://', get_option( 'home' ) );
+		$siteurl = preg_replace( '@https?://@', 'http://', get_option( 'siteurl' ) );
+
+		if ( ! empty( $home ) && 0 !== strcasecmp( $home, $siteurl ) ) {
+			return str_ireplace( $home, '', $siteurl ); /* $siteurl - $home */
+		}
+
+		return '';
+	}
+
+	/**
+	 * Cleanup a path a bit.
+	 *
+	 * @param string $path The path to cleanup.
+	 *
+	 * @return string
+	 */
+	private static function email_essentials_nice_path( $path ) {
+		// Turn \ into / .
+		$path = str_replace( '\\', '/', $path );
+		// Remove "current" instances.
+		$path = str_replace( '/./', '/', $path );
+		// phpcs:ignore Generic.Commenting.Todo.TaskFound
+		// @todo: remove  ../somethingotherthandotdot/ .
+
+		return $path;
+	}
+
+	/**
+	 * Migrate settings from WP Email Essentials (old plugin) to Email Essentials.
+	 */
+	private static function maybe_migrate_from_wp_email_essentials() {
+		// Settings mapping from old to new.
+		$settings_map = [
+			// Main plugin configuration.
+			'wp-email-essentials'      => 'acato_email_essentials_config',
+			// Queue management.
+			'wpes_queue_rev'           => 'acato_email_essentials_queue_revision',
+			'last_batch_sent'          => 'acato_email_essentials_last_batch_sent',
+			// Email key management.
+			'mail_key_admins'          => 'acato_email_essentials_admin_keys',
+			'mail_key_list'            => 'acato_email_essentials_key_list',
+			'mail_key_fails'           => 'acato_email_essentials_failed_keys',
+			'mail_key_moderators'      => 'acato_email_essentials_moderator_keys',
+			// Test email tracking.
+			'wpes_last_test_sent_from' => 'acato_email_essentials_last_test_from',
+			'wpes_last_test_sent_to'   => 'acato_email_essentials_last_test_to',
+			// History management.
+			'wpes_hist_rev'            => 'acato_email_essentials_history_revision',
+		];
+
+		// Check if migration is needed.
+		$a_random_value_that_should_never_exist = random_bytes( 32 );
+		foreach ( $settings_map as $old_name => $new_name ) {
+			$old_value = get_option( $old_name, $a_random_value_that_should_never_exist );
+
+			if ( $a_random_value_that_should_never_exist === $old_value ) {
+				// Old setting does not exist, skip.
+				continue;
+			}
+
+			// Migrate setting.
+			update_option( $new_name, $old_value );
+
+			// Delete old setting.
+			delete_option( $old_name );
+		}
+
+		$database_tables = [
+			'wpes_queue' => 'acato_email_essentials_queue',
+			'wpes_hist'  => 'acato_email_essentials_history',
+		];
+
+		global $wpdb;
+		foreach ( $database_tables as $old_table_name => $new_table_name ) {
+			$old_table_full_name = $wpdb->prefix . $old_table_name;
+			$new_table_full_name = $wpdb->prefix . $new_table_name;
+
+			// Check if old table exists.
+			$old_table_exists = $wpdb->get_var(
+				$wpdb->prepare(
+					'SHOW TABLES LIKE %s',
+					$old_table_full_name
+				)
+			);
+
+			if ( $old_table_exists !== $old_table_full_name ) {
+				// Old table does not exist, skip.
+				continue;
+			}
+
+			// Rename old table to new table.
+			if ( Plugin::wp_version_at_least_62() ) {
+				$wpdb->query( $wpdb->prepare( 'CREATE TABLE IF NOT EXISTS %i LIKE %i;', $new_table_full_name, $old_table_full_name ) );
+				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i SELECT * FROM %i;', $new_table_full_name, $old_table_full_name ) );
+				$wpdb->query( $wpdb->prepare( 'DROP TABLE %i;', $old_table_full_name ) );
+			} else {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "CREATE TABLE IF NOT EXISTS `{$new_table_full_name}` LIKE `{$old_table_full_name}`;" );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "INSERT INTO `{$new_table_full_name}` SELECT * FROM `{$old_table_full_name}`;" );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- would love to use prepare here, but table names cannot be used as parameters in WP < 6.2.
+				$wpdb->query( "DROP TABLE `{$old_table_full_name}`;" );
+			}
+		}
 	}
 }

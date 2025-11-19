@@ -2,7 +2,7 @@
 /**
  * View: alternative admins.
  *
- * @package WP_Email_Essentials
+ * @package Acato_Email_Essentials
  */
 
 namespace Acato\Email_Essentials;
@@ -13,9 +13,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 global $current_user;
 
-$wpes_config          = get_option( 'mail_key_admins', [] );
-$wpes_mail_keys       = Plugin::mail_key_database();
-$wpes_wordpress_admin = get_option( 'admin_email' );
+$acato_email_essentials_config          = get_option( 'acato_email_essentials_admin_keys', [] );
+$acato_email_essentials_mail_keys       = Plugin::mail_key_database();
+$acato_email_essentials_wordpress_admin = get_option( 'admin_email' );
 ?>
 <div class="wrap wpes-wrap wpes-admins">
 	<?php
@@ -30,8 +30,8 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 	?>
 
 	<form id="outpost" class="wpes-admin" method='POST' action="">
-		<input type="hidden" name="form_id" value="wpes-admins"/>
-		<?php wp_nonce_field( 'wp-email-essentials--admins', 'wpes-nonce' ); ?>
+		<input type="hidden" name="form_id" value="acato-email-essentials/admins"/>
+		<?php wp_nonce_field( 'acato-email-essentials--admins', 'wpes-nonce' ); ?>
 
 		<div class="wpes-tools">
 			<div class="wpes-tools--box">
@@ -47,7 +47,7 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 					<h2>
 						<?php
 						// translators: %s: the admin email address.
-						print wp_kses_post( sprintf( __( 'Outgoing emails to the site-administrator ( %s )', 'email-essentials' ), $wpes_wordpress_admin ) );
+						print wp_kses_post( sprintf( __( 'Outgoing emails to the site-administrator ( %s )', 'email-essentials' ), $acato_email_essentials_wordpress_admin ) );
 						?>
 					</h2>
 				</div>
@@ -66,24 +66,24 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 							<th><?php esc_html_e( 'Instead of the site administrator, send these emails to', 'email-essentials' ); ?></th>
 						</tr>
 						<?php
-						foreach ( $wpes_mail_keys as $wpes_mail_key => $wpes_mail_key_description ) {
-							if ( ! isset( $wpes_config[ $wpes_mail_key ] ) ) {
-								$wpes_config[ $wpes_mail_key ] = '';
+						foreach ( $acato_email_essentials_mail_keys as $acato_email_essentials_mail_key => $acato_email_essentials_mail_key_description ) {
+							if ( ! isset( $acato_email_essentials_config[ $acato_email_essentials_mail_key ] ) ) {
+								$acato_email_essentials_config[ $acato_email_essentials_mail_key ] = '';
 							}
 							?>
 							<tr>
 								<td>
 									<label
-										for="key-<?php print esc_attr( $wpes_mail_key ); ?>"><?php print esc_html( $wpes_mail_key_description ?: $wpes_mail_key ); ?></label>
+										for="key-<?php print esc_attr( $acato_email_essentials_mail_key ); ?>"><?php print esc_html( $acato_email_essentials_mail_key_description ?: $acato_email_essentials_mail_key ); ?></label>
 								</td>
 								<td>
 									<input
 										type="text"
-										name="settings[keys][<?php print esc_attr( $wpes_mail_key ); ?>]"
+										name="settings[keys][<?php print esc_attr( $acato_email_essentials_mail_key ); ?>]"
 										class="widefat"
-										placeholder="<?php print esc_attr( $wpes_wordpress_admin ); ?>"
-										value="<?php print esc_attr( $wpes_config[ $wpes_mail_key ] ); ?>"
-										id="key-<?php print esc_attr( $wpes_mail_key ); ?>"/>
+										placeholder="<?php print esc_attr( $acato_email_essentials_wordpress_admin ); ?>"
+										value="<?php print esc_attr( $acato_email_essentials_config[ $acato_email_essentials_mail_key ] ); ?>"
+										id="key-<?php print esc_attr( $acato_email_essentials_mail_key ); ?>"/>
 								</td>
 							</tr>
 						<?php } ?>
@@ -121,43 +121,43 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 						</tr>
 
 						<?php
-						$wpes_loop_iterator_0 = 0;
-						$wpes_regexp_list     = get_option( 'mail_key_list', [] );
-						foreach ( $wpes_regexp_list as $wpes_regexp => $wpes_mail_key ) {
+						$acato_email_essentials_loop_iterator_0 = 0;
+						$acato_email_essentials_regexp_list     = get_option( 'acato_email_essentials_key_list', [] );
+						foreach ( $acato_email_essentials_regexp_list as $acato_email_essentials_regexp => $acato_email_essentials_mail_key ) {
 							?>
 							<tr>
 								<td style="width: 50%">
 									<input
 										type="text"
-										name="settings[regexp][<?php print esc_attr( $wpes_loop_iterator_0 ); ?>][regexp]"
+										name="settings[regexp][<?php print esc_attr( $acato_email_essentials_loop_iterator_0 ); ?>][regexp]"
 										class="a-regexp widefat"
-										value="<?php print esc_attr( $wpes_regexp ); ?>"/>
+										value="<?php print esc_attr( $acato_email_essentials_regexp ); ?>"/>
 								</td>
 								<td>
 									<input
 										type="text"
-										name="settings[regexp][<?php print esc_attr( $wpes_loop_iterator_0 ); ?>][key]"
+										name="settings[regexp][<?php print esc_attr( $acato_email_essentials_loop_iterator_0 ); ?>][key]"
 										class="widefat"
-										value="<?php print esc_attr( $wpes_mail_key ); ?>"/>
+										value="<?php print esc_attr( $acato_email_essentials_mail_key ); ?>"/>
 								</td>
 							</tr>
 							<?php
-							++$wpes_loop_iterator_0;
+							++$acato_email_essentials_loop_iterator_0;
 						}
 						?>
-						<?php for ( $wpes_loop_iterator_1 = 0; $wpes_loop_iterator_1 < 5; $wpes_loop_iterator_1++ ) { ?>
+						<?php for ( $acato_email_essentials_loop_iterator_1 = 0; $acato_email_essentials_loop_iterator_1 < 5; $acato_email_essentials_loop_iterator_1++ ) { ?>
 							<tr>
 								<td>
 									<input
 										type="text"
-										name="settings[regexp][<?php print esc_attr( $wpes_loop_iterator_1 + $wpes_loop_iterator_0 ); ?>][regexp]"
+										name="settings[regexp][<?php print esc_attr( $acato_email_essentials_loop_iterator_1 + $acato_email_essentials_loop_iterator_0 ); ?>][regexp]"
 										class="a-regexp widefat"
 										value=""/>
 								</td>
 								<td>
 									<input
 										type="text" class="widefat"
-										name="settings[regexp][<?php print esc_attr( $wpes_loop_iterator_1 + $wpes_loop_iterator_0 ); ?>][key]"
+										name="settings[regexp][<?php print esc_attr( $acato_email_essentials_loop_iterator_1 + $acato_email_essentials_loop_iterator_0 ); ?>][key]"
 										value=""/>
 								</td>
 							</tr>
@@ -165,16 +165,16 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 					</table>
 
 					<?php
-					$wpes_missed_subjects = get_option( 'mail_key_fails', [] );
-					$wpes_missed_subjects = array_filter(
-						$wpes_missed_subjects,
+					$acato_email_essentials_missed_subjects = get_option( 'acato_email_essentials_failed_keys', [] );
+					$acato_email_essentials_missed_subjects = array_filter(
+						$acato_email_essentials_missed_subjects,
 						function ( $item ) {
 							return ! Plugin::mail_subject_match( $item ) && ! Plugin::get_mail_key( $item );
 						}
 					);
-					update_option( 'mail_key_fails', array_values( $wpes_missed_subjects ) );
+					update_option( 'acato_email_essentials_failed_keys', array_values( $acato_email_essentials_missed_subjects ) );
 
-					if ( ! empty( $wpes_missed_subjects ) ) {
+					if ( ! empty( $acato_email_essentials_missed_subjects ) ) {
 						?>
 						<div class="wpes-notice--info">
 							<strong class="title">
@@ -187,8 +187,8 @@ $wpes_wordpress_admin = get_option( 'admin_email' );
 							</p>
 						</div>
 
-						<?php foreach ( $wpes_missed_subjects as $wpes_missed_subject ) { ?>
-							<code class="a-fail"><?php print esc_html( $wpes_missed_subject ); ?></code>
+						<?php foreach ( $acato_email_essentials_missed_subjects as $acato_email_essentials_missed_subject ) { ?>
+							<code class="a-fail"><?php print esc_html( $acato_email_essentials_missed_subject ); ?></code>
 						<?php } ?>
 					<?php } else { ?>
 						<div class="wpes-notice--success">

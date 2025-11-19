@@ -186,7 +186,7 @@ class CssToInlineStyles {
 				$specifity += 10;
 			} else {
 				// anything else isn't that important.
-				$specifity++;
+				++$specifity;
 			}
 		}
 
@@ -595,7 +595,7 @@ class CssToInlineStyles {
 			}
 
 			// increment.
-			$i++;
+			++$i;
 		}
 
 		// sort based on specifity.
