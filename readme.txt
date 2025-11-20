@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 5.4.7
+Stable tag: 5.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -344,6 +344,10 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 = 6.0.0 =
 * GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
+
+= 5.5.1 =
+* Review feedback from WordPress.org handled. This brings no functional changes except for;
+* Updated the email viewer interface for more user-friendly viewing of emails and their debug information.
 
 = 5.4.7 =
 * i18n text domain changed to `email-essentials`.
