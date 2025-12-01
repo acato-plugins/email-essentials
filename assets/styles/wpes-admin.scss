@@ -459,13 +459,13 @@ $tools-width: 200px;
 		display: flex;
 		flex-direction: column;
 
-		.debug, .body, .alt_body, .headers {
+		.debug, .body, .alt_body, .headers, .body-source {
 			display: none;
 			height: 0;
 			width: 0;
 		}
 
-		.show-debug .debug, .show-body .body, .show-alt-body .alt_body, .show-headers .headers {
+		.show-debug .debug, .show-body .body, .show-alt-body .alt_body, .show-headers .headers, .show-body-source .body-source {
 			display: block;
 			height: 100%;
 			width: 100%;
@@ -534,9 +534,23 @@ $tools-width: 200px;
 		flex: 1;
 		overflow: auto;
 
-		.email-data.show-debug, .show-body, .show-alt-body, .show-headers {
+		.email-data.show-debug, .show-body, .show-alt-body, .show-headers, .show-body-source {
 			height: 100%;
 			width: 100%;
+		}
+
+		.body > .body-disclaimer {
+			padding: 10px;
+			background: #fffae6;
+			border-bottom: 1px solid $border-color;
+			font-size: 0.9em;
+			color: #665c00;
+		}
+
+		.show-body-source {
+			pre {
+				white-space: pre-wrap;
+			}
 		}
 	}
 }

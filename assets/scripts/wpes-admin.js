@@ -101,6 +101,8 @@ jQuery( document ).ready( function ($) {
       // Click to cycle through the views.
       let currentView = null;
       if ($( this ).is( '.show-body' )) {
+        currentView = 'body-source';
+      } else if ($( this ).is( '.show-body-source' )) {
         currentView = 'headers';
       } else if ($( this ).is( '.show-headers' )) {
         currentView = 'alt-body';
