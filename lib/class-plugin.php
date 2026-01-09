@@ -3696,7 +3696,7 @@ Item 2
 				}
 				$filtered = filter_var( $el, FILTER_VALIDATE_EMAIL );
 
-				return $filtered ? sanitize_email( $filtered ) : "";
+				return $filtered ? sanitize_email( $filtered ) : '';
 			},
 			$els
 		);
