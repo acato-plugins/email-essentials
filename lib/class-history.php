@@ -112,10 +112,14 @@ class History {
 			'init',
 			function () {
 				global $wpdb;
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not a form!.
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified below.
 				$download_eml = isset( $_GET['download_eml'] ) ? (int) $_GET['download_eml'] : 0;
 				if ( current_user_can( 'manage_options' ) && $download_eml ) {
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.Security.NonceVerification.Recommended -- still not a form!.
+					// Verify nonce for download action.
+					if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'download_eml_' . $download_eml ) ) {
+						wp_die( esc_html__( 'Security check failed', 'email-essentials' ) );
+					}
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 					$data = $wpdb->get_row( $wpdb->prepare( "SELECT ID, eml, subject, recipient, thedatetime FROM {$wpdb->prefix}acato_email_essentials_history WHERE id = %d LIMIT 1", $download_eml ), ARRAY_A );
 					if ( $data['eml'] ?? false ) {
 						header( 'Content-Type: message/rfc822' );

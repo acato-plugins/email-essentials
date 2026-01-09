@@ -43,4 +43,5 @@ cd "$TARGETDIR"
 
 cd ..
 
+[ -f email-essentials.zip ] && rm email-essentials.zip
 zip -r email-essentials{.zip,}

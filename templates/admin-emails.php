@@ -307,7 +307,12 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 										} else {
 											$acato_email_essentials_attachment_count = '';
 										}
-										print '<a href="' . esc_attr( add_query_arg( 'download_eml', $acato_email_essentials_view_email->ID ) ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $acato_email_essentials_view_email->eml ) ) . $acato_email_essentials_attachment_count );
+										$acato_email_essentials_download_url = wp_nonce_url(
+											add_query_arg( 'download_eml', $acato_email_essentials_view_email->ID ),
+											'download_eml_' . $acato_email_essentials_view_email->ID,
+											'_wpnonce'
+										);
+										print '<a href="' . esc_url( $acato_email_essentials_download_url ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $acato_email_essentials_view_email->eml ) ) . $acato_email_essentials_attachment_count );
 									}
 									?>
 								</td>
@@ -511,7 +516,7 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 									</div>
 									<iframe
 										class="autofit" width="100%" height="100%" border="0" frameborder="0"
-										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print $acato_email_essentials_email_data_base64; /* @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>">
+										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print esc_attr( $acato_email_essentials_email_data_base64 ); ?>">
 									</iframe>
 								</div>
 								<div class="body-source">

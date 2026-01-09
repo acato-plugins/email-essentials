@@ -1178,7 +1178,7 @@ $acato_email_essentials_dkim_identities  = [];
 				<div class="inside">
 					<iframe
 						class="email-preview"
-						src="<?php print esc_attr( add_query_arg( 'iframe', 'content' ) ); ?>"></iframe>
+						src="<?php print esc_url( wp_nonce_url( add_query_arg( 'iframe', 'content' ), 'email_preview_iframe', '_wpnonce' ) ); ?>"></iframe>
 				</div>
 			</div>
 
