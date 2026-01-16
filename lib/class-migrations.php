@@ -38,6 +38,22 @@ class Migrations {
 	}
 
 	/**
+	 * Provide Acato IP services.
+	 *
+	 * @param array $services The existing services.
+	 *
+	 * @return array
+	 */
+	public static function acato_email_essentials_ip_services( $services ) {
+		// Add your custom services here
+		$services['ipv4']       = 'https://ip4.acato.nl';
+		$services['ipv6']       = 'https://ip6.acato.nl';
+		$services['dual-stack'] = 'https://ip.acato.nl';
+
+		return $services;
+	}
+
+	/**
 	 * Migrate settings from SMTP Connect and deactivate the plugin.
 	 */
 	public static function migrate_from_smtp_connect() {
