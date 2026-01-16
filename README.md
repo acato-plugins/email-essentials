@@ -280,6 +280,10 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 6.0.0: GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
 
+5.5.3: More review feedback from WordPress.org, code hardening, no functional changes.
+
+5.5.2: Additional output escaping, breaking functionality, but added source panel for restoring part of that so outgoing emails can still be scrutinized.
+
 5.5.1: Review feedback from WordPress.org handled. This brings no functional changes except for;
 Updated the email viewer interface for more user-friendly viewing of emails and their debug information.
 

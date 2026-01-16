@@ -44,8 +44,8 @@ jQuery( document ).ready( function ($) {
      * Emails panel
      */
 
-    const enableTabs = function () {
-      $( '.mail-viewer-tabs' ).show();
+    const enableViewer = function () {
+      $( '#mail-viewer' ).removeClass('hidden');
     }
 
     // Function to switch to a specific view
@@ -101,6 +101,8 @@ jQuery( document ).ready( function ($) {
       // Click to cycle through the views.
       let currentView = null;
       if ($( this ).is( '.show-body' )) {
+        currentView = 'body-source';
+      } else if ($( this ).is( '.show-body-source' )) {
         currentView = 'headers';
       } else if ($( this ).is( '.show-headers' )) {
         currentView = 'alt-body';
@@ -109,7 +111,7 @@ jQuery( document ).ready( function ($) {
       } else {
         currentView = 'body';
       }
-      enableTabs();
+      enableViewer();
       switchToView( currentView );
     } );
 

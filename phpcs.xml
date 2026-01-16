@@ -80,6 +80,7 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="email-essentials"/>
+				<element value="default"/>
 			</property>
 		</properties>
 	</rule>

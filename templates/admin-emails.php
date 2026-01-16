@@ -307,7 +307,12 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 										} else {
 											$acato_email_essentials_attachment_count = '';
 										}
-										print '<a href="' . esc_attr( add_query_arg( 'download_eml', $acato_email_essentials_view_email->ID ) ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $acato_email_essentials_view_email->eml ) ) . $acato_email_essentials_attachment_count );
+										$acato_email_essentials_download_url = wp_nonce_url(
+											add_query_arg( 'download_eml', $acato_email_essentials_view_email->ID ),
+											'download_eml_' . $acato_email_essentials_view_email->ID,
+											'_wpnonce'
+										);
+										print '<a href="' . esc_url( $acato_email_essentials_download_url ) . '" class="dashicons dashicons-download"></a> ' . wp_kses_post( Plugin::nice_size( strlen( $acato_email_essentials_view_email->eml ) ) . $acato_email_essentials_attachment_count );
 									}
 									?>
 								</td>
@@ -435,11 +440,15 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 					</span>
 				</div>
 
-				<div id="mail-viewer">
-					<nav class="mail-viewer-tabs" role="tablist" style="display: none">
+				<div id="mail-viewer" class="hidden">
+					<nav class="mail-viewer-tabs" role="tablist">
 						<button type="button" class="mail-tab" data-view="body" role="tab" aria-selected="false">
 							<span class="dashicons dashicons-email"></span>
-							<?php echo esc_html_x( 'HTML Email Body', 'Email History Legend', 'email-essentials' ); ?>
+							<?php echo esc_html_x( 'HTML Email', 'Email History Legend', 'email-essentials' ); ?>
+						</button>
+						<button type="button" class="mail-tab" data-view="body-source" role="tab" aria-selected="false">
+							<span class="dashicons dashicons-html"></span>
+							<?php echo esc_html_x( 'HTML Email Source', 'Email History Legend', 'email-essentials' ); ?>
 						</button>
 						<button type="button" class="mail-tab" data-view="headers" role="tab" aria-selected="false">
 							<span class="dashicons dashicons-admin-settings"></span>
@@ -477,40 +486,11 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 							$acato_email_essentials_view_email->debug = wp_json_encode( $acato_email_essentials_view_email->debug, JSON_PRETTY_PRINT );
 							$acato_email_essentials_view_email->debug = ( $acato_email_essentials_view_email->log ? $acato_email_essentials_view_email->log . "\n" : '' ) . $acato_email_essentials_view_email->debug;
 
-							/**
-							 * Note to reviewers:
-							 *
-							 * It has been brought to our attention that the following code need more output filtering.
-							 * Scripts are already disabled in multiple ways, and storing and showing email content (the history function)
-							 * is a debugging tool for admins to see what was ACTUALLY emailed.
-							 * If there is script in there, it HAS ALREADY BEEN SENT VIA EMAIL, which is NOT our responsibility.
-							 * This is also the reason we don't remove it, but replace it with [script] so the administrator can directly
-							 * SEE that scripts have been emailed.
-							 *
-							 * The current method is intentional.
-							 *
-							 * If you have a better way, I invite you to visit our github repo and provide a PR. Any other
-							 * filtering we do will change the output and leave the administrator in a false sense of security.
-							 *
-							 * "There is nothing wrong in the debug window, so no, we did not email malware to half the world."
-							 *
-							 * I hope you can understand our reasoning here. If not, well, I guess we'll know :)
-							 */
-
 							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- how else am I supposed to base64_encode?.
 							$acato_email_essentials_email_data_base64 = base64_encode(
-								str_ireplace(
-									[
-										'onload',
-										'<script',
-										'</script>',
-									],
-									[
-										'nonload',
-										'[SCRIPT',
-										'[/SCRIPT]',
-									],
-									Plugin::maybe_convert_to_html( $acato_email_essentials_view_email->body, $acato_email_essentials_view_email->subject, $acato_email_essentials_mailer )
+								wp_kses(
+									Plugin::maybe_convert_to_html( $acato_email_essentials_view_email->body, $acato_email_essentials_view_email->subject, $acato_email_essentials_mailer ),
+									Plugin::allowed_html_for_displaying_an_entire_html_page()
 								)
 							);
 							?>
@@ -527,10 +507,20 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 								</div>
 								<div
 									class="body">
+									<div class="body-disclaimer">
+										<?php
+										echo wp_kses_post(
+											__( '<strong>Disclaimer:</strong> The email body is shown below as it was sent. For security reasons, output is sanitized. For actual HTML, see the source panel.', 'email-essentials' )
+										);
+										?>
+									</div>
 									<iframe
 										class="autofit" width="100%" height="100%" border="0" frameborder="0"
-										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print $acato_email_essentials_email_data_base64; /* @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>">
+										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print esc_attr( $acato_email_essentials_email_data_base64 ); ?>">
 									</iframe>
+								</div>
+								<div class="body-source">
+									<pre><?php print esc_html( Plugin::maybe_convert_to_html( $acato_email_essentials_view_email->body, $acato_email_essentials_view_email->subject, $acato_email_essentials_mailer ) ); ?></pre>
 								</div>
 								<div
 									class="debug">

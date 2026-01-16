@@ -140,7 +140,9 @@ class Plugin {
 			}
 			if ( ! $plugin_data ) {
 				if ( ! function_exists( 'get_plugin_data' ) ) {
-					require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
+					// We cannot fetch data, we are not allowed to include the admin include file for this.
+					// So. tough luck.
+					return [];
 				}
 				$plugin_data = get_plugin_data( self::instance()->get_plugin_path(), false, false );
 			}
@@ -318,8 +320,8 @@ class Plugin {
 	 */
 	public static function plugin_actions( $links, $file ) {
 		if ( function_exists( 'admin_url' ) && self::instance()->get_plugin_slug() === $file ) {
-			// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- we want to use the WordPress default translation here.
-			$settings_link = '<a href="' . admin_url( 'admin.php?page=acato-email-essentials' ) . '">' . _x( 'Settings', 'translators: ignore this.' ) . '</a>';
+			// Using WordPress default translation for "Settings".
+			$settings_link = '<a href="' . admin_url( 'admin.php?page=acato-email-essentials' ) . '">' . __( 'Settings', 'default' ) . '</a>';
 			array_unshift( $links, $settings_link ); // before other links.
 		}
 
@@ -2012,6 +2014,106 @@ class Plugin {
 	}
 
 	/**
+	 * Sanitize settings array with proper sanitization for each field type.
+	 *
+	 * @param array $settings Raw settings array to sanitize.
+	 *
+	 * @return array Sanitized settings array.
+	 */
+	private static function sanitize_settings( $settings ) {
+		if ( ! is_array( $settings ) ) {
+			return [];
+		}
+
+		$sanitized = [];
+
+		// Define field sanitization rules.
+		$field_rules = [
+			// Booleans.
+			'smtp-enabled'         => 'boolean',
+			'is_html'              => 'boolean',
+			'css_inliner'          => 'boolean',
+			'alt_body'             => 'boolean',
+			'do_shortcodes'        => 'boolean',
+			'SingleTo'             => 'boolean',
+			'spf_lookup_enabled'   => 'boolean',
+			'enable_history'       => 'boolean',
+			'enable_queue'         => 'boolean',
+			'enable_smime'         => 'boolean',
+			'enable_dkim'          => 'boolean',
+			// Strings.
+			'from_name'            => 'text',
+			'host'                 => 'text',
+			'username'             => 'text',
+			'password'             => 'text',
+			'certfolder'           => 'path',
+			'dkimfolder'           => 'path',
+			// Emails.
+			'from_email'           => 'email',
+			'errors_to'            => 'email',
+			// Integers.
+			'port'                 => 'integer',
+			'timeout'              => 'integer',
+			// Text/HTML content.
+			'content_precode'      => 'textarea',
+			// Select options (predefined values).
+			'secure'               => [ '', 'tls', 'ssl' ],
+			'make_from_valid'      => [ '', 'default', 'noreply', 'custom' ],
+			'make_from_valid_when' => [ 'when_sender_invalid', 'always', 'never' ],
+		];
+
+		foreach ( $settings as $key => $value ) {
+			// Skip if no rule defined - don't include unknown fields.
+			if ( ! isset( $field_rules[ $key ] ) ) {
+				continue;
+			}
+
+			$rule = $field_rules[ $key ];
+
+			// Handle array-based whitelist (select options).
+			if ( is_array( $rule ) ) {
+				$sanitized[ $key ] = in_array( $value, $rule, true ) ? $value : $rule[0];
+				continue;
+			}
+
+			// Handle type-based sanitization.
+			switch ( $rule ) {
+				case 'boolean':
+					$sanitized[ $key ] = (bool) $value;
+					break;
+
+				case 'text':
+					$sanitized[ $key ] = sanitize_text_field( $value );
+					break;
+
+				case 'email':
+					$sanitized[ $key ] = sanitize_email( $value );
+					break;
+
+				case 'integer':
+					$sanitized[ $key ] = (int) $value;
+					break;
+
+				case 'path':
+					// Sanitize file path - remove dangerous characters.
+					$sanitized[ $key ] = preg_replace( '/[^a-zA-Z0-9_\-\/.]/', '', $value );
+					break;
+
+				case 'textarea':
+					// Allow HTML but sanitize it properly.
+					$sanitized[ $key ] = wp_kses_post( $value );
+					break;
+
+				default:
+					// Unknown type - skip.
+					break;
+			}
+		}
+
+		return $sanitized;
+	}
+
+	/**
 	 * Process settings when POSTed.
 	 */
 	public static function save_admin_settings() {
@@ -2034,11 +2136,10 @@ class Plugin {
 		if ( wp_verify_nonce( $the_nonce, 'acato-email-essentials--settings' ) && 'acato-email-essentials' === $page && isset( $_POST['form_id'] ) && 'acato-email-essentials' === $_POST['form_id'] ) {
 			switch ( $op ) {
 				case __( 'Save settings', 'email-essentials' ):
-					$config = self::get_config();
-					// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, sanitized below.
-					$new_config = isset( $_POST['settings'] ) ? map_deep( wp_unslash( $_POST['settings'] ), 'trim' ) : [];
-					$host       = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
-					$host       = preg_replace( '/^www\d*\./', '', $host );
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified above.
+					$raw_settings = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : [];
+					// Sanitize settings using custom sanitization function.
+					$new_config = self::sanitize_settings( $raw_settings );
 					$defmail    = self::wp_mail_from( $new_config['from_email'] ?? '' );
 					if ( 'default' === ( $new_config['make_from_valid'] ?? '' ) && ! self::i_am_allowed_to_send_in_name_of( $defmail ) ) {
 						$new_config['make_from_valid'] = 'noreply';
@@ -2092,9 +2193,13 @@ class Plugin {
 		/**
 		 * Iframe content to show a sample email.
 		 */
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified below.
 		$iframe = isset( $_GET['iframe'] ) ? sanitize_text_field( wp_unslash( $_GET['iframe'] ) ) : '';
 		if ( 'acato-email-essentials' === $page && 'content' === $iframe ) {
+			// Verify nonce for iframe preview.
+			if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'email_preview_iframe' ) ) {
+				wp_die( esc_html__( 'Security check failed', 'email-essentials' ) );
+			}
 			$mailer          = new EEMailer();
 			$config          = self::get_config();
 			$subject         = __( 'Sample email subject', 'email-essentials' );
@@ -2127,15 +2232,7 @@ class Plugin {
 			$keys = array_filter(
 				$keys,
 				function ( $el ) {
-					$els = explode( ',', $el );
-					$els = array_map(
-						function ( $el ) {
-							return filter_var( $el, FILTER_VALIDATE_EMAIL );
-						},
-						$els
-					);
-
-					return implode( ',', $els );
+					return Plugin::sanitize_commaseparated_email_list( $el );
 				}
 			);
 			update_option( 'acato_email_essentials_admin_keys', $keys );
@@ -2165,19 +2262,7 @@ class Plugin {
 					$keys = array_filter(
 						$keys,
 						function ( $el ) {
-							$els = explode( ',', $el );
-							$els = array_map(
-								function ( $el ) {
-									if ( ':blackhole:' === $el ) {
-										return $el;
-									}
-
-									return filter_var( $el, FILTER_VALIDATE_EMAIL );
-								},
-								$els
-							);
-
-							return implode( ',', $els );
+							return Plugin::sanitize_commaseparated_email_list( $el, true );
 						}
 					);
 				}
@@ -2740,7 +2825,7 @@ Item 2
 			$email = array_filter(
 				$email,
 				function ( $el ) {
-					return filter_var( $el, FILTER_VALIDATE_EMAIL );
+					return Plugin::sanitize_commaseparated_email_list( $el );
 				}
 			);
 		}
@@ -2811,21 +2896,19 @@ Item 2
 		$blogname = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 
 		// FULL TEXT LOOKUP.
-		// @phpcs:disable WordPress.WP.I18n.MissingArgDomain
-		// WordPress strings, do NOT use own text-domain here, this construction is here because these are WP translated strings.
+		// WordPress strings, using 'default' text-domain to use WordPress core translations.
 		$keys = [
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
-			sprintf( __( '[%s] New User Registration' ), $blogname ) => 'new_user_registration_admin_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
-			sprintf( __( '[%s] Password Reset' ), $blogname )        => 'password_reset_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
-			sprintf( __( '[%s] Password Changed' ), $blogname )      => 'password_changed_email',
-			// translators: ignore this. Text is taken from WordPress core. That's why no text-domain is used here. You do not need to translate this.
-			sprintf( __( '[%s] Password Lost/Changed' ), $blogname ) => 'password_lost_changed_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why 'default' text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] New User Registration', 'default' ), $blogname ) => 'new_user_registration_admin_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why 'default' text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Reset', 'default' ), $blogname )        => 'password_reset_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why 'default' text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Changed', 'default' ), $blogname )      => 'password_changed_email',
+			// translators: ignore this. Text is taken from WordPress core. That's why 'default' text-domain is used here. You do not need to translate this.
+			sprintf( __( '[%s] Password Lost/Changed', 'default' ), $blogname ) => 'password_lost_changed_email',
 
 			self::dummy_subject() => 'email_essentials_test_email_body',
 		];
-		// @phpcs:enable WordPress.WP.I18n.MissingArgDomain
 
 		$key = $keys[ $lookup ] ?? '';
 
@@ -3208,15 +3291,6 @@ Item 2
 	 * @return string
 	 */
 	public static function get_wpes_version() {
-		if ( ! function_exists( 'get_plugin_data' ) ) {
-			/**
-			 * Note to reviewer:
-			 * This was marked as not allowed, however, there is no other way to get the get_plugin_data function to be available.
-			 * If there is a way unknown to us to do this without a require_once, please let us know.
-			 */
-			require_once trailingslashit( ABSPATH ) . 'wp-admin/includes/plugin.php';
-		}
-
 		$plugin_data = self::plugin_data();
 
 		return $plugin_data['Version'];
@@ -3598,5 +3672,37 @@ Item 2
 		];
 
 		return array_merge( $base, $additional_tags );
+	}
+
+	/**
+	 * Sanitize a comma-separated email list.
+	 *
+	 * @param string|string[] $el              The email list to sanitize, a comma-separated string or an array of strings.
+	 * @param bool            $allow_blackhole Whether to allow blackhole listing. Default false.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_commaseparated_email_list( $el, $allow_blackhole = false ) {
+		if ( is_array( $el ) ) {
+			$els = $el;
+		} else {
+			$els = explode( ',', $el );
+		}
+		$els = array_map(
+			function ( $el ) use ( $allow_blackhole ) {
+				$el = trim( $el );
+				if ( $allow_blackhole && ':blackhole:' === $el ) {
+					return $el;
+				}
+				$filtered = filter_var( $el, FILTER_VALIDATE_EMAIL );
+
+				return $filtered ? sanitize_email( $filtered ) : '';
+			},
+			$els
+		);
+
+		$els = array_filter( $els );
+
+		return implode( ',', $els );
 	}
 }

@@ -1,4 +1,9 @@
-<?php return array(
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+return array(
     'root' => array(
         'name' => 'rmpel/wp-email-essentials',
         'pretty_version' => 'dev-master',

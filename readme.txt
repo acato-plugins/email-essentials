@@ -3,10 +3,10 @@ Contributors: acato
 Donate link: https://acato.nl
 Tags: email, smtp, dkim, smime, deliverability
 More Tags: debugging, history, html, css, outgoing
-Requires at least: 5.0
-Tested up to: 6.8
+Requires at least: 5.6
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 5.5.1
+Stable tag: 5.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -344,6 +344,12 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 = 6.0.0 =
 * GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
+
+= 5.5.3 =
+* More review feedback from WordPress.org, code hardening, no functional changes.
+
+= 5.5.2 =
+* Additional output escaping, breaking functionality, but added source panel for restoring part of that so outgoing emails gan still be scrutinized.
 
 = 5.5.1 =
 * Review feedback from WordPress.org handled. This brings no functional changes except for;

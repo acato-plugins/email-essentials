@@ -14,26 +14,26 @@ spl_autoload_register(
 		$n = 'Acato\\Email_Essentials';
 
 		$class_map = [];
-		if ( file_exists( __DIR__ . '/lib/class-migrations.php' ) ) {
-			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/lib/class-migrations.php';
+		if ( file_exists( __DIR__ . '/class-migrations.php' ) ) {
+			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/class-migrations.php';
 		}
-
+		
 		// Deprecation support.
 		$n         = 'WP_Email_Essentials';
 		$class_map = array_merge(
 			$class_map,
 			[
-				$n . '\\Plugin'                => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Migrations'            => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\IP'                    => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\History'               => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Queue'                 => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\Fake_Sender'           => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CSS_Inliner'           => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CssVarEval'            => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\CssToInlineStyles'     => __DIR__ . '/lib/class-deprecation.php',
-				$n . '\\WPES_PHPMailer'        => __DIR__ . '/lib/class-deprecation.php',
+				$n . '\\Plugin'                => __DIR__ . '/class-deprecation.php',
+				$n . '\\Migrations'            => __DIR__ . '/class-deprecation.php',
+				$n . '\\IP'                    => __DIR__ . '/class-deprecation.php',
+				$n . '\\History'               => __DIR__ . '/class-deprecation.php',
+				$n . '\\Queue'                 => __DIR__ . '/class-deprecation.php',
+				$n . '\\Fake_Sender'           => __DIR__ . '/class-deprecation.php',
+				$n . '\\WPES_Queue_List_Table' => __DIR__ . '/class-deprecation.php',
+				$n . '\\CSS_Inliner'           => __DIR__ . '/class-deprecation.php',
+				$n . '\\CssVarEval'            => __DIR__ . '/class-deprecation.php',
+				$n . '\\CssToInlineStyles'     => __DIR__ . '/class-deprecation.php',
+				$n . '\\WPES_PHPMailer'        => __DIR__ . '/class-deprecation.php',
 			]
 		);
 
