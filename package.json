@@ -1,6 +1,6 @@
 {
   "name": "acato-email-essentials",
-  "version": "5.5.3",
+  "version": "5.5.4",
   "description": "The only plugin you need for email processing in WordPress.",
   "author": "Municipality of Acato",
   "main": "build/index.js",

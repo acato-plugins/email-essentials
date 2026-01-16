@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 5.5.3
+Stable tag: 5.5.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,9 @@ Please consider forking the repository and submitting pull requests for any impr
 
 = How do I get support? =
 If you need support, please visit our [support forum](https://wordpress.org/support/plugin/email-essentials/) or check the [GitHub issues page](https://github.com/acato-plugins/email-essentials/issues). (If you post the same issue on both, please cross-link your posts.) Acato customers can also contact us through regular channels.
+
+= Can we support you financially? =
+If you are a company, using this plugin in commercial projects, and you wish to support its development, please contact us at [sales@acato.nl](mailto:sales@acato.nl).
 
 == Screenshots ==
 
@@ -344,6 +347,10 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 = 6.0.0 =
 * GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
+
+= 5.5.4 =
+* Latest bugfixes in user interface and deprecation handling.
+* This is the last release before going FOSS.
 
 = 5.5.3 =
 * More review feedback from WordPress.org, code hardening, no functional changes.

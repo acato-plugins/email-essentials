@@ -1,4 +1,0 @@
-Our intention is to start with version 6.0.0 when public, version for review is 5.4.7 because of the 12 year history of the plugin.
-lib/sabberworm is a packaged composer lib, plugin check complaints, but I surely would not have to fix 3rd party code, right??
-for one file error "Library files that are already in the WordPress core are not permitted." is shown, this is a false positive. We 100% use the bundled phpmailer, we just add a wrapper that is version-aware for proper configuration
-tools/generate_dkim.* are tools, no WordPress is present, these files make life easier, but they are not required, not loaded during normal operation.

@@ -278,7 +278,9 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 # Changelog:
 
-6.0.0: GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
+6.0.0: GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl). From this point on, the only changelog maintained will be in readme.txt .
+
+5.5.4: This is the last release before going FOSS. Latest bugfixes in user interface and deprecation handling.
 
 5.5.3: More review feedback from WordPress.org, code hardening, no functional changes.
 
