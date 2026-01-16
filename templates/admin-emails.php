@@ -440,8 +440,8 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 					</span>
 				</div>
 
-				<div id="mail-viewer">
-					<nav class="mail-viewer-tabs" role="tablist" style="display: none">
+				<div id="mail-viewer" class="hidden">
+					<nav class="mail-viewer-tabs" role="tablist">
 						<button type="button" class="mail-tab" data-view="body" role="tab" aria-selected="false">
 							<span class="dashicons dashicons-email"></span>
 							<?php echo esc_html_x( 'HTML Email', 'Email History Legend', 'email-essentials' ); ?>

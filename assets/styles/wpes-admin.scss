@@ -470,6 +470,10 @@ $tools-width: 200px;
 			height: 100%;
 			width: 100%;
 		}
+
+		&.hidden {
+			display: none!important;
+		}
 	}
 
 	.mail-viewer-tabs {
