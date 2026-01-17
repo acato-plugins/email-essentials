@@ -301,20 +301,20 @@ class History {
 						// Write the content to the temporary file.
 						wp_mkdir_p( $tmp_dir );
 						// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents,WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-						file_put_contents( $tmp_dir . '/' . $filename, base64_decode( $content ) );
+						file_put_contents( $tmp_dir . '/' . basename( $filename ), base64_decode( $content ) );
 						add_action(
 							'shutdown',
 							function () use ( $tmp_dir, $filename ) {
 								// Delete the temporary file on shutdown.
-								if ( file_exists( $tmp_dir . '/' . $filename ) ) {
-									wp_delete_file( $tmp_dir . '/' . $filename );
+								if ( file_exists( $tmp_dir . '/' . basename( $filename ) ) ) {
+									wp_delete_file( $tmp_dir . '/' . basename( $filename ) );
 									// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir,WordPress.PHP.NoSilencedErrors.Discouraged -- We don't care if it fails.
 									@rmdir( $tmp_dir );
 								}
 							}
 						);
 					}
-					$attachments[] = $tmp_dir . '/' . $filename; // Store the path to the temporary file.
+					$attachments[] = $tmp_dir . '/' . basename( $filename ); // Store the path to the temporary file.
 				}
 			}
 		}

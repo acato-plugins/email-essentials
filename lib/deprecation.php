@@ -17,7 +17,7 @@ spl_autoload_register(
 		if ( file_exists( __DIR__ . '/class-migrations.php' ) ) {
 			$class_map[ $n . '\\Migrations' ] = __DIR__ . '/class-migrations.php';
 		}
-		
+
 		// Deprecation support.
 		$n         = 'WP_Email_Essentials';
 		$class_map = array_merge(

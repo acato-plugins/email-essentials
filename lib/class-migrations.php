@@ -45,7 +45,7 @@ class Migrations {
 	 * @return array
 	 */
 	public static function acato_email_essentials_ip_services( $services ) {
-		// Add your custom services here
+		// Add your custom services here.
 		$services['ipv4']       = 'https://ip4.acato.nl';
 		$services['ipv6']       = 'https://ip6.acato.nl';
 		$services['dual-stack'] = 'https://ip.acato.nl';
