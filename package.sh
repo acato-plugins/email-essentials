@@ -22,8 +22,8 @@ for i in \
 	composer.json info.json \
 	node_modules package-lock.json .editorconfig \
 	./.git ./.gitignore .claude \
-	package.sh SUBMISSION_NOTES.txt \
-	assets/wordpress_org \
+	package.sh build.sh SUBMISSION_NOTES.txt \
+	.wordpress-org \
 	wp_mail_key.patch tools/generate_dkim.php \
 	lib/class-migrations.php lib/class-deprecation.php lib/filter-deprecation.php lib/deprecation.php \
 	bitbucket-pipelines.yml; do

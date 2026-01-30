@@ -33,27 +33,27 @@ const getDirectories = function (dir) {
 const mixFiles = (folder, outputFolder = folder) => {
 
   // Apply mix to all scripts and styles in the root directory.
-  getFiles(`assets/${folder}`).forEach((filepath) => {
+  getFiles(`src/${folder}`).forEach((filepath) => {
     // Skip all files starting with a dot.
     if ('.' !== filepath.charAt(0) && '_' !== filepath.charAt(0)) {
 
       if ('scripts' === folder || folder.includes('scripts/')) {
-        mix.js(`assets/${folder}/${filepath}`, outputFolder);
+        mix.js(`src/${folder}/${filepath}`, outputFolder);
       }
 
       if ('styles' === folder || folder.includes('styles/')) {
-        mix.sass(`assets/${folder}/${filepath}`, outputFolder);
+        mix.sass(`src/${folder}/${filepath}`, outputFolder);
       }
 
       if ('images' === folder || 'fonts' === folder) {
-        mix.copy(`assets/${folder}/${filepath}`, `${process.env.MIX_BUILD_DIR}/${folder}`);
+        mix.copy(`src/${folder}/${filepath}`, `${process.env.MIX_BUILD_DIR}/${folder}`);
       }
     }
   });
 };
 
 // Loop through directories to build.
-getDirectories('assets').forEach((dir) => mixFiles(dir));
+getDirectories('src').forEach((dir) => mixFiles(dir));
 
 /*
  |--------------------------------------------------------------------------
