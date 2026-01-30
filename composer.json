@@ -1,4 +1,5 @@
 {
   "name": "acato/email-essentials",
-  "type": "wordpress-plugin"
+  "type": "wordpress-plugin",
+  "version": "6.0.0"
 }
