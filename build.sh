@@ -2,6 +2,9 @@
 # Build script for Email Essentials
 cd "$(dirname "$0")"
 
-[ -f .nvmrc ] && nvm use
-[ ! -d node_modules ] && npm install --no-audit --no-fund
+[ -f ~/.bashrc ] && source ~/.bashrc
+
+[ -f .nvmrc ] && [ ! -z nvm ] && nvm install && nvm use
+[ ! -f .nvmrc ] && [ ! -z nvm ] && nvm install 20 && nvm use 20
+npm install
 npm run build
