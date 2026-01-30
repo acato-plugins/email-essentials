@@ -13,7 +13,7 @@ namespace Acato\Email_Essentials;
  * Plugin URI: https://github.com/acato-plugins/email-essentials
  * Author: Remon Pel <remon@acato.nl>
  * Author URI: https://acato.nl
- * Version: 6.0.1
+ * Version: 6.0.2
  * Requires PHP: 7.4
  * Requires at least: 5.6
  * Tested up to: 6.9
