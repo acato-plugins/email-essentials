@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 6.0.0
+Stable tag: 6.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -344,6 +344,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.1 =
+* Bugfix for internal use; deprecation handler used incorrect method signature for CssVarEval::evaluate().
 
 = 6.0.0 =
 * GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
