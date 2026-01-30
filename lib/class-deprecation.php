@@ -35,16 +35,16 @@ class CssVarEval extends \Acato\Email_Essentials\CssVarEval {
 		\Acato\Email_Essentials\Plugin::_deprecated_class( 'WP_Email_Essentials\\CssVarEval', '5.0.0', 'Acato\\Email_Essentials\\CssVarEval' );
 	}
 
-	public static function evaluate( string $css ): string {
+	public static function evaluate( $css ) {
 		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\CssVarEval::evaluate', '5.0.0', 'Acato\\Email_Essentials\\CssVarEval::evaluate' );
 
 		return parent::evaluate( $css );
 	}
 
-	public static function resolveCssVariables( string $css ): string {
-		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\CssVarEval::resolveCssVariables', '5.0.0', 'Acato\\Email_Essentials\\CssVarEval::resolveCssVariables' );
+	public static function resolveCssVariables( $css ) {
+		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\CssVarEval::resolveCssVariables', '5.0.0', 'Acato\\Email_Essentials\\CssVarEval::resolve_css_variables' );
 
-		return parent::resolveCssVariables( $css );
+		return parent::resolve_css_variables( $css );
 	}
 }
 
