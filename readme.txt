@@ -66,9 +66,6 @@ No, it enhances WordPress email sending but only supports SMTP. You CAN use both
 = Is it free? =
 Email Essentials has always been free, but has never been open source. Since version 6.0.0, it is now a FOSS plugin, meaning it is free to use, modify and distribute under the GPLv2 license.
 
-= How do I report a vulnerability? =
-Email responsibledisclosure@acato.nl.
-
 = How can I contribute? =
 You can contribute by reporting bugs, helping others in the community, or contributing code. See our [GitHub repository](https://github.com/acato-plugins/email-essentials) for more information.
 Please consider forking the repository and submitting pull requests for any improvements or bug fixes you make.
@@ -78,6 +75,9 @@ If you need support, please visit our [support forum](https://wordpress.org/supp
 
 = Can we support you financially? =
 If you are a company, using this plugin in commercial projects, and you wish to support its development, please contact us at [sales@acato.nl](mailto:sales@acato.nl).
+
+= Where do I report security bugs found in this plugin? =
+Please report security bugs found in the source code of this plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/c3d10616-a8d3-41e1-ab3c-19e53b63b1ab). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Screenshots ==
 
