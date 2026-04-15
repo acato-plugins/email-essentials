@@ -345,6 +345,12 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 == Changelog ==
 
+= 6.0.4 =
+* Bugfix: failed to save self-signed tls/ssl setting
+* Feature: Allow strict nginx compatible image tracker (tracker is still only active in debug/history mode)
+* Updated: Translations added for new features and some grammatical errors fixed
+* Bugfix: translation hints were wrong
+
 = 6.0.3 =
 * Switched to PatchStack for responsible disclosure.
 

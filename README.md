@@ -278,39 +278,4 @@ You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool y
 
 # Changelog:
 
-6.0.0: GOING FOSS! This is the first release of Email Essentials as a FOSS plugin. After months of preparation, we're finally public! If you want more, come check us out on [Acato.nl](https://www.acato.nl).
-        From this point on, the only changelog maintained will be in readme.txt .
-
-5.5.4: This is the last release before going FOSS. Latest bugfixes in user interface and deprecation handling.
-
-5.5.3: More review feedback from WordPress.org, code hardening, no functional changes.
-
-5.5.2: Additional output escaping, breaking functionality, but added source panel for restoring part of that so outgoing emails can still be scrutinized.
-
-5.5.1: Review feedback from WordPress.org handled. This brings no functional changes except for;
-Updated the email viewer interface for more user-friendly viewing of emails and their debug information.
-
-5.4.7: i18n text domain changed to `email-essentials` to match future plugin slug, another step towards FOSS,
-       Bugfix: add missing PHPMailer Exception class.
-
-5.4.6: Small bugfixes on the resend interface
-
-5.4.5: Translation fixes - nothing critical changed.
-
-5.4.4: Added a re-send button for emails in the history, so you can re-send an email that failed to send.
-
-5.4.3: New tag because tag 5.4.2 is broken - No changes here - Identical code to 5.4.2.
-
-5.4.2: Default SMTP port is now 465 or 587 for SSL or TLS, instead of relying on the server to switch automatically on port 25.
-
-5.4.1: Added more logging during sending/processing the email, you can find the extra log in the debug field, in the history viewable with an alt-click. Also added a note about false-positive SPF match when using an Admin Email that is on a domain on the same server.
-
-5.4.0: Critical bugfix warranted the new minor release, gathering subjects for the alternative admins was broken since version 4.0.0.
-
-5.3.0: Move E-mail testing to the bottom and add more features, In Multisite, also check the Site Admin for candidate for replacement (Alternative Admins).
-
-5.2.5: More improvements for PHP 8 compatibility, code optimisation and generic bugfixing
-
-5.2.4: Code improvements for PHP 8.0 compatibility
-
-5.2.3: Added filter to disable the HTML envelope set by GravityForms, so we can use our own.
+Please find the changelog in the [readme.txt](./readme.txt) file.
