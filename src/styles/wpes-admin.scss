@@ -277,6 +277,11 @@ $tools-width: 200px;
 			display: block;
 		}
 	}
+
+	.wpes-field-description {
+		grid-column-start: 2;
+		grid-column-end: 3;
+	}
 }
 
 .wpes-tools {

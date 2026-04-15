@@ -535,13 +535,72 @@ class History {
 	}
 
 	/**
+	 * Get the tracker filename for a specific email, or the regex pattern for matching.
+	 *
+	 * @param int|null $mail_id The mail id, or null for the regex pattern.
+	 *
+	 * @return string Exact filename or regex pattern.
+	 */
+	private static function get_tracker_filename( $mail_id = null ) {
+		if ( null !== $mail_id ) {
+			return 'email-image-' . $mail_id . '.png';
+		}
+
+		return 'email-image-(\d+)\.png';
+	}
+
+	/**
+	 * Get the full tracker URL for a specific email.
+	 *
+	 * @param int $mail_id The mail id.
+	 *
+	 * @return string The tracker URL.
+	 */
+	private static function get_tracker_url( $mail_id ) {
+		$filename = self::get_tracker_filename( $mail_id );
+		$config   = Plugin::get_config();
+
+		if ( ! empty( $config['nginx_tracker'] ) && $config['nginx_tracker'] ) {
+			return add_query_arg( 'email-image', $filename, home_url() );
+		}
+
+		return trailingslashit( home_url() ) . $filename;
+	}
+
+	/**
+	 * Check if the current request is an email tracker request.
+	 *
+	 * Checks both path-based and query-based URL formats so existing tracked emails
+	 * continue to work regardless of the current setting.
+	 *
+	 * @return int|null The mail id if the request is a tracker, null otherwise.
+	 */
+	private static function is_email_tracker() {
+		// Check path-based format: /email-image-123.png.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by regex below.
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		if ( preg_match( '/\/' . self::get_tracker_filename() . '/', $request_uri, $match ) ) {
+			return (int) $match[1];
+		}
+
+		// Check query-based format: ?email-image=email-image-123.png.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- this is a tracker pixel, no form submission.
+		$email_image = isset( $_GET['email-image'] ) ? sanitize_text_field( wp_unslash( $_GET['email-image'] ) ) : '';
+		if ( $email_image && preg_match( '/^' . self::get_tracker_filename() . '$/', $email_image, $match ) ) {
+			return (int) $match[1];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Add a tracker to the outgoing email. This only happens when debugging is enabled, which is not GDPR compliant anyway.
 	 *
 	 * @param string $message The email.
 	 * @param int    $mail_id The mail id.
 	 */
 	private static function add_tracker( &$message, $mail_id ) {
-		$tracker_url = trailingslashit( home_url() ) . 'email-image-' . $mail_id . '.png';
+		$tracker_url = self::get_tracker_url( $mail_id );
 
 		$tracker = '<img src="' . esc_attr( $tracker_url ) . '" alt="" />';
 
@@ -562,11 +621,10 @@ class History {
 	 */
 	public static function handle_tracker() {
 		global $wpdb;
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by regex below.
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-		if ( preg_match( '/\/email-image-(\d+).png/', $request_uri, $match ) ) {
+		$mail_id = self::is_email_tracker();
+		if ( null !== $mail_id ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $match[1] ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $mail_id ) );
 
 			header( 'Content-Type: image/png' );
 			header( 'Content-Length: 0' );

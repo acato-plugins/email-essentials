@@ -1769,6 +1769,7 @@ class Plugin {
 			'SingleTo'             => true,
 			'do_shortcodes'        => true,
 			'enable_history'       => false,
+			'nginx_tracker'        => false,
 			'enable_queue'         => false,
 			'make_from_valid_when' => 'when_sender_invalid',
 			'make_from_valid'      => 'default',
@@ -1857,6 +1858,7 @@ class Plugin {
 		$settings['SingleTo']           = array_key_exists( 'SingleTo', $values ) && $values['SingleTo'];
 		$settings['spf_lookup_enabled'] = array_key_exists( 'spf_lookup_enabled', $values ) && $values['spf_lookup_enabled'];
 		$settings['enable_history']     = array_key_exists( 'enable_history', $values ) && $values['enable_history'];
+		$settings['nginx_tracker']      = array_key_exists( 'nginx_tracker', $values ) && $values['nginx_tracker'];
 		$settings['enable_queue']       = array_key_exists( 'enable_queue', $values ) && $values['enable_queue'];
 
 		$settings['enable_smime']         = array_key_exists( 'enable_smime', $values ) && $values['enable_smime'] ? '1' : '0';
@@ -2038,6 +2040,7 @@ class Plugin {
 			'SingleTo'             => 'boolean',
 			'spf_lookup_enabled'   => 'boolean',
 			'enable_history'       => 'boolean',
+			'nginx_tracker'        => 'boolean',
 			'enable_queue'         => 'boolean',
 			'enable_smime'         => 'boolean',
 			'enable_dkim'          => 'boolean',

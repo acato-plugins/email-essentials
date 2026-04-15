@@ -576,6 +576,20 @@ $acato_email_essentials_dkim_identities  = [];
 							<?php print wp_kses_post( __( 'If you insist on storing emails, please note that you need to implement the appropriate protocols for compliance with GDPR. The responsibility lies with the owner of the website, not the creator or hosting company.', 'email-essentials' ) ); ?>
 						</strong>
 					</div>
+
+					<div class="wpes-radio-list on-enable_history">
+						<input
+							<?php checked( $acato_email_essentials_config['nginx_tracker'] ); ?>
+							type="checkbox" name="settings[nginx_tracker]"
+							value="1"
+							id="nginx_tracker"/>
+						<label for="nginx_tracker">
+							<?php print wp_kses_post( __( 'Tracker compatible with strict nginx', 'email-essentials' ) ); ?>
+						</label>
+						<p class="description wpes-field-description">
+							<?php print wp_kses_post( __( 'Use this if nginx blocks the tracker image.', 'email-essentials' ) ); ?>
+						</p>
+					</div>
 				</div>
 			</div>
 
