@@ -2057,7 +2057,7 @@ class Plugin {
 			// Text/HTML content.
 			'content_precode'      => 'textarea',
 			// Select options (predefined values).
-			'secure'               => [ '', 'tls', 'ssl' ],
+			'secure'               => [ '', 'tls', 'ssl', 'tls-', 'ssl-' ],
 			'make_from_valid'      => [ '', 'default', 'noreply', 'custom' ],
 			'make_from_valid_when' => [ 'when_sender_invalid', 'always', 'never' ],
 		];
