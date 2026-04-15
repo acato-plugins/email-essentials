@@ -161,11 +161,11 @@ class Queue_List_Table extends WP_List_Table {
 	 */
 	public function column_status( $item ) {
 		$stati = [
-			Queue::FRESH   => _x( 'Still to send', 'Email queue: this email is Sent', 'email-essentials' ),
-			Queue::SENDING => _x( 'Sending', 'Email queue: this email is Sent OK', 'email-essentials' ),
-			Queue::SENT    => _x( 'Sent', 'Email queue: this email Failed sending', 'email-essentials' ),
-			Queue::STALE   => _x( 'Stale', 'Email queue: this email is Opened by the receiver', 'email-essentials' ),
-			Queue::BLOCK   => _x( 'Blocked', 'Email queue: this email is Opened by the receiver', 'email-essentials' ),
+			Queue::FRESH   => _x( 'Still to send', 'Email queue: this email is fresh in the queue', 'email-essentials' ),
+			Queue::SENDING => _x( 'Sending', 'Email queue: this email is being sent', 'email-essentials' ),
+			Queue::SENT    => _x( 'Sent', 'Email queue: this email has been sent', 'email-essentials' ),
+			Queue::STALE   => _x( 'Stale', 'Email queue: this email should have gone out but is still not sent', 'email-essentials' ),
+			Queue::BLOCK   => _x( 'Blocked', 'Email queue: this email is being throttled and will be sent later', 'email-essentials' ),
 		];
 
 		$value = $item['status'];
