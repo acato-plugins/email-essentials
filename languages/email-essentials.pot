@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Remon Pel <remon@acato.nl>
+# Copyright (C) 2026 Remon Pel <remon@acato.nl>
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Email Essentials 5.5.3\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/email-essentials-source\n"
+"Project-Id-Version: Email Essentials 6.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/email-essentials\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-01T06:00:56+00:00\n"
+"POT-Creation-Date: 2026-04-15T17:57:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: email-essentials\n"
@@ -39,308 +39,313 @@ msgstr ""
 msgid "https://acato.nl"
 msgstr ""
 
-#: lib/class-history.php:163
-#: lib/class-history.php:164
+#: lib/class-history.php:120
+#: lib/class-plugin.php:2204
+msgid "Security check failed"
+msgstr ""
+
+#: lib/class-history.php:167
+#: lib/class-history.php:168
 #: templates/admin-emails.php:46
 #: templates/admin-emails.php:154
 #: templates/admin-interface.php:553
 msgid "Email History"
 msgstr ""
 
-#: lib/class-plugin.php:439
+#: lib/class-plugin.php:441
 msgid "anonymous"
 msgstr ""
 
-#: lib/class-plugin.php:1520
-#: lib/class-plugin.php:2050
+#: lib/class-plugin.php:1522
+#: lib/class-plugin.php:2154
 #: templates/admin-interface.php:48
-#: templates/admin-interface.php:1246
+#: templates/admin-interface.php:1260
 msgid "Send sample mail"
 msgstr ""
 
-#: lib/class-plugin.php:1555
+#: lib/class-plugin.php:1557
 msgid "Print debug output of sample mail"
 msgstr ""
 
-#: lib/class-plugin.php:1557
+#: lib/class-plugin.php:1559
 msgid "Dump of PHP Mailer object"
 msgstr ""
 
-#: lib/class-plugin.php:2036
-#: lib/class-plugin.php:2124
-#: lib/class-plugin.php:2159
+#: lib/class-plugin.php:2141
+#: lib/class-plugin.php:2232
+#: lib/class-plugin.php:2259
 #: templates/admin-admins.php:39
 #: templates/admin-interface.php:45
 #: templates/admin-moderators.php:43
 msgid "Save settings"
 msgstr ""
 
-#: lib/class-plugin.php:2047
+#: lib/class-plugin.php:2151
 msgid "Settings saved."
 msgstr ""
 
-#: lib/class-plugin.php:2061
+#: lib/class-plugin.php:2165
 msgid "No email address to send to."
 msgstr ""
 
-#: lib/class-plugin.php:2068
+#: lib/class-plugin.php:2172
 msgid "No email address to send from."
 msgstr ""
 
 #. translators: %s is the email address.
-#: lib/class-plugin.php:2083
+#: lib/class-plugin.php:2187
 #, php-format
 msgid "Mail sent to %s"
 msgstr ""
 
 #. translators: %s is the email address.
-#: lib/class-plugin.php:2086
+#: lib/class-plugin.php:2190
 #, php-format
 msgid "Mail NOT sent to %s"
 msgstr ""
 
-#: lib/class-plugin.php:2100
+#: lib/class-plugin.php:2208
 msgid "Sample email subject"
 msgstr ""
 
-#: lib/class-plugin.php:2142
+#: lib/class-plugin.php:2242
 msgid "Alternative Admins list saved."
 msgstr ""
 
-#: lib/class-plugin.php:2153
+#: lib/class-plugin.php:2253
 msgid "Subject-RegExp list saved."
 msgstr ""
 
-#: lib/class-plugin.php:2187
+#: lib/class-plugin.php:2275
 msgid "Alternative Moderators list saved."
 msgstr ""
 
-#: lib/class-plugin.php:2206
-#: lib/class-plugin.php:2207
+#: lib/class-plugin.php:2294
+#: lib/class-plugin.php:2295
 #: templates/admin-admins.php:22
 #: templates/admin-interface.php:91
 msgid "Alternative Admins"
 msgstr ""
 
-#: lib/class-plugin.php:2218
-#: lib/class-plugin.php:2219
+#: lib/class-plugin.php:2306
+#: lib/class-plugin.php:2307
 #: templates/admin-moderators.php:27
 msgid "Alternative Moderators"
 msgstr ""
 
-#: lib/class-plugin.php:2310
+#: lib/class-plugin.php:2398
 msgid "Test-email"
 msgstr ""
 
 #. translators: %s: Plugin name.
-#: lib/class-plugin.php:2386
+#: lib/class-plugin.php:2474
 #, php-format
 msgid "%s is not yet configured. Please fill out the form below."
 msgstr ""
 
 #. translators: %1$s: Plugin name, %2$s: settings URL.
-#: lib/class-plugin.php:2391
+#: lib/class-plugin.php:2479
 #, php-format
 msgid "%1$s is not yet configured. Please go <a href=\"%2$s\">here</a>."
 msgstr ""
 
 #. translators: %s: a file path.
-#: lib/class-plugin.php:2402
+#: lib/class-plugin.php:2490
 #, php-format
 msgid "The S/MIME certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr ""
 
-#: lib/class-plugin.php:2408
+#: lib/class-plugin.php:2496
 msgid "The openssl package for PHP is not installed, incomplete or broken. Please contact your hosting provider. S/MIME signing is NOT available."
 msgstr ""
 
-#: lib/class-plugin.php:2414
+#: lib/class-plugin.php:2502
 msgid "Services like MandrillApp or SparkPostMail will break S/MIME signing. Please use a different SMTP-service if signing is required."
 msgstr ""
 
 #. translators: %s: email address.
-#: lib/class-plugin.php:2427
+#: lib/class-plugin.php:2515
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. The required certificate is supplied with this plugin. Please copy it to the correct folder."
 msgstr ""
 
 #. translators: %s: email address.
-#: lib/class-plugin.php:2432
+#: lib/class-plugin.php:2520
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. Start: <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">here</a>."
 msgstr ""
 
 #. translators: %s: a file path.
-#: lib/class-plugin.php:2444
+#: lib/class-plugin.php:2532
 #, php-format
 msgid "The DKIM certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr ""
 
-#: lib/class-plugin.php:2782
+#: lib/class-plugin.php:2870
 msgctxt "mail key"
 msgid "Email after automatic update (debug)"
 msgstr ""
 
-#: lib/class-plugin.php:2783
+#: lib/class-plugin.php:2871
 msgctxt "mail key"
 msgid "Email after automatic update"
 msgstr ""
 
-#: lib/class-plugin.php:2784
+#: lib/class-plugin.php:2872
 msgctxt "mail key"
 msgid "Email after website crash"
 msgstr ""
 
-#: lib/class-plugin.php:2791
+#: lib/class-plugin.php:2879
 msgctxt "mail key"
 msgid "Email after new user registered"
 msgstr ""
 
-#: lib/class-plugin.php:2792
+#: lib/class-plugin.php:2880
 msgctxt "mail key"
 msgid "Email notification after user requests password reset"
 msgstr ""
 
-#: lib/class-plugin.php:2793
+#: lib/class-plugin.php:2881
 msgctxt "mail key"
 msgid "Email notification after user reset their password"
 msgstr ""
 
-#: lib/class-plugin.php:2794
+#: lib/class-plugin.php:2882
 msgctxt "mail key"
 msgid "Email notification after user changed their password"
 msgstr ""
 
-#: lib/class-plugin.php:2795
+#: lib/class-plugin.php:2883
 msgctxt "mail key"
 msgid "Email test from Email Essentials"
 msgstr ""
 
 #. translators: %s: a URL.
-#: lib/class-plugin.php:2961
+#: lib/class-plugin.php:3047
 #, php-format
 msgid "You can configure alternative administrators <a href=\"%s\">here</a>."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: website hostname.
-#: lib/class-plugin.php:2977
+#: lib/class-plugin.php:3063
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"noreply\">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: email address.
-#: lib/class-plugin.php:2981
+#: lib/class-plugin.php:3067
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"default\">%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class-plugin.php:2985
+#: lib/class-plugin.php:3071
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"at-\">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header."
 msgstr ""
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class-plugin.php:2989
+#: lib/class-plugin.php:3075
 #, php-format
 msgid "You can fix this here, or you can let <a href=\"%1$s\" target=\"_blank\">%2$s</a> fix this automatically upon sending the email."
 msgstr ""
 
 #. translators: %1$s: type (class/function/filter), %2$s: function/class/filter name, %3$s: time since last seen, %4$s: version, %5$s: replacement.
-#: lib/class-plugin.php:3367
+#: lib/class-plugin.php:3444
 #, php-format
 msgid "Deprecated <strong>%1$s</strong> <code>%2$s</code> was seen %3$s ago. Replacement since version <strong>%4$s</strong> is <code>%5$s</code>."
 msgstr ""
 
-#: lib/class-plugin.php:3372
+#: lib/class-plugin.php:3449
 msgid "unavailable"
 msgstr ""
 
-#: lib/class-plugin.php:3378
+#: lib/class-plugin.php:3455
 msgid "Email Essentials detected the use of deprecated functions or classes"
 msgstr ""
 
-#: lib/class-plugin.php:3381
+#: lib/class-plugin.php:3458
 msgid "Debug Logging is enabled in your site, please check the log for more information."
 msgstr ""
 
-#: lib/class-plugin.php:3383
+#: lib/class-plugin.php:3460
 msgid "Please enable debug logging in your site to see more information about these deprecated functions/classes/filters."
 msgstr ""
 
-#: lib/class-queue-list-table.php:44
+#: lib/class-queue-list-table.php:39
 msgctxt "Singular List Table Header"
 msgid "Email"
 msgstr ""
 
-#: lib/class-queue-list-table.php:45
+#: lib/class-queue-list-table.php:40
 msgctxt "Plural List Table Header"
 msgid "Emails"
 msgstr ""
 
-#: lib/class-queue-list-table.php:86
+#: lib/class-queue-list-table.php:81
 #: templates/admin-emails.php:194
 msgid "Status"
 msgstr ""
 
-#: lib/class-queue-list-table.php:87
+#: lib/class-queue-list-table.php:82
 msgid "Email Date"
 msgstr ""
 
-#: lib/class-queue-list-table.php:88
+#: lib/class-queue-list-table.php:83
 #: templates/admin-emails.php:167
 msgid "Recipient"
 msgstr ""
 
-#: lib/class-queue-list-table.php:89
+#: lib/class-queue-list-table.php:84
 #: templates/admin-emails.php:169
 msgid "Subject"
 msgstr ""
 
-#: lib/class-queue-list-table.php:169
-msgctxt "Email queue: this email is Sent"
+#: lib/class-queue-list-table.php:164
+msgctxt "Email queue: this email is fresh in the queue"
 msgid "Still to send"
 msgstr ""
 
-#: lib/class-queue-list-table.php:170
-msgctxt "Email queue: this email is Sent OK"
+#: lib/class-queue-list-table.php:165
+msgctxt "Email queue: this email is being sent"
 msgid "Sending"
 msgstr ""
 
-#: lib/class-queue-list-table.php:171
-msgctxt "Email queue: this email Failed sending"
+#: lib/class-queue-list-table.php:166
+msgctxt "Email queue: this email has been sent"
 msgid "Sent"
 msgstr ""
 
-#: lib/class-queue-list-table.php:172
-msgctxt "Email queue: this email is Opened by the receiver"
+#: lib/class-queue-list-table.php:167
+msgctxt "Email queue: this email should have gone out but is still not sent"
 msgid "Stale"
 msgstr ""
 
-#: lib/class-queue-list-table.php:173
-msgctxt "Email queue: this email is Opened by the receiver"
+#: lib/class-queue-list-table.php:168
+msgctxt "Email queue: this email is being throttled and will be sent later"
 msgid "Blocked"
 msgstr ""
 
-#: lib/class-queue-list-table.php:193
+#: lib/class-queue-list-table.php:188
 msgid "Fresh? Send Now"
 msgstr ""
 
-#: lib/class-queue-list-table.php:194
+#: lib/class-queue-list-table.php:189
 msgid "Sent? Re-send"
 msgstr ""
 
-#: lib/class-queue-list-table.php:195
+#: lib/class-queue-list-table.php:190
 msgid "Stale? Retry"
 msgstr ""
 
-#: lib/class-queue-list-table.php:196
+#: lib/class-queue-list-table.php:191
 msgid "Blocked? Release"
 msgstr ""
 
 #: lib/class-queue.php:507
 #: lib/class-queue.php:508
-#: templates/admin-interface.php:585
+#: templates/admin-interface.php:599
 msgid "Email Throttling"
 msgstr ""
 
@@ -422,36 +427,36 @@ msgid "There are currently no email subjects that have not been matched."
 msgstr ""
 
 #: templates/admin-emails.php:87
-#: templates/admin-emails.php:375
+#: templates/admin-emails.php:380
 msgctxt "Paginator"
 msgid "« First"
 msgstr ""
 
 #: templates/admin-emails.php:93
-#: templates/admin-emails.php:381
+#: templates/admin-emails.php:386
 msgctxt "Paginator"
 msgid "< Previous"
 msgstr ""
 
 #: templates/admin-emails.php:115
-#: templates/admin-emails.php:403
+#: templates/admin-emails.php:408
 msgctxt "Paginator"
 msgid "Next >"
 msgstr ""
 
 #: templates/admin-emails.php:121
-#: templates/admin-emails.php:409
+#: templates/admin-emails.php:414
 msgctxt "Paginator"
 msgid "Last »"
 msgstr ""
 
 #: templates/admin-emails.php:132
-#: templates/admin-emails.php:420
+#: templates/admin-emails.php:425
 msgid "Reset Sorting"
 msgstr ""
 
 #: templates/admin-emails.php:138
-#: templates/admin-emails.php:426
+#: templates/admin-emails.php:431
 msgctxt "Paginator"
 msgid "Page size:"
 msgstr ""
@@ -489,36 +494,36 @@ msgctxt "Email log: this email is Opened by the receiver"
 msgid "Opened"
 msgstr ""
 
-#: templates/admin-emails.php:340
+#: templates/admin-emails.php:345
 msgid "Resend"
 msgstr ""
 
-#: templates/admin-emails.php:442
+#: templates/admin-emails.php:447
 msgctxt "Email History Legend"
 msgid "HTML Email"
 msgstr ""
 
-#: templates/admin-emails.php:446
+#: templates/admin-emails.php:451
 msgctxt "Email History Legend"
 msgid "HTML Email Source"
 msgstr ""
 
-#: templates/admin-emails.php:450
+#: templates/admin-emails.php:455
 msgctxt "Email History Legend"
 msgid "Email Headers"
 msgstr ""
 
-#: templates/admin-emails.php:454
+#: templates/admin-emails.php:459
 msgctxt "Email History Legend"
 msgid "Plain Text Alternative"
 msgstr ""
 
-#: templates/admin-emails.php:458
+#: templates/admin-emails.php:463
 msgctxt "Email History Legend"
 msgid "Debug information"
 msgstr ""
 
-#: templates/admin-emails.php:508
+#: templates/admin-emails.php:513
 msgid "<strong>Disclaimer:</strong> The email body is shown below as it was sent. For security reasons, output is sanitized. For actual HTML, see the source panel."
 msgstr ""
 
@@ -871,325 +876,333 @@ msgstr ""
 msgid "If you insist on storing emails, please note that you need to implement the appropriate protocols for compliance with GDPR. The responsibility lies with the owner of the website, not the creator or hosting company."
 msgstr ""
 
-#: templates/admin-interface.php:586
+#: templates/admin-interface.php:587
+msgid "Tracker compatible with strict nginx"
+msgstr ""
+
+#: templates/admin-interface.php:590
+msgid "Use this if nginx blocks the tracker image."
+msgstr ""
+
+#: templates/admin-interface.php:600
 msgid "Beta feature"
 msgstr ""
 
-#: templates/admin-interface.php:587
+#: templates/admin-interface.php:601
 msgid "It works but not without flaws."
 msgstr ""
 
-#: templates/admin-interface.php:598
+#: templates/admin-interface.php:612
 msgid "Enable Email Throttling"
 msgstr ""
 
-#: templates/admin-interface.php:604
+#: templates/admin-interface.php:618
 #: templates/admin-queue.php:30
 msgid "Enabling the throttling feature will prevent sending large amounts of emails in quick succession, for example a spam-run."
 msgstr ""
 
 #. translators: %1$d: the maximum number of emails per time window, %2$d: the time window in seconds.
-#: templates/admin-interface.php:609
+#: templates/admin-interface.php:623
 #: templates/admin-queue.php:34
 #, php-format
 msgid "Once activated, when more than %1$d emails are sent within %2$d seconds from the same IP-address, all other emails will be held until released."
 msgstr ""
 
 #. translators: %d: the number of emails per minute.
-#: templates/admin-interface.php:614
+#: templates/admin-interface.php:628
 #: templates/admin-queue.php:39
 #, php-format
 msgid "Emails will be sent in batches of %d per minute, the trigger is a hit on the website, the admin panel or the cron (wp-cron.php)."
 msgstr ""
 
-#: templates/admin-interface.php:623
+#: templates/admin-interface.php:637
 msgid "Email content"
 msgstr ""
 
-#: templates/admin-interface.php:630
+#: templates/admin-interface.php:644
 msgid "Send as HTML?"
 msgstr ""
 
-#: templates/admin-interface.php:640
+#: templates/admin-interface.php:654
 msgid "This will convert non-html body to html-ish body"
 msgstr ""
 
-#: templates/admin-interface.php:644
+#: templates/admin-interface.php:658
 msgid "Convert CSS to Inline Styles"
 msgstr ""
 
-#: templates/admin-interface.php:654
+#: templates/admin-interface.php:668
 msgid "Works for Outlook Online, Yahoo Mail, Google Mail, Hotmail, etc."
 msgstr ""
 
-#: templates/admin-interface.php:663
+#: templates/admin-interface.php:677
 msgid "Content charset re-coding"
 msgstr ""
 
-#: templates/admin-interface.php:668
+#: templates/admin-interface.php:682
 msgid "Some servers have f*cked-up content-encoding settings, resulting in wrongly encoded diacritics. If you expect a character like &eacute; and all you get is something like &euro;&tilde;&Itilde;, experiment with this setting."
 msgstr ""
 
 #. translators: %s: a content-encoding, like UTF-8.
-#: templates/admin-interface.php:679
+#: templates/admin-interface.php:693
 #, php-format
 msgctxt "E.g.: From: UTF-8"
 msgid "From: %s"
 msgstr ""
 
-#: templates/admin-interface.php:683
+#: templates/admin-interface.php:697
 msgid "No charset re-coding (default)"
 msgstr ""
 
-#: templates/admin-interface.php:684
+#: templates/admin-interface.php:698
 msgid "Autodetect with mb_check_encoding()"
 msgstr ""
 
-#: templates/admin-interface.php:696
+#: templates/admin-interface.php:710
 msgid "Content handling"
 msgstr ""
 
-#: templates/admin-interface.php:703
+#: templates/admin-interface.php:717
 msgid "Derive plain-text alternative?"
 msgstr ""
 
-#: templates/admin-interface.php:713
+#: templates/admin-interface.php:727
 msgid "This will derive text-ish body from html body as AltBody"
 msgstr ""
 
-#: templates/admin-interface.php:717
+#: templates/admin-interface.php:731
 msgid "Process the body with <code>do_shortcode()</code>"
 msgstr ""
 
-#: templates/admin-interface.php:734
+#: templates/admin-interface.php:748
 msgid "Digital Email Signing (S/MIME)"
 msgstr ""
 
-#: templates/admin-interface.php:741
+#: templates/admin-interface.php:755
 msgid "Sign emails with S/MIME certificate"
 msgstr ""
 
-#: templates/admin-interface.php:753
+#: templates/admin-interface.php:767
 msgid "S/MIME Certificate/Private-Key path"
 msgstr ""
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:769
-#: templates/admin-interface.php:922
+#: templates/admin-interface.php:783
+#: templates/admin-interface.php:936
 #, php-format
 msgid "It is highly advised to pick a folder path <u>outside</u> your website, for example: <code>%s</code> to prevent stealing your identity."
 msgstr ""
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:789
-#: templates/admin-interface.php:940
+#: templates/admin-interface.php:803
+#: templates/admin-interface.php:954
 #, php-format
 msgid "Set folder <code>%s</code> not found."
 msgstr ""
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:792
-#: templates/admin-interface.php:943
+#: templates/admin-interface.php:806
+#: templates/admin-interface.php:957
 #, php-format
 msgid "Expanded path: <code>%s</code>"
 msgstr ""
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:795
-#: templates/admin-interface.php:946
+#: templates/admin-interface.php:809
+#: templates/admin-interface.php:960
 #, php-format
 msgid "Evaluated path: <code>%s</code>"
 msgstr ""
 
-#: templates/admin-interface.php:805
-#: templates/admin-interface.php:957
+#: templates/admin-interface.php:819
+#: templates/admin-interface.php:971
 msgid "You can also type a relative path (any path not starting with a / is a relative path), this will be evaluated against ABSPATH (the root of your WordPress installation)."
 msgstr ""
 
-#: templates/admin-interface.php:806
-#: templates/admin-interface.php:959
+#: templates/admin-interface.php:820
+#: templates/admin-interface.php:973
 msgid "The file-naming convention is"
 msgstr ""
 
-#: templates/admin-interface.php:811
+#: templates/admin-interface.php:825
 msgid "Type an email address to see the correct filenames"
 msgstr ""
 
-#: templates/admin-interface.php:837
-#: templates/admin-interface.php:976
+#: templates/admin-interface.php:851
+#: templates/admin-interface.php:990
 msgid "certificate"
 msgstr ""
 
-#: templates/admin-interface.php:847
-#: templates/admin-interface.php:985
+#: templates/admin-interface.php:861
+#: templates/admin-interface.php:999
 msgid "private key"
 msgstr ""
 
-#: templates/admin-interface.php:857
-#: templates/admin-interface.php:1003
+#: templates/admin-interface.php:871
+#: templates/admin-interface.php:1017
 msgid "(optional) passphrase"
 msgstr ""
 
 #. translators: %s: a list of S/MIME identities.
-#: templates/admin-interface.php:873
+#: templates/admin-interface.php:887
 #, php-format
 msgid "Found S/MIME identities for the following senders: <code>%s</code>"
 msgstr ""
 
-#: templates/admin-interface.php:890
+#: templates/admin-interface.php:904
 msgid "Digital Email Signing (DKIM)"
 msgstr ""
 
-#: templates/admin-interface.php:897
+#: templates/admin-interface.php:911
 msgid "Sign emails with DKIM certificate"
 msgstr ""
 
-#: templates/admin-interface.php:908
+#: templates/admin-interface.php:922
 msgid "DKIM Certificate/Private-Key path"
 msgstr ""
 
-#: templates/admin-interface.php:964
+#: templates/admin-interface.php:978
 msgid "Type a domain to see the correct filenames and records"
 msgstr ""
 
-#: templates/admin-interface.php:967
+#: templates/admin-interface.php:981
 msgid "Type the desired domainkey to see the correct DNS records"
 msgstr ""
 
-#: templates/admin-interface.php:970
+#: templates/admin-interface.php:984
 msgid "Type a sample password to see the correct scripts"
 msgstr ""
 
-#: templates/admin-interface.php:994
+#: templates/admin-interface.php:1008
 msgid "DKIM Selector"
 msgstr ""
 
-#: templates/admin-interface.php:1013
+#: templates/admin-interface.php:1027
 msgid "To generate DKIM keys, use"
 msgstr ""
 
-#: templates/admin-interface.php:1017
-#: templates/admin-interface.php:1019
-#: templates/admin-interface.php:1028
+#: templates/admin-interface.php:1031
+#: templates/admin-interface.php:1033
+#: templates/admin-interface.php:1042
 msgctxt "A sample password"
 msgid "YOUR-PASSWORD"
 msgstr ""
 
-#: templates/admin-interface.php:1020
-#: templates/admin-interface.php:1027
-#: templates/admin-interface.php:1073
+#: templates/admin-interface.php:1034
+#: templates/admin-interface.php:1041
+#: templates/admin-interface.php:1087
 msgctxt "A sample DKIM selector"
 msgid "DKIM-SELECTOR-FOR-THIS-KEY"
 msgstr ""
 
-#: templates/admin-interface.php:1021
+#: templates/admin-interface.php:1035
 msgid "Upload these files to the specified path on the server and again; this should not be publicly queryable!!!"
 msgstr ""
 
-#: templates/admin-interface.php:1070
+#: templates/admin-interface.php:1084
 msgid "Finally, register the domain key in the DNS"
 msgstr ""
 
-#: templates/admin-interface.php:1073
+#: templates/admin-interface.php:1087
 msgctxt "A tag that tells the user to get the content of a file"
 msgid "CONTENT-OF"
 msgstr ""
 
 #. translators: %1$s and %2$s are sample content lines to be removed from the key.
-#: templates/admin-interface.php:1077
+#: templates/admin-interface.php:1091
 #, php-format
 msgid "Remove the lines \"%1$s\" and \"%2$s\" and place the rest of the content on a single line."
 msgstr ""
 
 #. translators: %s: a URL: to a testing site.
-#: templates/admin-interface.php:1083
+#: templates/admin-interface.php:1097
 #, php-format
 msgid "Test your settings with <a href=\"%s\" target=\"_blank\">DMARC Analyser</a> (unaffiliated)"
 msgstr ""
 
 #. translators: %s: a list of domains.
-#: templates/admin-interface.php:1094
+#: templates/admin-interface.php:1108
 #, php-format
 msgid "Found DKIM certificates for the following sender-domains: %s"
 msgstr ""
 
-#: templates/admin-interface.php:1108
+#: templates/admin-interface.php:1122
 msgid "Email styling, and filters for HTML head/body"
 msgstr ""
 
-#: templates/admin-interface.php:1114
+#: templates/admin-interface.php:1128
 msgid "You can use WordPress filters to augment the HEAD and BODY sections of the HTML email."
 msgstr ""
 
-#: templates/admin-interface.php:1120
+#: templates/admin-interface.php:1134
 msgid "You can use WordPress filters to change the email."
 msgstr ""
 
-#: templates/admin-interface.php:1126
+#: templates/admin-interface.php:1140
 msgid "Purpose"
 msgstr ""
 
-#: templates/admin-interface.php:1127
+#: templates/admin-interface.php:1141
 msgid "WordPress filter"
 msgstr ""
 
-#: templates/admin-interface.php:1128
+#: templates/admin-interface.php:1142
 msgid "Parameters"
 msgstr ""
 
-#: templates/admin-interface.php:1131
+#: templates/admin-interface.php:1145
 msgid "Plugin defaults"
 msgstr ""
 
-#: templates/admin-interface.php:1136
+#: templates/admin-interface.php:1150
 msgid "Plugin settings"
 msgstr ""
 
-#: templates/admin-interface.php:1141
+#: templates/admin-interface.php:1155
 msgid "Email subject"
 msgstr ""
 
-#: templates/admin-interface.php:1146
+#: templates/admin-interface.php:1160
 msgid "Email <head>"
 msgstr ""
 
-#: templates/admin-interface.php:1152
+#: templates/admin-interface.php:1166
 msgid "Email <body>"
 msgstr ""
 
-#: templates/admin-interface.php:1158
+#: templates/admin-interface.php:1172
 msgid "Email CSS styles"
 msgstr ""
 
-#: templates/admin-interface.php:1165
+#: templates/admin-interface.php:1179
 msgid "Turn on HTML email to enable email styling."
 msgstr ""
 
-#: templates/admin-interface.php:1175
+#: templates/admin-interface.php:1189
 msgid "Example Email (actual HTML) - with your filters applied"
 msgstr ""
 
-#: templates/admin-interface.php:1175
+#: templates/admin-interface.php:1189
 msgid "Example Email"
 msgstr ""
 
-#: templates/admin-interface.php:1188
+#: templates/admin-interface.php:1202
 msgid "Send Test Email"
 msgstr ""
 
-#: templates/admin-interface.php:1223
+#: templates/admin-interface.php:1237
 msgid "Send test-email from:"
 msgstr ""
 
-#: templates/admin-interface.php:1230
+#: templates/admin-interface.php:1244
 msgid "This setting will allow you to test the sender-replacement setting. Depending on your settings above, the chosen address will either be the actual sender-address, or the reply-to address."
 msgstr ""
 
-#: templates/admin-interface.php:1233
+#: templates/admin-interface.php:1247
 msgid "Send test-email to:"
 msgstr ""
 
-#: templates/admin-interface.php:1240
+#: templates/admin-interface.php:1254
 msgid "This setting will allow you to test the \"Alternative Admins\" settings."
 msgstr ""
 
