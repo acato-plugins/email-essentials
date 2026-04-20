@@ -3,6 +3,7 @@
 cd "$(dirname "$0")"
 
 [ -f ~/.bashrc ] && source ~/.bashrc
+[ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh
 
 [ -f .nvmrc ] && [ ! -z nvm ] && nvm install && nvm use
 [ ! -f .nvmrc ] && [ ! -z nvm ] && nvm install 20 && nvm use 20
