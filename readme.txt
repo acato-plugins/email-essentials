@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 6.0.3
+Stable tag: 6.0.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ Email Essentials vastly reduces the chances of your emails being marked as spam 
 Please note that this plugin is not a "we support any type of transport" Email plugin. For other protocols than SMTP, but rather to enhance the email sending capabilities of WordPress.
 If you need to send emails with other protocols than SMTP, this plugin is not for you. You might want to look at plugins like Post SMTP (not affiliated).
 
-And since version 6.0.0, after more than 10 years of development, this plugin is now a FOSS plugin, meaning it is free to use, modify and distribute under the GPLv2 license.
+And since version 6.0.0, after more than 10 years of development and internal use, this plugin is now a FOSS plugin, meaning it is free to use, modify and distribute under the GPLv2 license.
 
 In return, we ask you to support the development of this plugin by contributing to the codebase, reporting bugs, and helping others in the community.
 
@@ -344,6 +344,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.5 =
+* Re-release of 6.0.4 because I forgot to update the Stable Tag.
 
 = 6.0.4 =
 * Bugfix: failed to save self-signed tls/ssl setting
