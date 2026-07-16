@@ -3,14 +3,10 @@ pipelines:
     '*':
       - parallel:
           - step:
-              name: Trigger package refresh from tag
+              name: Trigger packagist update
+              image: curlimages/curl:latest
               script:
-                - pipe: atlassian/trigger-pipeline:4.2.1
-                  variables:
-                    BITBUCKET_USERNAME: 'acato_pipeline'
-                    BITBUCKET_APP_PASSWORD: $APP_PASSWORD
-                    REPOSITORY: 'acato-packagist'
-                    ACCOUNT: 'acato'
+                - curl "https://packagist.acato.nl/update/?package_name=acato/email-essentials"
           - step:
               name: GitHub Mirror to Acato Legacy Clearsite
               image: alpine/git:latest
@@ -24,14 +20,10 @@ pipelines:
     '{develop,staging,master}':
       - parallel:
           - step:
-              name: Trigger package refresh from branch
+              name: Trigger packagist update
+              image: curlimages/curl:latest
               script:
-                - pipe: atlassian/trigger-pipeline:4.2.1
-                  variables:
-                    BITBUCKET_USERNAME: 'acato_pipeline'
-                    BITBUCKET_APP_PASSWORD: $APP_PASSWORD
-                    REPOSITORY: 'acato-packagist'
-                    ACCOUNT: 'acato'
+                - curl "https://packagist.acato.nl/update/?package_name=acato/email-essentials"
           - step:
               name: GitHub Mirror to Acato Legacy Clearsite
               image: alpine/git:latest

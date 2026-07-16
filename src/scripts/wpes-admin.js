@@ -3,7 +3,7 @@ jQuery( document ).ready( function ($) {
     /**
      * Settings panel
      */
-    let keys = 'enable_history,smtp-enabled,enable-smime,enable-dkim,smtp-is_html'.split( ',' );
+    let keys = 'enable_history,smtp-enabled,enable-smime,enable-dkim,smtp-is_html,tracker_enabled'.split( ',' );
     keys.forEach( (selector) => {
       $( '#' + selector ).on( 'change', function (e) { // we need 'function' here for 'this'.
         let target_id = e.target.id;

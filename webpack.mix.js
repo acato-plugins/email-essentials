@@ -44,10 +44,6 @@ const mixFiles = (folder, outputFolder = folder) => {
       if ('styles' === folder || folder.includes('styles/')) {
         mix.sass(`src/${folder}/${filepath}`, outputFolder);
       }
-
-      if ('images' === folder || 'fonts' === folder) {
-        mix.copy(`src/${folder}/${filepath}`, `${process.env.MIX_BUILD_DIR}/${folder}`);
-      }
     }
   });
 };
