@@ -578,6 +578,26 @@ $acato_email_essentials_dkim_identities  = [];
 					</div>
 
 					<div class="wpes-radio-list on-enable_history">
+						<input type="hidden" name="settings[tracker_enabled]" value="0"/>
+						<input
+							<?php checked( $acato_email_essentials_config['tracker_enabled'] ); ?>
+							type="checkbox" name="settings[tracker_enabled]"
+							value="1"
+							id="tracker_enabled"/>
+						<label for="tracker_enabled">
+							<?php print wp_kses_post( __( 'Enable Tracker to detect actual image delivery.', 'email-essentials' ) ); ?>
+						</label>
+						<p class="description wpes-field-description">
+							<?php
+							$sent_ok_status_text = _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' );
+							// Translators: %s is a pre-tanslated string for 'Sent OK'. Keep as is.
+							print wp_kses_post( sprintf( __( 'Use this to be absolutely certain emails are delivered. Without this, the best status you can get is "%s"', 'email-essentials' ), $sent_ok_status_text ) );
+							?>
+						</p>
+					</div>
+
+					<div class="wpes-radio-list on-tracker_enabled">
+						<input type="hidden" name="settings[nginx_tracker]" value="0"/>
 						<input
 							<?php checked( $acato_email_essentials_config['nginx_tracker'] ); ?>
 							type="checkbox" name="settings[nginx_tracker]"
@@ -588,6 +608,19 @@ $acato_email_essentials_dkim_identities  = [];
 						</label>
 						<p class="description wpes-field-description">
 							<?php print wp_kses_post( __( 'Use this if nginx blocks the tracker image.', 'email-essentials' ) ); ?>
+						</p>
+
+						<input type="hidden" name="settings[tracker_actual_image]" value="0"/>
+						<input
+							<?php checked( $acato_email_essentials_config['tracker_actual_image'] ); ?>
+							type="checkbox" name="settings[tracker_actual_image]"
+							value="1"
+							id="tracker_actual_image"/>
+						<label for="tracker_actual_image">
+							<?php print wp_kses_post( __( 'Send an actual 1x1 transparent image', 'email-essentials' ) ); ?>
+						</label>
+						<p class="description wpes-field-description">
+							<?php print wp_kses_post( __( 'Default behavior is a 404 response, which will give an "image missing" icon in certain email clients. This option changes it to an actual, invisible image.', 'email-essentials' ) ); ?>
 						</p>
 					</div>
 				</div>

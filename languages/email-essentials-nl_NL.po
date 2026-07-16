@@ -31,9 +31,9 @@ msgid "anonymous"
 msgstr "anoniem"
 
 #: lib/class-plugin.php:1522
-#: lib/class-plugin.php:2154
+#: lib/class-plugin.php:2160
 #: templates/admin-interface.php:48
-#: templates/admin-interface.php:1260
+#: templates/admin-interface.php:1293
 msgid "Send sample mail"
 msgstr "Verstuur test-e-mail"
 
@@ -45,184 +45,184 @@ msgstr "Geef debug informatie over verzonden test-e-mail"
 msgid "Dump of PHP Mailer object"
 msgstr "Dump van het PHP Mailer object"
 
-#: lib/class-plugin.php:2141
-#: lib/class-plugin.php:2232
-#: lib/class-plugin.php:2259
+#: lib/class-plugin.php:2147
+#: lib/class-plugin.php:2238
+#: lib/class-plugin.php:2265
 #: templates/admin-admins.php:39
 #: templates/admin-interface.php:45
 #: templates/admin-moderators.php:43
 msgid "Save settings"
 msgstr "Instellingen opslaan"
 
-#: lib/class-plugin.php:2151
+#: lib/class-plugin.php:2157
 msgid "Settings saved."
 msgstr "Instellingen opgeslagen."
 
-#: lib/class-plugin.php:2165
+#: lib/class-plugin.php:2171
 msgid "No email address to send to."
 msgstr "Geen e-mail adres om aan te verzenden."
 
-#: lib/class-plugin.php:2172
+#: lib/class-plugin.php:2178
 msgid "No email address to send from."
 msgstr "Geen email adres beschikbaar als afzender."
 
 #. translators: %s is the email address.
-#: lib/class-plugin.php:2187
+#: lib/class-plugin.php:2193
 #, php-format
 msgid "Mail sent to %s"
 msgstr "Mail verzonden naar %s"
 
 #. translators: %s is the email address.
-#: lib/class-plugin.php:2190
+#: lib/class-plugin.php:2196
 #, php-format
 msgid "Mail NOT sent to %s"
 msgstr "Mail NIET verzonden naar %s"
 
-#: lib/class-plugin.php:2208
+#: lib/class-plugin.php:2214
 msgid "Sample email subject"
 msgstr "Voorbeeld e-mail onderwerp"
 
-#: lib/class-plugin.php:2242
+#: lib/class-plugin.php:2248
 msgid "Alternative Admins list saved."
 msgstr "Lijst van alternatieve adressen opgeslagen."
 
-#: lib/class-plugin.php:2253
+#: lib/class-plugin.php:2259
 msgid "Subject-RegExp list saved."
 msgstr "Onderwerp-RegExp lijst opgeslagen."
 
-#: lib/class-plugin.php:2275
+#: lib/class-plugin.php:2281
 msgid "Alternative Moderators list saved."
 msgstr "Lijst van alternatieve moderators opgeslagen."
 
-#: lib/class-plugin.php:2294
-#: lib/class-plugin.php:2295
+#: lib/class-plugin.php:2300
+#: lib/class-plugin.php:2301
 #: templates/admin-admins.php:22
 #: templates/admin-interface.php:91
 msgid "Alternative Admins"
 msgstr "Alternatieve Administrator-adressen"
 
-#: lib/class-plugin.php:2306
-#: lib/class-plugin.php:2307
+#: lib/class-plugin.php:2312
+#: lib/class-plugin.php:2313
 #: templates/admin-moderators.php:27
 msgid "Alternative Moderators"
 msgstr "Alternatieve moderators"
 
-#: lib/class-plugin.php:2398
+#: lib/class-plugin.php:2404
 msgid "Test-email"
 msgstr "Test-e-mail"
 
 #. translators: %s: Plugin name.
-#: lib/class-plugin.php:2474
+#: lib/class-plugin.php:2480
 #, php-format
 msgid "%s is not yet configured. Please fill out the form below."
 msgstr "%s is nog niet geconfigureerd. Vul aub onderstaande instellingen in."
 
 #. translators: %1$s: Plugin name, %2$s: settings URL.
-#: lib/class-plugin.php:2479
+#: lib/class-plugin.php:2485
 #, php-format
 msgid "%1$s is not yet configured. Please go <a href=\"%2$s\">here</a>."
 msgstr "%1$s is nog niet geconfigureerd, ga a.u.b. naar <a href=\"%2$s\">deze pagina</a>."
 
 #. translators: %s: a file path.
-#: lib/class-plugin.php:2490
+#: lib/class-plugin.php:2496
 #, php-format
 msgid "The S/MIME certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr "Het gekozen S/MIME certificaat pad is gesitueerd binnen de website. Dit is Extreem onveilig. Kies a.u.b. een andere locatie welke niet binnen de website-basis %s ligt."
 
-#: lib/class-plugin.php:2496
+#: lib/class-plugin.php:2502
 msgid "The openssl package for PHP is not installed, incomplete or broken. Please contact your hosting provider. S/MIME signing is NOT available."
 msgstr "Het pakket openssl voor PHP is niet geïnstalleerd, is incompleet of stuk. Neem contact op met je hosting aanbieder. S/MIME ondertekening is NIET beschikbaar."
 
-#: lib/class-plugin.php:2502
+#: lib/class-plugin.php:2508
 msgid "Services like MandrillApp or SparkPostMail will break S/MIME signing. Please use a different SMTP-service if signing is required."
 msgstr "Diensten als MandrillApp of SparkPostMail werken niet goed samen met S/MIME ondertekening. Gebruik een andere SMTP-dienst indien digitale ondertekening vereist is."
 
 #. translators: %s: email address.
-#: lib/class-plugin.php:2515
+#: lib/class-plugin.php:2521
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. The required certificate is supplied with this plugin. Please copy it to the correct folder."
 msgstr "Er is geen certificaat voor het standaard afzender adres <code>%s</code>. Het vereiste certificaat is meegeleverd met deze plugin, kopieer het a.u.b. naar de juiste map."
 
 #. translators: %s: email address.
-#: lib/class-plugin.php:2520
+#: lib/class-plugin.php:2526
 #, php-format
 msgid "There is no certificate for the default sender address <code>%s</code>. Start: <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">here</a>."
 msgstr "Er is geen certificaat voor het standaard afzender adres <code>%s</code>. Begin <a href=\"https://www.comodo.com/home/email-security/free-email-certificate.php\" target=\"_blank\">hier</a> met de aanvraag van een S/MIME certificaat."
 
 #. translators: %s: a file path.
-#: lib/class-plugin.php:2532
+#: lib/class-plugin.php:2538
 #, php-format
 msgid "The DKIM certificate folder is inside the webspace. This is Extremely insecure. Please reconfigure, make sure the folder is outside the website-root %s."
 msgstr "Het gekozen DKIM certificaat pad is gesitueerd binnen de website. Dit is Extreem onveilig. Kies a.u.b. een andere locatie welke niet binnen de website-basis %s ligt."
 
-#: lib/class-plugin.php:2870
+#: lib/class-plugin.php:2876
 msgctxt "mail key"
 msgid "Email after automatic update (debug)"
 msgstr "E-mail na automatische update (debug)"
 
-#: lib/class-plugin.php:2871
+#: lib/class-plugin.php:2877
 msgctxt "mail key"
 msgid "Email after automatic update"
 msgstr "E-mail na automatische update"
 
-#: lib/class-plugin.php:2872
+#: lib/class-plugin.php:2878
 msgctxt "mail key"
 msgid "Email after website crash"
 msgstr "E-mail wanneer de website crasht"
 
-#: lib/class-plugin.php:2879
+#: lib/class-plugin.php:2885
 msgctxt "mail key"
 msgid "Email after new user registered"
 msgstr "E-mail wanneer een nieuwe gebruiker is geregistreerd"
 
-#: lib/class-plugin.php:2880
+#: lib/class-plugin.php:2886
 msgctxt "mail key"
 msgid "Email notification after user requests password reset"
 msgstr "E-mail notificatie nadat een gebruiker een wachtwoord reset vraagt"
 
-#: lib/class-plugin.php:2881
+#: lib/class-plugin.php:2887
 msgctxt "mail key"
 msgid "Email notification after user reset their password"
 msgstr "E-mail notificatie nadat een gebruiker hun wachtwoord heeft gereset"
 
-#: lib/class-plugin.php:2882
+#: lib/class-plugin.php:2888
 msgctxt "mail key"
 msgid "Email notification after user changed their password"
 msgstr "E-mail notificatie nadat een gebruiker hun wachtwoord veranderd heeft"
 
 #. translators: %s: a URL.
-#: lib/class-plugin.php:3047
+#: lib/class-plugin.php:3053
 #, php-format
 msgid "You can configure alternative administrators <a href=\"%s\">here</a>."
 msgstr "Je kunt alternatieve ontvangers <a href=\"%s\">hier</a> instellen."
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: website hostname.
-#: lib/class-plugin.php:3063
+#: lib/class-plugin.php:3069
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"noreply\">noreply@%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"noreply\">noreply@%3$s</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name, %3$s: email address.
-#: lib/class-plugin.php:3067
+#: lib/class-plugin.php:3073
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"default\">%3$s</em> as sender and set <em>this email address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"default\">%3$s</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class-plugin.php:3071
+#: lib/class-plugin.php:3077
 #, php-format
 msgid "But <strong>please do not worry</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> will set <em class=\"at-\">example-email-at-youtserver-dot-com</em> as sender and set <em>this address</em> as Reply-To header."
 msgstr "Maar <strong>weest niet bevreesd</strong>! <a href=\"%1$s\" target=\"_blank\">%2$s</a> zal <em class=\"at-\">example-email-at-youtserver-dot-com</em> instellen als afzender en <em>het hier ingestelde adres</em> gebruiken als Reply-To adres."
 
 #. translators: %1$s: a URL, %2$s: the plugin name.
-#: lib/class-plugin.php:3075
+#: lib/class-plugin.php:3081
 #, php-format
 msgid "You can fix this here, or you can let <a href=\"%1$s\" target=\"_blank\">%2$s</a> fix this automatically upon sending the email."
 msgstr "Dit kun je hier oplossen, of je kunt <a href=\"%1$s\" target=\"_blank\">%2$s</a> het automatisch laten oplossen bij het verzenden van de e-mail."
 
 #: lib/class-queue.php:507
 #: lib/class-queue.php:508
-#: templates/admin-interface.php:599
+#: templates/admin-interface.php:632
 msgid "Email Throttling"
 msgstr "E-mail Wachtrij"
 
@@ -346,6 +346,7 @@ msgid "Sent ??"
 msgstr "Verzonden ??"
 
 #: templates/admin-emails.php:243
+#: templates/admin-interface.php:592
 msgctxt "Email log: this email is Sent OK"
 msgid "Sent Ok"
 msgstr "Goed verzonden"
@@ -712,303 +713,303 @@ msgstr "Het uitschakelen van deze functie wist alle opgeslagen data."
 msgid "If you insist on storing emails, please note that you need to implement the appropriate protocols for compliance with GDPR. The responsibility lies with the owner of the website, not the creator or hosting company."
 msgstr "Als je zeker bent dat je de mails wilt opslaan, zorg dan dat je de toepasselijke protocollen implementeert volgens de GDPR richtlijnen. De verantwoordelijkheid hiervoor en elk verbonden risico is voor de eigenaar van de website, niet voor de bouwer of het bedrijf waar je website gehost is."
 
-#: templates/admin-interface.php:612
+#: templates/admin-interface.php:645
 msgid "Enable Email Throttling"
 msgstr "E-mail Wachtrij inschakelen"
 
-#: templates/admin-interface.php:618
+#: templates/admin-interface.php:651
 #: templates/admin-queue.php:30
 msgid "Enabling the throttling feature will prevent sending large amounts of emails in quick succession, for example a spam-run."
 msgstr "Met de e-mail wachtrij ingeschakeld voorkom je dat er grote hoeveelheden e-mails worden verzonden in zeer korte tijd, zoals bijvoorbeeld een reeks spam e-mails."
 
 #. translators: %1$d: the maximum number of emails per time window, %2$d: the time window in seconds.
-#: templates/admin-interface.php:623
+#: templates/admin-interface.php:656
 #: templates/admin-queue.php:34
 #, fuzzy,php-format
 msgid "Once activated, when more than %1$d emails are sent within %2$d seconds from the same IP-address, all other emails will be held until released."
 msgstr "Indien ingeschakeld zal bij verzending van meer dan %d e-mails binnen een tijdsbestek van %d seconden (vanaf hetzelfde IP adres), de rest van de e-mails worden tegengehouden."
 
 #. translators: %d: the number of emails per minute.
-#: templates/admin-interface.php:628
+#: templates/admin-interface.php:661
 #: templates/admin-queue.php:39
 #, php-format
 msgid "Emails will be sent in batches of %d per minute, the trigger is a hit on the website, the admin panel or the cron (wp-cron.php)."
 msgstr "E-mails worden verzonden in groepjes van %d per minuut. Dit gebeurt wanneer de website, het administratie paneel ofwel de cron (wp-cron.php) wordt aangeroepen."
 
-#: templates/admin-interface.php:637
+#: templates/admin-interface.php:670
 msgid "Email content"
 msgstr "E-mail inhoud"
 
-#: templates/admin-interface.php:644
+#: templates/admin-interface.php:677
 msgid "Send as HTML?"
 msgstr "Verstuur als HTML?"
 
-#: templates/admin-interface.php:654
+#: templates/admin-interface.php:687
 msgid "This will convert non-html body to html-ish body"
 msgstr "Dit converteert niet-HTML e-mails naar HTML-achtige emails"
 
-#: templates/admin-interface.php:658
+#: templates/admin-interface.php:691
 msgid "Convert CSS to Inline Styles"
 msgstr "Converteer CSS naar inline-style"
 
-#: templates/admin-interface.php:668
+#: templates/admin-interface.php:701
 msgid "Works for Outlook Online, Yahoo Mail, Google Mail, Hotmail, etc."
 msgstr "Voor o.a. Outlook Online, Yahoo Mail, Google Mail, Hotmail."
 
-#: templates/admin-interface.php:677
+#: templates/admin-interface.php:710
 msgid "Content charset re-coding"
 msgstr "Content karakterset her-codering"
 
-#: templates/admin-interface.php:682
+#: templates/admin-interface.php:715
 msgid "Some servers have f*cked-up content-encoding settings, resulting in wrongly encoded diacritics. If you expect a character like &eacute; and all you get is something like &euro;&tilde;&Itilde;, experiment with this setting."
 msgstr "Op sommige webservers is de content-encoding zeer slecht geregeld, resulterend in verkeerd gecodeerde diakritische tekens. Als je letters als &eacute; verwacht en al wat je krijgt is iets als &euro;&tilde&ltilte;, probeer dan deze instelling."
 
 #. translators: %s: a content-encoding, like UTF-8.
-#: templates/admin-interface.php:693
+#: templates/admin-interface.php:726
 #, php-format
 msgctxt "E.g.: From: UTF-8"
 msgid "From: %s"
 msgstr "Bron-encoding: %s"
 
-#: templates/admin-interface.php:697
+#: templates/admin-interface.php:730
 msgid "No charset re-coding (default)"
 msgstr "Geen her-codering (standaard)"
 
-#: templates/admin-interface.php:698
+#: templates/admin-interface.php:731
 msgid "Autodetect with mb_check_encoding()"
 msgstr "Automatisch detecteren middels mb_check_encoding()"
 
-#: templates/admin-interface.php:710
+#: templates/admin-interface.php:743
 msgid "Content handling"
 msgstr "Content behandeling"
 
-#: templates/admin-interface.php:717
+#: templates/admin-interface.php:750
 msgid "Derive plain-text alternative?"
 msgstr "Genereer normale-tekst-alternatief?"
 
-#: templates/admin-interface.php:727
+#: templates/admin-interface.php:760
 msgid "This will derive text-ish body from html body as AltBody"
 msgstr "Dit maakt een tekst-achtige variant van de HTML Body voor gebruik als AltBody"
 
-#: templates/admin-interface.php:731
+#: templates/admin-interface.php:764
 msgid "Process the body with <code>do_shortcode()</code>"
 msgstr "Gebruik <code>do_shortcode()</code> op de e-mail inhoud"
 
-#: templates/admin-interface.php:748
+#: templates/admin-interface.php:781
 msgid "Digital Email Signing (S/MIME)"
 msgstr "Digitale ondertekening middels S/MIME"
 
-#: templates/admin-interface.php:755
+#: templates/admin-interface.php:788
 msgid "Sign emails with S/MIME certificate"
 msgstr "Onderteken de e-mails met een S/MIME certificaat"
 
-#: templates/admin-interface.php:767
+#: templates/admin-interface.php:800
 msgid "S/MIME Certificate/Private-Key path"
 msgstr "Bestandspad naar S/MIME Certificaat en Prive-sleutel-bestaand"
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:783
-#: templates/admin-interface.php:936
+#: templates/admin-interface.php:816
+#: templates/admin-interface.php:969
 #, php-format
 msgid "It is highly advised to pick a folder path <u>outside</u> your website, for example: <code>%s</code> to prevent stealing your identity."
 msgstr "Het is sterk aanbevolen om een map te kiezen <u>buiten</u> je website, bijvoorbeeld <code>%s</code> om te voorkomen dat je identiteit wordt gestolen."
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:803
-#: templates/admin-interface.php:954
+#: templates/admin-interface.php:836
+#: templates/admin-interface.php:987
 #, php-format
 msgid "Set folder <code>%s</code> not found."
 msgstr "Ingestelde map <code>%s</code> niet gevonden."
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:806
-#: templates/admin-interface.php:957
+#: templates/admin-interface.php:839
+#: templates/admin-interface.php:990
 #, php-format
 msgid "Expanded path: <code>%s</code>"
 msgstr "Volledig pad: <code>%s</code>"
 
 #. translators: %s: a path.
-#: templates/admin-interface.php:809
-#: templates/admin-interface.php:960
+#: templates/admin-interface.php:842
+#: templates/admin-interface.php:993
 #, php-format
 msgid "Evaluated path: <code>%s</code>"
 msgstr "Daadwerkelijk pad: <code>%s</code>"
 
-#: templates/admin-interface.php:819
-#: templates/admin-interface.php:971
+#: templates/admin-interface.php:852
+#: templates/admin-interface.php:1004
 #, fuzzy
 msgid "You can also type a relative path (any path not starting with a / is a relative path), this will be evaluated against ABSPATH (the root of your WordPress installation)."
 msgstr "Je kunt de map-locatie ook relatief opgeven (dus niet met een / beginnend) welke wordt geëvalueerd t.o.v. ABSPATH, de basis-locatie van WordPress."
 
-#: templates/admin-interface.php:820
-#: templates/admin-interface.php:973
+#: templates/admin-interface.php:853
+#: templates/admin-interface.php:1006
 msgid "The file-naming convention is"
 msgstr "Bestandsnamen dienen als volgt te zijn;"
 
-#: templates/admin-interface.php:825
+#: templates/admin-interface.php:858
 msgid "Type an email address to see the correct filenames"
 msgstr "Type een e-mailadres om de juiste bestandsnamen te zien"
 
-#: templates/admin-interface.php:851
-#: templates/admin-interface.php:990
+#: templates/admin-interface.php:884
+#: templates/admin-interface.php:1023
 msgid "certificate"
 msgstr "certificaat"
 
-#: templates/admin-interface.php:861
-#: templates/admin-interface.php:999
+#: templates/admin-interface.php:894
+#: templates/admin-interface.php:1032
 msgid "private key"
 msgstr "privé-sleutel"
 
-#: templates/admin-interface.php:871
-#: templates/admin-interface.php:1017
+#: templates/admin-interface.php:904
+#: templates/admin-interface.php:1050
 msgid "(optional) passphrase"
 msgstr "(optioneel) wachtwoord"
 
 #. translators: %s: a list of S/MIME identities.
-#: templates/admin-interface.php:887
+#: templates/admin-interface.php:920
 #, php-format
 msgid "Found S/MIME identities for the following senders: <code>%s</code>"
 msgstr "S/MIME identiteiten gevonden voor de volgende e-mail-afzenders: <code>%s</code>"
 
-#: templates/admin-interface.php:904
+#: templates/admin-interface.php:937
 msgid "Digital Email Signing (DKIM)"
 msgstr "Digitale ondertekening middels DKIM"
 
-#: templates/admin-interface.php:911
+#: templates/admin-interface.php:944
 msgid "Sign emails with DKIM certificate"
 msgstr "Onderteken de e-mails met DKIM"
 
-#: templates/admin-interface.php:922
+#: templates/admin-interface.php:955
 msgid "DKIM Certificate/Private-Key path"
 msgstr "Bestandspad naar DKIM Certificaat en Prive-sleutel-bestaand"
 
-#: templates/admin-interface.php:978
+#: templates/admin-interface.php:1011
 msgid "Type a domain to see the correct filenames and records"
 msgstr "Type een domein om de juiste bestandsnamen en records te zien"
 
-#: templates/admin-interface.php:981
+#: templates/admin-interface.php:1014
 msgid "Type the desired domainkey to see the correct DNS records"
 msgstr "Type de gewenste domeinsleutel om de juiste DNS records te zien"
 
-#: templates/admin-interface.php:984
+#: templates/admin-interface.php:1017
 msgid "Type a sample password to see the correct scripts"
 msgstr "Type een voorbeeld wachtwoord om de juiste scripts te zien"
 
-#: templates/admin-interface.php:1008
+#: templates/admin-interface.php:1041
 msgid "DKIM Selector"
 msgstr "DKIM Selector"
 
-#: templates/admin-interface.php:1027
+#: templates/admin-interface.php:1060
 msgid "To generate DKIM keys, use"
 msgstr "Om een DKIM sleutel te genereren volg je de volgende stappen:"
 
-#: templates/admin-interface.php:1031
-#: templates/admin-interface.php:1033
-#: templates/admin-interface.php:1042
+#: templates/admin-interface.php:1064
+#: templates/admin-interface.php:1066
+#: templates/admin-interface.php:1075
 msgctxt "A sample password"
 msgid "YOUR-PASSWORD"
 msgstr "WACHTWOORD-NAAR-KEUZE"
 
-#: templates/admin-interface.php:1034
-#: templates/admin-interface.php:1041
-#: templates/admin-interface.php:1087
+#: templates/admin-interface.php:1067
+#: templates/admin-interface.php:1074
+#: templates/admin-interface.php:1120
 msgctxt "A sample DKIM selector"
 msgid "DKIM-SELECTOR-FOR-THIS-KEY"
 msgstr "DKIM-SELECTOR-VOOR-DEZE-SLEUTEL"
 
-#: templates/admin-interface.php:1035
+#: templates/admin-interface.php:1068
 #, fuzzy
 msgid "Upload these files to the specified path on the server and again; this should not be publicly queryable!!!"
 msgstr "Upload deze bestanden naar de ingestelde folder op de server en nogmaals; deze bestanden mogen NIET bereikbaar zijn vanaf het web!!!"
 
-#: templates/admin-interface.php:1084
+#: templates/admin-interface.php:1117
 msgid "Finally, register the domain key in the DNS"
 msgstr "Tenslotte, registreer de DKIM domein sleutel in de DNS"
 
-#: templates/admin-interface.php:1087
+#: templates/admin-interface.php:1120
 msgctxt "A tag that tells the user to get the content of a file"
 msgid "CONTENT-OF"
 msgstr "INHOUD-VAN"
 
 #. translators: %1$s and %2$s are sample content lines to be removed from the key.
-#: templates/admin-interface.php:1091
+#: templates/admin-interface.php:1124
 #, php-format
 msgid "Remove the lines \"%1$s\" and \"%2$s\" and place the rest of the content on a single line."
 msgstr "Verwijder de regels \"%1$s\" en \"%2$s\" en plaats de rest van de inhoud op één enkele regel."
 
 #. translators: %s: a URL: to a testing site.
-#: templates/admin-interface.php:1097
+#: templates/admin-interface.php:1130
 #, php-format
 msgid "Test your settings with <a href=\"%s\" target=\"_blank\">DMARC Analyser</a> (unaffiliated)"
 msgstr "Test je instellingen met <a href=\"%s\" target=\"_blank\">DMARC Analyser</a> (niet geaffilieerd)"
 
 #. translators: %s: a list of domains.
-#: templates/admin-interface.php:1108
+#: templates/admin-interface.php:1141
 #, php-format
 msgid "Found DKIM certificates for the following sender-domains: %s"
 msgstr "DKIM identiteiten gevonden voor de volgende e-mail-afzenders: %s"
 
-#: templates/admin-interface.php:1122
+#: templates/admin-interface.php:1155
 msgid "Email styling, and filters for HTML head/body"
 msgstr "E-mail stijl, en filters voor HTML head/body"
 
-#: templates/admin-interface.php:1128
+#: templates/admin-interface.php:1161
 msgid "You can use WordPress filters to augment the HEAD and BODY sections of the HTML email."
 msgstr "Je kunt WordPress filters gebruiken om de HEAD en BODY van de HTML e-mail te verrijken."
 
-#: templates/admin-interface.php:1134
+#: templates/admin-interface.php:1167
 msgid "You can use WordPress filters to change the email."
 msgstr "Je kunt WordPress filters gebruiken om de e-mail aan te passen."
 
-#: templates/admin-interface.php:1140
+#: templates/admin-interface.php:1173
 msgid "Purpose"
 msgstr "Doel"
 
-#: templates/admin-interface.php:1141
+#: templates/admin-interface.php:1174
 msgid "WordPress filter"
 msgstr "WordPress filter"
 
-#: templates/admin-interface.php:1142
+#: templates/admin-interface.php:1175
 msgid "Parameters"
 msgstr "Parameters"
 
-#: templates/admin-interface.php:1145
+#: templates/admin-interface.php:1178
 msgid "Plugin defaults"
 msgstr "Standaard waarden"
 
-#: templates/admin-interface.php:1150
+#: templates/admin-interface.php:1183
 msgid "Plugin settings"
 msgstr "Plugin instellingen"
 
-#: templates/admin-interface.php:1155
+#: templates/admin-interface.php:1188
 msgid "Email subject"
 msgstr "E-mail onderwerp"
 
-#: templates/admin-interface.php:1160
+#: templates/admin-interface.php:1193
 msgid "Email <head>"
 msgstr "E-mail <head>"
 
-#: templates/admin-interface.php:1166
+#: templates/admin-interface.php:1199
 msgid "Email <body>"
 msgstr "E-mail <body>"
 
-#: templates/admin-interface.php:1179
+#: templates/admin-interface.php:1212
 msgid "Turn on HTML email to enable email styling."
 msgstr "Zet HTML e-mail aan om e-mail opmaak te activeren."
 
-#: templates/admin-interface.php:1189
+#: templates/admin-interface.php:1222
 msgid "Example Email (actual HTML) - with your filters applied"
 msgstr "Voorbeeld E-mail (werkelijke HTML) - met jouw filters toegepast"
 
-#: templates/admin-interface.php:1189
+#: templates/admin-interface.php:1222
 msgid "Example Email"
 msgstr "Voorbeeld e-mail"
 
-#: templates/admin-interface.php:1202
+#: templates/admin-interface.php:1235
 msgid "Send Test Email"
 msgstr "Verstuur test-e-mail"
 
-#: templates/admin-interface.php:1247
+#: templates/admin-interface.php:1280
 msgid "Send test-email to:"
 msgstr "Verstuur test-e-mail aan:"
 
@@ -1020,15 +1021,15 @@ msgstr "Blog instellingen"
 msgid "Site settings"
 msgstr "Multisite instellingen"
 
-#: templates/admin-interface.php:1254
+#: templates/admin-interface.php:1287
 msgid "This setting will allow you to test the \"Alternative Admins\" settings."
 msgstr "Deze instelling zal je in staat stellen de \"Alternatieve Admins\" instellingen te testen."
 
-#: templates/admin-interface.php:1237
+#: templates/admin-interface.php:1270
 msgid "Send test-email from:"
 msgstr "Verstuur test-e-mail vanaf:"
 
-#: templates/admin-interface.php:1244
+#: templates/admin-interface.php:1277
 msgid "This setting will allow you to test the sender-replacement setting. Depending on your settings above, the chosen address will either be the actual sender-address, or the reply-to address."
 msgstr "Deze instelling zal je in staat stellen de afzender-vervangings-instelling te testen. Afhankelijk van je bovenstaande instellingen, zal het gekozen adres de werkelijke afzender zijn, of het antwoord-adres."
 
@@ -1132,24 +1133,24 @@ msgid "Emails"
 msgstr "E-mails"
 
 #. translators: %1$s: type (class/function/filter), %2$s: function/class/filter name, %3$s: time since last seen, %4$s: version, %5$s: replacement.
-#: lib/class-plugin.php:3444
+#: lib/class-plugin.php:3450
 #, php-format
 msgid "Deprecated <strong>%1$s</strong> <code>%2$s</code> was seen %3$s ago. Replacement since version <strong>%4$s</strong> is <code>%5$s</code>."
 msgstr "Verouderd gebruik van <strong>%1$s</strong> <code>%2$s</code> is gezien %3$s geleden. Vervanging sinds versie <strong>%4$s</strong> is <code>%5$s</code>."
 
-#: lib/class-plugin.php:3449
+#: lib/class-plugin.php:3455
 msgid "unavailable"
 msgstr "niet beschikbaar"
 
-#: lib/class-plugin.php:3455
+#: lib/class-plugin.php:3461
 msgid "Email Essentials detected the use of deprecated functions or classes"
 msgstr "E-mail Essentials heeft het gebruik van verouderde functions of classes gedetecteerd"
 
-#: lib/class-plugin.php:3458
+#: lib/class-plugin.php:3464
 msgid "Debug Logging is enabled in your site, please check the log for more information."
 msgstr "Debug Logging is ingeschakeld op je website, controleer de log voor meer informatie."
 
-#: lib/class-plugin.php:3460
+#: lib/class-plugin.php:3466
 msgid "Please enable debug logging in your site to see more information about these deprecated functions/classes/filters."
 msgstr "Zet de debug logging aan op je website om meer informatie te zien over deze verouderde functions/classes/filters."
 
@@ -1157,15 +1158,15 @@ msgstr "Zet de debug logging aan op je website om meer informatie te zien over d
 msgid "Related settings"
 msgstr "Gerelateerde instellingen"
 
-#: templates/admin-interface.php:600
+#: templates/admin-interface.php:633
 msgid "Beta feature"
 msgstr "Beta functie"
 
-#: templates/admin-interface.php:601
+#: templates/admin-interface.php:634
 msgid "It works but not without flaws."
 msgstr "Het werkt, maar niet zonder nukken."
 
-#: lib/class-plugin.php:2883
+#: lib/class-plugin.php:2889
 msgctxt "mail key"
 msgid "Email test from Email Essentials"
 msgstr "E-mail test van E-mail Essentials"
@@ -1205,7 +1206,7 @@ msgctxt "Paginator"
 msgid "Page size:"
 msgstr "Pagina grootte:"
 
-#: templates/admin-interface.php:1172
+#: templates/admin-interface.php:1205
 msgid "Email CSS styles"
 msgstr "E-mail CSS stijl"
 
@@ -1230,15 +1231,15 @@ msgid "<strong>Disclaimer:</strong> The email body is shown below as it was sent
 msgstr "<strong>Disclaimer:</strong> De e-mail inhoud wordt hieronder getoond zoals deze is verzonden. Uit veiligheidsoverwegingen is de output gesaneerd. Voor de werkelijke HTML, zie het broncode paneel."
 
 #: lib/class-history.php:120
-#: lib/class-plugin.php:2204
+#: lib/class-plugin.php:2210
 msgid "Security check failed"
 msgstr "Veiligheidscontrole mislukt"
 
-#: templates/admin-interface.php:587
+#: templates/admin-interface.php:607
 msgid "Tracker compatible with strict nginx"
 msgstr "Tracker compatibel met strikte nginx configuratie"
 
-#: templates/admin-interface.php:590
+#: templates/admin-interface.php:610
 msgid "Use this if nginx blocks the tracker image."
 msgstr "Gebruik dit als nginx de tracker afbeelding blokkeert."
 
@@ -1266,3 +1267,21 @@ msgstr "Verouderd"
 msgctxt "Email queue: this email is being throttled and will be sent later"
 msgid "Blocked"
 msgstr "Tegehouden"
+
+#: templates/admin-interface.php:588
+msgid "Enable Tracker to detect actual image delivery."
+msgstr "Zet de tracker aan om te detecteren of de e-mail daadwerkelijk is afgeleverd."
+
+#. Translators: %s is a pre-tanslated string for 'Sent OK'. Keep as is.
+#: templates/admin-interface.php:594
+#, php-format
+msgid "Use this to be absolutely certain emails are delivered. Without this, the best status you can get is \"%s\""
+msgstr "Gebruik dit om er absoluut zeker van te zijn dat e-mails worden afgeleverd. Zonder dit is de beste status die je kunt krijgen \"%s\""
+
+#: templates/admin-interface.php:620
+msgid "Send an actual 1x1 transparent image"
+msgstr "Serveer een echte 1x1 transparante afbeelding"
+
+#: templates/admin-interface.php:623
+msgid "Default behavior is a 404 response, which will give an \"image missing\" icon in certain email clients. This option changes it to an actual, invisible image."
+msgstr "Normaal wordt een 404 response gegeven, wat in sommige e-mail clients resulteert in een \"afbeelding ontbreekt\" icoon. Deze optie verandert dit naar een echte, onzichtbare afbeelding."

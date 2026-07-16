@@ -4,9 +4,9 @@ Donate link: https://acato.nl
 Tags: email, smtp, dkim, smime, deliverability
 More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
-Tested up to: 6.9
+Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.5
+Stable tag: 6.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -344,6 +344,10 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.6 =
+* Improvement: Tracker can now serve an actual 1x1 transparent pixel instead of serving a 404.
+* Feature: Tracker can be disabled while retaining the email-history feature. No more "Email Opened" status, but also, no tracker for privacy.
 
 = 6.0.5 =
 * Re-release of 6.0.4 because I forgot to update the Stable Tag.

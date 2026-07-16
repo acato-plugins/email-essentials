@@ -441,7 +441,10 @@ class History {
 		}
 		$data = wp_json_encode( $data, JSON_PRETTY_PRINT );
 
-		self::add_tracker( $phpmailer->Body, self::last_insert() );
+		$settings = Plugin::get_config();
+		if ( $settings['tracker_enabled'] ) {
+			self::add_tracker( $phpmailer->Body, self::last_insert() );
+		}
 
 		$phpmailer->PreSend();
 		$eml = $phpmailer->GetSentMIMEMessage();
@@ -622,16 +625,28 @@ class History {
 	public static function handle_tracker() {
 		global $wpdb;
 		$mail_id = self::is_email_tracker();
-		if ( null !== $mail_id ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $mail_id ) );
-
-			header( 'Content-Type: image/png' );
-			header( 'Content-Length: 0' );
-			header( 'HTTP/1.1 404 Not Found' );
-			exit;
+		if ( empty( $mail_id ) ) {
+			return false;
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}acato_email_essentials_history` SET status = %s WHERE ID = %d;", self::MAIL_OPENED, $mail_id ) );
 
-		return false;
+		$config = Plugin::get_config();
+
+		header( 'Content-Type: image/png' );
+
+		switch ( $config['tracker_actual_image'] ) {
+			case true:
+				$tracker = dirname( __DIR__ ) . '/src/images/empty_1_x_1_pixel.png';
+				header( 'Content-Length: ' . filesize( $tracker ) );
+				header( 'HTTP/1.1 200 Ok' );
+				readfile( $tracker );
+				break;
+			default:
+				header( 'Content-Length: 0' );
+				header( 'HTTP/1.1 404 Not Found' );
+				break;
+		}
+		exit;
 	}
 }

@@ -1769,7 +1769,9 @@ class Plugin {
 			'SingleTo'             => true,
 			'do_shortcodes'        => true,
 			'enable_history'       => false,
+			'tracker_enabled'      => true,
 			'nginx_tracker'        => false,
+			'tracker_actual_image' => false,
 			'enable_queue'         => false,
 			'make_from_valid_when' => 'when_sender_invalid',
 			'make_from_valid'      => 'default',
@@ -1847,19 +1849,21 @@ class Plugin {
 		} else {
 			$settings['smtp'] = false;
 		}
-		$settings['from_name']          = array_key_exists( 'from_name', $values ) && $values['from_name'] ? trim( $values['from_name'] ) : $settings['from_name'];
-		$settings['from_email']         = array_key_exists( 'from_email', $values ) && $values['from_email'] ? trim( $values['from_email'] ) : $settings['from_email'];
-		$settings['timeout']            = array_key_exists( 'timeout', $values ) && $values['timeout'] ? $values['timeout'] : 5;
-		$settings['is_html']            = array_key_exists( 'is_html', $values ) && $values['is_html'];
-		$settings['css_inliner']        = array_key_exists( 'css_inliner', $values ) && $values['css_inliner'];
-		$settings['content_precode']    = array_key_exists( 'content_precode', $values ) && $values['content_precode'] ? $values['content_precode'] : false;
-		$settings['alt_body']           = array_key_exists( 'alt_body', $values ) && $values['alt_body'];
-		$settings['do_shortcodes']      = array_key_exists( 'do_shortcodes', $values ) && $values['do_shortcodes'];
-		$settings['SingleTo']           = array_key_exists( 'SingleTo', $values ) && $values['SingleTo'];
-		$settings['spf_lookup_enabled'] = array_key_exists( 'spf_lookup_enabled', $values ) && $values['spf_lookup_enabled'];
-		$settings['enable_history']     = array_key_exists( 'enable_history', $values ) && $values['enable_history'];
-		$settings['nginx_tracker']      = array_key_exists( 'nginx_tracker', $values ) && $values['nginx_tracker'];
-		$settings['enable_queue']       = array_key_exists( 'enable_queue', $values ) && $values['enable_queue'];
+		$settings['from_name']            = array_key_exists( 'from_name', $values ) && $values['from_name'] ? trim( $values['from_name'] ) : $settings['from_name'];
+		$settings['from_email']           = array_key_exists( 'from_email', $values ) && $values['from_email'] ? trim( $values['from_email'] ) : $settings['from_email'];
+		$settings['timeout']              = array_key_exists( 'timeout', $values ) && $values['timeout'] ? $values['timeout'] : 5;
+		$settings['is_html']              = array_key_exists( 'is_html', $values ) && $values['is_html'];
+		$settings['css_inliner']          = array_key_exists( 'css_inliner', $values ) && $values['css_inliner'];
+		$settings['content_precode']      = array_key_exists( 'content_precode', $values ) && $values['content_precode'] ? $values['content_precode'] : false;
+		$settings['alt_body']             = array_key_exists( 'alt_body', $values ) && $values['alt_body'];
+		$settings['do_shortcodes']        = array_key_exists( 'do_shortcodes', $values ) && $values['do_shortcodes'];
+		$settings['SingleTo']             = array_key_exists( 'SingleTo', $values ) && $values['SingleTo'];
+		$settings['spf_lookup_enabled']   = array_key_exists( 'spf_lookup_enabled', $values ) && $values['spf_lookup_enabled'];
+		$settings['enable_history']       = array_key_exists( 'enable_history', $values ) && $values['enable_history'];
+		$settings['tracker_enabled']      = array_key_exists( 'tracker_enabled', $values ) && $values['tracker_enabled'];
+		$settings['nginx_tracker']        = array_key_exists( 'nginx_tracker', $values ) && $values['nginx_tracker'];
+		$settings['tracker_actual_image'] = array_key_exists( 'tracker_actual_image', $values ) && $values['tracker_actual_image'];
+		$settings['enable_queue']         = array_key_exists( 'enable_queue', $values ) && $values['enable_queue'];
 
 		$settings['enable_smime']         = array_key_exists( 'enable_smime', $values ) && $values['enable_smime'] ? '1' : '0';
 		$settings['certfolder']           = array_key_exists( 'certfolder', $values ) && $values['certfolder'] ? $values['certfolder'] : '';
@@ -2040,7 +2044,9 @@ class Plugin {
 			'SingleTo'             => 'boolean',
 			'spf_lookup_enabled'   => 'boolean',
 			'enable_history'       => 'boolean',
+			'tracker_enabled'      => 'boolean',
 			'nginx_tracker'        => 'boolean',
+			'tracker_actual_image' => 'boolean',
 			'enable_queue'         => 'boolean',
 			'enable_smime'         => 'boolean',
 			'enable_dkim'          => 'boolean',
