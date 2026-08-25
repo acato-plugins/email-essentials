@@ -142,10 +142,10 @@ class Queue_List_Table extends WP_List_Table {
 			case 'attachments':
 				$value = maybe_unserialize( $value );
 				if ( is_array( $value ) ) {
-					$value = implode( '</br />', $value );
+					return implode( '</br />', array_map( 'esc_html', $value ) );
 				}
 
-				return $value;
+				return esc_html( $value );
 
 			default:
 				return $value;

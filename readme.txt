@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.6
+Stable tag: 6.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -344,6 +344,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.7 =
+* Bugfix: Prevent potential XSS vulnerability. Thanks to PatchStack / JunHee CHO for reporting this.
 
 = 6.0.6 =
 * Improvement: Tracker can now serve an actual 1x1 transparent pixel instead of serving a 404.
