@@ -29,7 +29,8 @@
     }
   },
   "Dist Cleanup": [
-    "webpack.mix.js",
+    "vite.config.js",
+    ".nvmrc",
     "package.json",
     "package-lock.json",
     "phpcs.xml",

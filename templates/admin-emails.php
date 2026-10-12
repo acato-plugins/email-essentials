@@ -351,27 +351,6 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 						</tbody>
 					</table>
 				</div>
-				<style>
-					.email-item__status-0 td:first-child {
-						border-left: 3px solid orange;
-					}
-
-					.email-item__status-1 td:first-child {
-						border-left: 3px solid green;
-					}
-
-					.email-item__status-2 td:first-child {
-						border-left: 3px solid red;
-					}
-
-					.email-item__status-3 td:first-child {
-						border-left: 3px solid yellowgreen;
-					}
-
-					.email-item__status-4 {
-						opacity: 0.5;
-					}
-				</style>
 
 				<div class="pager">
 					<?php if ( $acato_email_essentials_view_current_page >= 2 ) { ?>
@@ -440,7 +419,7 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 					</span>
 				</div>
 
-				<div id="mail-viewer" class="hidden">
+				<div id="mail-viewer" hidden>
 					<nav class="mail-viewer-tabs" role="tablist">
 						<button type="button" class="mail-tab" data-view="body" role="tab" aria-selected="false">
 							<span class="dashicons dashicons-email"></span>
@@ -515,7 +494,7 @@ $acato_email_essentials_wp_admin_email = get_option( 'admin_email' );
 										?>
 									</div>
 									<iframe
-										class="autofit" width="100%" height="100%" border="0" frameborder="0"
+										class="autofit"
 										src="data:text/html;headers=<?php print rawurlencode( 'Content-Security-Policy: script-src none;' ); ?>;base64,<?php print esc_attr( $acato_email_essentials_email_data_base64 ); ?>">
 									</iframe>
 								</div>

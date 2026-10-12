@@ -1,0 +1,35 @@
+# Files and folders that should not end up in the plugin published on
+# WordPress.org.
+/.distignore
+/.editorconfig
+/.git
+/.github
+/.gitattributes
+/.gitignore
+/.idea
+/.prd
+/.wordpress-org
+/.claude
+/.DS_Store
+/bitbucket-pipelines.yml
+/build.sh
+/composer.json
+/composer.lock
+/info.json
+/node_modules
+/package.json
+/package-lock.json
+/package.sh
+/vite.config.js
+/.nvmrc
+/phpcs.xml
+/phpcs.xml.dist
+/SUBMISSION_NOTES.txt
+/vendor
+/wp_mail_key.patch
+/tools/generate_dkim.php
+/tools/generate_dkim.sh
+/lib/class-migrations.php
+/lib/class-deprecation.php
+/lib/filter-deprecation.php
+/lib/deprecation.php

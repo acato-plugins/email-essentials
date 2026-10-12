@@ -6,6 +6,6 @@ cd "$(dirname "$0")"
 [ -f ~/.nvm/nvm.sh ] && source ~/.nvm/nvm.sh
 
 [ -f .nvmrc ] && [ ! -z nvm ] && nvm install && nvm use
-[ ! -f .nvmrc ] && [ ! -z nvm ] && nvm install 20 && nvm use 20
+[ ! -f .nvmrc ] && [ ! -z nvm ] && nvm install 24 && nvm use 24
 npm install
 npm run build

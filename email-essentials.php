@@ -23,6 +23,9 @@ namespace Acato\Email_Essentials;
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
+// Keep in sync with "Version" above and "Stable tag" in readme.txt.
+define( 'ACATO_EMAIL_ESSENTIALS_VERSION', '6.0.7' );
+
 spl_autoload_register(
 	function ( $class_name ) {
 		global $wp_version;
