@@ -1,58 +1,77 @@
+@use "sass:color";
+
+$notice-color: #72aee6;
+$error-color: #d63638;
+$warning-color: #ff6700;
+$success-color: #00a32a;
+
+:root {
+	--wpes-spacing: 8px;
+	--wpes-border-color: #c3c4c7;
+	--wpes-accent: #2271b1;
+	--wpes-surface: #fff;
+	--wpes-tools-width: 200px;
+	--wpes-notice-color: #{$notice-color};
+	--wpes-notice-bg: #{color.adjust($notice-color, $lightness: 30%)};
+	--wpes-error-color: #{$error-color};
+	--wpes-error-bg: #{color.adjust($error-color, $lightness: 44%)};
+	--wpes-warning-color: #{$warning-color};
+	--wpes-warning-bg: #{color.adjust($warning-color, $lightness: 48%)};
+	--wpes-success-color: #{$success-color};
+	--wpes-success-bg: #{color.adjust($success-color, $lightness: 66%)};
+	--wpes-active-row-bg: #{color.adjust($notice-color, $lightness: 25%)};
+}
+
 .wpes-wrap {
 	line-height: 1.8em;
 
-	.dashicons-before:before {
-		font-size: 30px;
-		width: 30px;
+	// The UA [hidden] rule loses to any display set here, e.g. the flex layouts.
+	[hidden] {
+		display: none !important;
 	}
 
-	h2 {
-		em {
-			font-style: normal;
-			opacity: 0.5;
-		}
+	.dashicons-before::before {
+		font-size: 30px;
+		inline-size: 30px;
+	}
+
+	h2 em {
+		font-style: normal;
+		opacity: 0.5;
 	}
 
 	.wpes-table {
-		tr {
-			td, th {
-				padding: 0 20px 0 0;
+		tr :is(td, th) {
+			padding-block: 0;
+			padding-inline: 0 20px;
 
-				&.last {
-					padding: 0;
-				}
+			&.last {
+				padding: 0;
 			}
 		}
 
 		td {
-			h3 {
-				margin-top: 0;
-			}
-
 			vertical-align: top;
+
+			h3 {
+				margin-block-start: 0;
+			}
 		}
 
-		td, th {
-			width: 25%;
+		:is(td, th) {
+			inline-size: 25%;
 			vertical-align: top;
-			text-align: left;
+			text-align: start;
 
 			&[colspan="2"] {
-				width: 50%;
+				inline-size: 50%;
 			}
 
 			&[colspan="3"] {
-				width: 75%;
+				inline-size: 75%;
 			}
 		}
 	}
-}
-
-/**
- Settings panel
- */
-.wpes-settings {
-
 }
 
 /**
@@ -60,7 +79,6 @@
  */
 .wpes-admins {
 	.a-regexp {
-
 		&.error {
 			border-color: red;
 			background: #ff9e8b;
@@ -73,106 +91,93 @@
 	}
 
 	.a-fail.match {
-		background-color: #80ff8e
+		background-color: #80ff8e;
 	}
 }
 
-$notice-color: #72aee6;
-$error-color: #d63638;
-$warning-color: #ff6700;
-$success-color: #00a32a;
-$border-color: #c3c4c7;
-$spacing: 8px;
-$tools-width: 200px;
-
 .wpes-admin {
-	width: calc(100% - #{$tools-width} - 20px);
+	inline-size: calc(100% - var(--wpes-tools-width) - 20px);
 
 	&.wpes-emails {
-		width: initial;
+		inline-size: initial;
 	}
 
-	* {
+	:where(*) {
 		box-sizing: border-box;
 	}
 
 	.inside {
-		padding: $spacing * 1.5 !important;
+		padding: calc(var(--wpes-spacing) * 1.5) !important;
 		margin: 0 !important;
 		display: flex;
 		flex-direction: column;
-		gap: $spacing;
+		gap: var(--wpes-spacing);
 
-		> * {
+		> :where(*) {
 			margin: 0;
 		}
+
 		&.cols {
-			display: flex;
 			flex-direction: row;
 		}
 
 		&.col {
-			max-width: 50%;
+			max-inline-size: 50%;
 			flex: 1;
 		}
 	}
 
 	select {
-		max-width: 100%;
+		max-inline-size: 100%;
 	}
 }
 
 .email-preview {
-	width: 100%;
-	height: auto;
-	min-height: 600px;
+	inline-size: 100%;
+	block-size: auto;
+	min-block-size: 600px;
 }
 
 .wpes-form {
 	display: flex;
 	flex-direction: column;
-	gap: $spacing * 2;
+	gap: calc(var(--wpes-spacing) * 2);
 }
 
 .wpes-form-item {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: $spacing;
+	gap: var(--wpes-spacing);
 
 	label {
-		width: 25%;
+		inline-size: 25%;
 		font-weight: 700;
 
-		@media (max-width: 768px) {
-			width: 100%;
+		@media (width <= 768px) {
+			inline-size: 100%;
 		}
 	}
 
-	input,
-	select {
-		&:not([type="checkbox"]):not([type="radio"]) {
-			flex-grow: 1;
-		}
+	:is(input, select):not([type="checkbox"], [type="radio"]) {
+		flex-grow: 1;
 	}
 
-	input {
-		&[type="checkbox"],
-		&[type="radio"] {
-			margin: 0;
-		}
+	input:is([type="checkbox"], [type="radio"]) {
+		margin: 0;
 	}
 }
 
-.wpes-notice {
-	width: 100%;
-	padding: $spacing;
-	border: 1px solid $border-color;
+// The variants are used on their own, without the base class.
+:is(.wpes-notice, .wpes-notice--info, .wpes-notice--error, .wpes-notice--warning, .wpes-notice--success) {
+	inline-size: 100%;
+	padding: var(--wpes-spacing);
+	border: 1px solid var(--wpes-border-color);
 	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
-	background: #fafafa;
+	background: var(--wpes-notice-background, #fafafa);
 	display: flex;
 	flex-direction: column;
-	gap: $spacing;
+	gap: var(--wpes-spacing);
 
 	pre {
 		white-space: normal;
@@ -180,7 +185,7 @@ $tools-width: 200px;
 
 	.warning {
 		display: block;
-		width: 100%;
+		inline-size: 100%;
 	}
 
 	.title {
@@ -188,82 +193,67 @@ $tools-width: 200px;
 		font-size: 1.1em;
 
 		&:not(:first-child) {
-			margin-top: $spacing * 2;
+			margin-block-start: calc(var(--wpes-spacing) * 2);
 		}
 	}
 
-	* {
+	:where(*) {
 		margin: 0;
 	}
+}
 
-	&--info {
-		@extend .wpes-notice;
-		border-left: 4px solid $notice-color;
-		background: lighten($notice-color, 30%);
-	}
+// Notice variant => color token.
+$notice-types: (info: notice, error: error, warning: warning, success: success);
 
-	&--error {
-		@extend .wpes-notice;
-		border-left: 4px solid $error-color;
-		background: lighten($error-color, 44%);
-	}
+@each $type, $name in $notice-types {
+	.wpes-notice--#{$type} {
+		--wpes-notice-accent: var(--wpes-#{$name}-color);
+		--wpes-notice-background: var(--wpes-#{$name}-bg);
 
-	&--warning {
-		@extend .wpes-notice;
-		border-left: 4px solid $warning-color;
-		background: lighten($warning-color, 48%);
-	}
-
-	&--success {
-		@extend .wpes-notice;
-		border-left: 4px solid $success-color;
-		background: lighten($success-color, 66%);
+		border-inline-start: 4px solid var(--wpes-notice-accent);
 	}
 }
 
 .wpes-info-table {
 	border-collapse: collapse;
-	border: 1px solid $border-color;
-	margin-top: $spacing;
+	border: 1px solid var(--wpes-border-color);
+	margin-block-start: var(--wpes-spacing);
 
-	&.equal {
-		th {
-			width: 50%;
-		}
+	&.equal th {
+		inline-size: 50%;
 	}
 
 	th {
-		text-align: left;
+		text-align: start;
 	}
 
-	th,
-	td {
-		border: 1px solid $border-color;
-		padding: $spacing;
+	:is(th, td) {
+		border: 1px solid var(--wpes-border-color);
+		padding: var(--wpes-spacing);
 	}
 }
 
 .wpes-radio-list {
 	display: grid;
 	grid-template-columns: 16px 1fr;
-	gap: $spacing;
+	gap: var(--wpes-spacing);
 	align-items: center;
 
 	&.arrow-down {
 		position: relative;
-		padding-left: 60px;
+		padding-inline-start: 60px;
 
-		&:after {
+		&::after {
 			content: '';
 			background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 302.816 302.816" style="enable-background:new 0 0 302.816 302.816;" xml:space="preserve"><path id="XMLID_6_" d="M298.423,152.996c-5.857-5.858-15.354-5.858-21.213,0l-35.137,35.136     c-5.871-59.78-50.15-111.403-112.001-123.706c-45.526-9.055-92.479,5.005-125.596,37.612c-5.903,5.813-5.977,15.31-0.165,21.213     c5.813,5.903,15.31,5.977,21.212,0.164c26.029-25.628,62.923-36.679,98.695-29.565c48.865,9.72,83.772,50.677,88.07,97.978     l-38.835-38.835c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l62.485,62.485     c2.929,2.929,6.768,4.393,10.606,4.393s7.678-1.464,10.607-4.393l62.483-62.482C304.281,168.352,304.281,158.854,298.423,152.996z"/></svg>');
-			width: 50px;
-			height: 50px;
+			inline-size: 50px;
+			block-size: 50px;
 			background-size: cover;
 			background-position: center;
 			background-repeat: no-repeat;
 			position: absolute;
-			bottom: -10px;
-			left: 0;
+			inset-block-end: -10px;
+			inset-inline-start: 0;
 			transform: scaleX(-1);
 		}
 	}
@@ -272,73 +262,66 @@ $tools-width: 200px;
 		margin: 0;
 	}
 
-	label {
-		strong {
-			display: block;
-		}
+	label strong {
+		display: block;
 	}
 
 	.wpes-field-description {
-		grid-column-start: 2;
-		grid-column-end: 3;
+		grid-column: 2 / 3;
 	}
 }
 
 .wpes-tools {
 	position: fixed;
-	bottom: 40px;
-	right: 20px;
-	width: $tools-width;
+	inset-block-end: 40px;
+	inset-inline-end: 20px;
+	inline-size: var(--wpes-tools-width);
 	z-index: 9999;
 	display: flex;
 	flex-direction: column;
-	gap: $spacing;
+	gap: var(--wpes-spacing);
+}
 
-	&--box {
-		padding: $spacing;
-		border: 1px solid $border-color;
-		background: white;
+:is(.wpes-tools--box, .wpes-tools--box__toc) {
+	padding: var(--wpes-spacing);
+	border: 1px solid var(--wpes-border-color);
+	background: var(--wpes-surface);
+	display: flex;
+	flex-direction: column;
+	gap: var(--wpes-spacing);
+
+	em b {
+		display: block;
+	}
+
+	:where(*) {
+		margin: 0;
+	}
+
+	.toc {
+		font-size: .85em;
+		line-height: 1.6;
 		display: flex;
 		flex-direction: column;
-		gap: $spacing;
+		gap: calc(var(--wpes-spacing) / 4);
 
-		em {
-			b {
-				display: block;
+		li {
+			padding-inline-start: 10px;
+			position: relative;
+
+			&::before {
+				content: '•';
+				position: absolute;
+				inset-block-start: 0;
+				inset-inline-start: 0;
 			}
 		}
+	}
+}
 
-		* {
-			margin: 0;
-		}
-
-		.toc {
-			font-size: .85em;
-			line-height: 1.6;
-			display: flex;
-			flex-direction: column;
-			gap: $spacing / 4;
-
-			li {
-				padding-left: 10px;
-				position: relative;
-
-				&:before {
-					content: '•';
-					position: absolute;
-					top: 0;
-					left: 0;
-				}
-			}
-		}
-
-		&__toc {
-			@extend .wpes-tools--box;
-
-			@media (max-height: 660px) {
-				display: none;
-			}
-		}
+.wpes-tools--box__toc {
+	@media (height <= 660px) {
+		display: none;
 	}
 }
 
@@ -346,37 +329,35 @@ $tools-width: 200px;
 	background: transparent;
 
 	.postbox-header {
-		background: white;
+		background: var(--wpes-surface);
 	}
 }
 
 .wpes-email-history {
-	height: 400px;
+	block-size: 400px;
 	overflow: auto;
-	border: 1px solid $border-color;
+	border: 1px solid var(--wpes-border-color);
 
 	thead {
 		position: sticky;
-		top: 0;
-		background: white;
+		inset-block-start: 0;
+		background: var(--wpes-surface);
 
-		td {
-			a {
-				color: inherit;
-				text-decoration: none;
-				display: inline-flex;
-				align-items: center;
-				gap: 4px;
+		td a {
+			color: inherit;
+			text-decoration: none;
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
 
-				&:hover {
-					color: #2271b1;
-				}
+			&:hover {
+				color: var(--wpes-accent);
+			}
 
-				.dashicons {
-					font-size: 16px;
-					width: 16px;
-					height: 16px;
-				}
+			.dashicons {
+				font-size: 16px;
+				inline-size: 16px;
+				block-size: 16px;
 			}
 		}
 	}
@@ -386,21 +367,38 @@ $tools-width: 200px;
 	}
 
 	.eml {
-		width: 100px
+		inline-size: 100px;
 	}
 
-	#the-list {
-		tr {
-			cursor: pointer;
+	#the-list tr {
+		cursor: pointer;
 
-			&:hover {
-				background: rgba(0, 0, 0, .075);
-			}
-
-			&.active {
-				background: lighten($notice-color, 25%);
-			}
+		&:hover {
+			background: rgb(0 0 0 / 7.5%);
 		}
+
+		&.active {
+			background: var(--wpes-active-row-bg);
+		}
+	}
+}
+
+// Email status => marker on the first cell.
+$email-status-colors: (0: orange, 1: green, 2: red, 3: yellowgreen);
+
+.email-item {
+	@each $status, $color in $email-status-colors {
+		&__status-#{$status} {
+			--wpes-status-marker: 3px solid #{$color};
+		}
+	}
+
+	&__status-4 {
+		opacity: 0.5;
+	}
+
+	td:first-child {
+		border-inline-start: var(--wpes-status-marker, none);
 	}
 }
 
@@ -408,43 +406,39 @@ $tools-width: 200px;
 	.pager {
 		display: flex;
 		align-items: center;
-		gap: $spacing;
-		margin-bottom: $spacing * 1.5;
+		gap: var(--wpes-spacing);
+		margin-block-end: calc(var(--wpes-spacing) * 1.5);
 
 		&:last-of-type {
-			margin-top: $spacing * 1.5;
-			margin-bottom: 0;
+			margin-block: calc(var(--wpes-spacing) * 1.5) 0;
 		}
 
 		> span {
 			&:first-of-type {
 				display: flex;
-				gap: $spacing / 2;
+				gap: calc(var(--wpes-spacing) / 2);
 			}
 
 			&:last-of-type {
-				margin-left: auto;
+				margin-inline-start: auto;
 				display: flex;
 				align-items: center;
-				gap: $spacing;
+				gap: var(--wpes-spacing);
 			}
 		}
 
-		.button {
-			min-width: 38px;
+		:is(.button, strong) {
+			min-inline-size: 38px;
 			text-align: center;
 			box-sizing: border-box;
 		}
 
 		strong {
-			min-width: 38px;
 			padding: 4px 8px;
-			background: #2271b1;
+			background: var(--wpes-accent);
 			color: #fff;
 			border-radius: 3px;
-			text-align: center;
 			display: inline-block;
-			box-sizing: border-box;
 		}
 
 		.ellipsis {
@@ -452,32 +446,33 @@ $tools-width: 200px;
 		}
 
 		select {
-			height: auto;
+			block-size: auto;
 		}
 	}
 
 	#mail-viewer {
 		position: relative;
-		border: 1px solid $border-color;
-		height: 600px;
-		width: 100%;
+		border: 1px solid var(--wpes-border-color);
+		block-size: 600px;
+		inline-size: 100%;
 		display: flex;
 		flex-direction: column;
 
-		.debug, .body, .alt_body, .headers, .body-source {
+		:is(.debug, .body, .alt_body, .headers, .body-source) {
 			display: none;
-			height: 0;
-			width: 0;
+			block-size: 0;
+			inline-size: 0;
 		}
 
-		.show-debug .debug, .show-body .body, .show-alt-body .alt_body, .show-headers .headers, .show-body-source .body-source {
+		// Plain list: inside :is() the .show-* ancestor could match outside #mail-viewer.
+		.show-debug .debug,
+		.show-body .body,
+		.show-alt-body .alt_body,
+		.show-headers .headers,
+		.show-body-source .body-source {
 			display: block;
-			height: 100%;
-			width: 100%;
-		}
-
-		&.hidden {
-			display: none!important;
+			block-size: 100%;
+			inline-size: 100%;
 		}
 	}
 
@@ -485,7 +480,7 @@ $tools-width: 200px;
 		display: flex;
 		flex-direction: row;
 		background: #f0f0f1;
-		border-bottom: 1px solid $border-color;
+		border-block-end: 1px solid var(--wpes-border-color);
 		padding: 0;
 		margin: 0;
 		flex-shrink: 0;
@@ -493,7 +488,7 @@ $tools-width: 200px;
 		.mail-tab {
 			background: transparent;
 			border: none;
-			border-right: 1px solid $border-color;
+			border-inline-end: 1px solid var(--wpes-border-color);
 			padding: 10px 16px;
 			cursor: pointer;
 			display: flex;
@@ -508,32 +503,30 @@ $tools-width: 200px;
 			position: relative;
 
 			&:last-child {
-				border-right: none;
+				border-inline-end: none;
 			}
 
 			.dashicons {
 				font-size: 16px;
-				width: 16px;
-				height: 16px;
+				inline-size: 16px;
+				block-size: 16px;
 			}
 
-			&:hover {
-				background: #fff;
-				color: #2271b1;
+			&:is(:hover, .active) {
+				background: var(--wpes-surface);
+				color: var(--wpes-accent);
 			}
 
 			&:focus {
-				box-shadow: inset 0 0 0 1px #2271b1, inset 0 0 0 2px #fff;
+				box-shadow: inset 0 0 0 1px var(--wpes-accent), inset 0 0 0 2px var(--wpes-surface);
 				outline: 2px solid transparent;
 				outline-offset: 0;
 			}
 
 			&.active {
-				background: #fff;
-				color: #2271b1;
 				font-weight: 600;
-				border-bottom: 3px solid #2271b1;
-				padding-bottom: 7px;
+				border-block-end: 3px solid var(--wpes-accent);
+				padding-block-end: 7px;
 			}
 		}
 	}
@@ -543,23 +536,39 @@ $tools-width: 200px;
 		flex: 1;
 		overflow: auto;
 
-		.email-data.show-debug, .show-body, .show-alt-body, .show-headers, .show-body-source {
-			height: 100%;
-			width: 100%;
+		:is(.email-data.show-debug, .show-body, .show-alt-body, .show-headers, .show-body-source) {
+			block-size: 100%;
+			inline-size: 100%;
+		}
+
+		.autofit {
+			display: block;
+			inline-size: 100%;
+			block-size: 100%;
+			border: 0;
 		}
 
 		.body > .body-disclaimer {
 			padding: 10px;
 			background: #fffae6;
-			border-bottom: 1px solid $border-color;
+			border-block-end: 1px solid var(--wpes-border-color);
 			font-size: 0.9em;
 			color: #665c00;
 		}
 
-		.show-body-source {
-			pre {
-				white-space: pre-wrap;
-			}
+		.show-body-source pre {
+			white-space: pre-wrap;
 		}
+	}
+}
+
+// Hint added to the Contact Form 7 mail tab.
+.wpes-err-add em {
+	font-style: inherit;
+
+	&.quote {
+		background: lightgray;
+		font-family: monospace;
+		font-weight: bold;
 	}
 }

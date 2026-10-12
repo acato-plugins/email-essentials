@@ -254,8 +254,8 @@ Filter to modify which TLDs are treated as development/local environments. Defau
 
 # Scripts/styles:
 
-in the `public/scripts` and `public/styles` folder you find the JS and CSS files used in the plugin admin area.
-These files are processed with Webpack, just so it works in all recent browsers. Script is nearly identical to the source.
+in the `public` folder you find the JS and CSS files used in the plugin admin area.
+These files are processed with Vite, just so it works in all recent browsers. Script is nearly identical to the source.
 
 You can find the source files in the `src/scripts` and `src/styles` folders.
 

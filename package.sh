@@ -23,6 +23,7 @@ for i in \
 	node_modules package-lock.json .editorconfig \
 	./.git ./.gitignore .claude \
 	package.sh build.sh SUBMISSION_NOTES.txt \
+	package.json vite.config.js .nvmrc .distignore .gitattributes \
 	.wordpress-org \
 	wp_mail_key.patch tools/generate_dkim.php \
 	lib/class-migrations.php lib/class-deprecation.php lib/filter-deprecation.php lib/deprecation.php \

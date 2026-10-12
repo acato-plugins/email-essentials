@@ -359,16 +359,6 @@ $acato_email_essentials_dkim_identities  = [];
 								</option>
 							</select>
 						</div>
-						<script>
-							jQuery(document).ready(function () {
-								const smtpPort = document.getElementById('smtp-port');
-								const smtpSecure = document.getElementById('smtp-secure');
-								smtpSecure.addEventListener('change', function () {
-									smtpPort.placeholder = this.options[this.selectedIndex].dataset.smtpPort;
-								});
-								smtpSecure.dispatchEvent(new Event('change'));
-							});
-						</script>
 						<div class="wpes-form-item">
 							<label for="timeout">
 								<?php print wp_kses_post( __( 'phpMailer Timeout', 'email-essentials' ) ); ?>
@@ -589,9 +579,9 @@ $acato_email_essentials_dkim_identities  = [];
 						</label>
 						<p class="description wpes-field-description">
 							<?php
-							$sent_ok_status_text = _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' );
+							$acato_email_essentials_sent_ok_status_text = _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' );
 							// Translators: %s is a pre-tanslated string for 'Sent OK'. Keep as is.
-							print wp_kses_post( sprintf( __( 'Use this to be absolutely certain emails are delivered. Without this, the best status you can get is "%s"', 'email-essentials' ), $sent_ok_status_text ) );
+							print wp_kses_post( sprintf( __( 'Use this to be absolutely certain emails are delivered. Without this, the best status you can get is "%s"', 'email-essentials' ), $acato_email_essentials_sent_ok_status_text ) );
 							?>
 						</p>
 					</div>
@@ -857,26 +847,6 @@ $acato_email_essentials_dkim_identities  = [];
 								<label
 									for="smime-sample-email"><?php esc_html_e( 'Type an email address to see the correct filenames', 'email-essentials' ); ?></label>
 								<input type="email" id="smime-sample-email" class="smime-sample-email">
-								<script>
-									jQuery(document).ready(function ($) {
-										$('#smime-sample-email').on('input', function () {
-											var email = $(this).val();
-											$('.smime-sample-email-output').each(function () {
-												var pattern = $(this).data('pattern');
-												var output = $(this).data('default');
-												if (email) {
-													output = email.replace(/[^a-z0-9-_.@]/gi, '_');
-												}
-												output = pattern.replace('?', output);
-												$(this).text(output);
-											});
-										}).on('keypress', function (e) {
-											if (e.which === 13 || e.which === 10) {
-												e.preventDefault();
-											}
-										});
-									});
-								</script>
 
 								<table class="wpes-info-table">
 									<tr>
@@ -1067,52 +1037,6 @@ $acato_email_essentials_dkim_identities  = [];
 							print wp_kses_post( '<code class="dkim-sample-output preload">echo "' . _x( 'DKIM-SELECTOR-FOR-THIS-KEY', 'A sample DKIM selector', 'email-essentials' ) . '" > domain.tld.selector</code>' );
 							print wp_kses_post( __( 'Upload these files to the specified path on the server and again; this should not be publicly queryable!!!', 'email-essentials' ) );
 							?>
-							<script>
-								// items with class preload will generate pattern data on the fly
-								var preload_data = [
-									"domain.tld",
-									<?php print wp_json_encode( _x( 'DKIM-SELECTOR-FOR-THIS-KEY', 'A sample DKIM selector', 'email-essentials' ) ); ?>,
-									<?php print wp_json_encode( _x( 'YOUR-PASSWORD', 'A sample password', 'email-essentials' ) ); ?>
-								], sample_data = [], sample_data_key_numbers = {
-									domain: 0,
-									domainkey: 1,
-									password: 2
-								};
-								jQuery(document).ready(function ($) {
-									// Set-up the preload data
-									$('.preload').each(function () {
-										var $this = $(this);
-										var pattern = $this.text();
-										$.each(preload_data, function (key, value) {
-											sample_data[key] = value;
-											pattern = pattern.replace(new RegExp(value, 'g'), '?' + key);
-											$this.data("default" + (key + 1), value);
-										});
-										$this.data('pattern', pattern);
-									}).removeClass('preload');
-
-									$('.dkim-sample-input').on('input', function () {
-										var sample_data_key = $(this).attr('id').replace('dkim-sample-', '');
-										sample_data_key = sample_data_key_numbers[sample_data_key];
-										sample_data[sample_data_key] = $(this).val();
-										if (!sample_data[sample_data_key]) {
-											sample_data[sample_data_key] = preload_data[sample_data_key];
-										}
-
-										$('.dkim-sample-output').each(function () {
-											var output = $(this).data('pattern');
-											sample_data.forEach(function (value, key) {
-												output = output.replace(new RegExp('\\?' + key, 'g'), value);
-											});
-											$(this).text(output);
-										});
-									}).on('keypress', function (e) {
-										if (e.which === 13 || e.which === 10) {
-											e.preventDefault();
-										}
-									});
-								});
-							</script>
 							<strong class="title">
 								<?php esc_html_e( 'Finally, register the domain key in the DNS', 'email-essentials' ); ?>
 							</strong>
@@ -1298,12 +1222,6 @@ $acato_email_essentials_dkim_identities  = [];
 					<div id="wpes-debug-info" class="wpes-notice--info inside">
 						<pre><?php print wp_kses_post( Plugin::$debug ); ?></pre>
 					</div>
-					<script>
-						// Scroll to the debug info panel.
-						document.getElementById('wpes-debug-info').scrollIntoView({
-							behavior: 'smooth'
-						});
-					</script>
 				<?php } ?>
 			</div>
 	</form>

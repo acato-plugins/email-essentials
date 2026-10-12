@@ -173,13 +173,7 @@ class Plugin {
 		add_action( 'wp_ajax_acato_email_essentials_get_ip', [ self::class, 'ajax_get_ip' ] );
 		add_action( 'wp_ajax_nopriv_acato_email_essentials_get_ip', [ self::class, 'ajax_get_ip' ] );
 
-		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				wp_register_style( 'email-essentials', plugins_url( 'public/styles/wpes-admin.css', __DIR__ ), [], filemtime( __DIR__ . '/../public/styles/wpes-admin.css' ), 'all' );
-				wp_register_script( 'email-essentials', plugins_url( 'public/scripts/wpes-admin.js', __DIR__ ), [], filemtime( __DIR__ . '/../public/scripts/wpes-admin.js' ), true );
-			}
-		);
+		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_admin_assets' ] );
 
 		$config = self::get_config();
 		add_action( 'phpmailer_init', [ self::class, 'action_phpmailer_init' ] );
@@ -233,8 +227,6 @@ class Plugin {
 		add_filter( 'wp_mail', [ self::class, 'action_wp_mail' ], PHP_INT_MAX - 1000 );
 
 		add_action( 'admin_menu', [ self::class, 'admin_menu' ], 9 );
-
-		add_action( 'admin_footer', [ self::class, 'maybe_inject_admin_settings' ] );
 
 		add_filter( 'cfdb_form_data', [ self::class, 'correct_cfdb_form_data_ip' ] );
 
@@ -2321,6 +2313,69 @@ class Plugin {
 	}
 
 	/**
+	 * Is the current admin page one of the plugin pages?
+	 *
+	 * @return bool
+	 */
+	public static function is_plugin_page() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+
+		return 'acato-email-essentials' === $page || 0 === strpos( $page, 'acato-email-essentials/' );
+	}
+
+	/**
+	 * The URL of a built asset in public/, with the content hash from mix-manifest.json.
+	 *
+	 * @param string $file The file name, e.g. wpes-admin.js.
+	 *
+	 * @return string
+	 */
+	public static function asset_url( $file ) {
+		static $manifest = null;
+
+		$public = dirname( __DIR__ ) . '/public';
+		if ( null === $manifest ) {
+			$json     = is_readable( "$public/mix-manifest.json" ) ? file_get_contents( "$public/mix-manifest.json" ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
+			$manifest = json_decode( (string) $json, true );
+			$manifest = is_array( $manifest ) ? $manifest : [];
+		}
+
+		// Without a manifest entry, fall back to the modification time.
+		$path = $manifest[ "/$file" ] ?? "/$file?id=" . ( is_file( "$public/$file" ) ? filemtime( "$public/$file" ) : '' );
+
+		return plugins_url( 'public' . $path, __DIR__ );
+	}
+
+	/**
+	 * Callback to the admin_enqueue_scripts action.
+	 *
+	 * Registers the admin assets, enqueues them on the plugin pages and passes the data the script needs.
+	 */
+	public static function enqueue_admin_assets() {
+		wp_register_style( 'email-essentials', self::asset_url( 'wpes-admin.css' ), [], ACATO_EMAIL_ESSENTIALS_VERSION );
+		wp_register_script( 'email-essentials', self::asset_url( 'wpes-admin.js' ), [], ACATO_EMAIL_ESSENTIALS_VERSION, true );
+
+		$script_data = array_merge(
+			[
+				'dismissNonce' => wp_create_nonce( 'acato_email_essentials_dismiss_deprecation_notice' ),
+				'dkimSamples'  => [
+					'domain.tld',
+					_x( 'DKIM-SELECTOR-FOR-THIS-KEY', 'A sample DKIM selector', 'email-essentials' ),
+					_x( 'YOUR-PASSWORD', 'A sample password', 'email-essentials' ),
+				],
+			],
+			self::maybe_inject_admin_settings()
+		);
+		wp_add_inline_script( 'email-essentials', 'window.acatoEmailEssentials = ' . wp_json_encode( $script_data ) . ';', 'before' );
+
+		if ( self::is_plugin_page() ) {
+			wp_enqueue_style( 'email-essentials' );
+			wp_enqueue_script( 'email-essentials' );
+		}
+	}
+
+	/**
 	 * Template view
 	 *
 	 * @param string $tpl The template to load.
@@ -2328,8 +2383,6 @@ class Plugin {
 	public static function view( $tpl ) {
 		// Sanitize path traversal.
 		$tpl = basename( "./$tpl" );
-		wp_enqueue_style( 'email-essentials' );
-		wp_enqueue_script( 'email-essentials' );
 		require __DIR__ . '/../templates/' . $tpl . '.php';
 	}
 
@@ -3037,28 +3090,31 @@ Item 2
 
 	/**
 	 * Inject elements in existing admin panels.
+	 *
+	 * Enqueues the admin script on the General Settings and Contact Form 7 screens.
+	 *
+	 * @return array Data for the admin script.
 	 */
 	public static function maybe_inject_admin_settings() {
 		global $pagenow;
-		$host = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no form processing, just checking...
-		if ( 'options-general.php' === $pagenow && empty( $_GET['page'] ) ) {
-			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen
-			// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd
-			// phpcs:disable Generic.WhiteSpace.ScopeIndent.IncorrectExact
-			?>
-			<script>
-				jQuery("#admin_email,#new_admin_email").after('<p class="description"><?php
-					// translators: %s: a URL.
-					print wp_kses_post( sprintf( __( 'You can configure alternative administrators <a href="%s">here</a>.', 'email-essentials' ), add_query_arg( [ 'page' => 'acato-email-essentials/admins' ], admin_url( 'admin.php' ) ) ) );
-					?></p>');
-			</script>
-			<?php
-			// phpcs:enable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen
-			// phpcs:enable Squiz.PHP.EmbeddedPhp.ContentAfterEnd
-			// phpcs:enable Generic.WhiteSpace.ScopeIndent.IncorrectExact
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
+		$page_param = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+
+		if ( 'options-general.php' === $pagenow && '' === $page_param ) {
+			wp_enqueue_script( 'email-essentials' );
+
+			return [
+				// translators: %s: a URL.
+				'adminEmailNotice' => wp_kses_post( sprintf( __( 'You can configure alternative administrators <a href="%s">here</a>.', 'email-essentials' ), add_query_arg( [ 'page' => 'acato-email-essentials/admins' ], admin_url( 'admin.php' ) ) ) ),
+			];
 		}
 
+		if ( 'admin.php' !== $pagenow || 'wpcf7' !== $page_param ) {
+			return [];
+		}
+
+		$host   = wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST );
 		$config = self::get_config();
 		if ( ! isset( $config['make_from_valid'] ) ) {
 			$config['make_from_valid'] = '';
@@ -3082,90 +3138,15 @@ Item 2
 				break;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- not processing form content.
-		$page_param = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-		if ( 'admin.php' === $pagenow && 'wpcf7' === $page_param ) {
-			?>
-			<script>
-				jQuery(document).ready(function () {
-					setTimeout(function () {
-						var i = jQuery("#wpcf7-mail-sender,#wpcf7-mail-2-sender");
-						if (i.length > 0) {
-							var t = <?php print wp_json_encode( $text ); ?>,
-								e = i.siblings('.config-error');
+		wp_enqueue_style( 'email-essentials' );
+		wp_enqueue_script( 'email-essentials' );
 
-							if (e.length > 0) {
-								if (e.is('ul')) {
-									e.append('<li class="wpes-err-add">' + t + '</li>');
-								} else {
-									e.html(e.html() + '<br /><span class="wpes-err-add">' + t + '</span>');
-								}
-							}
-						}
-					}, 1000);
-
-					var atdottify = function (rfc) {
-						var email = getEmail(rfc);
-						var newemail = email.replace('@', '-at-').replace(/\./g, '-dot-') + '@' + ((document.location.host).replace(/^www\./, ''));
-						return rfc.replace(email, newemail);
-					};
-
-					var noreplyify = function (rfc) {
-						var email = getEmail(rfc);
-						var newemail = 'noreply' + '@' + ((document.location.host).replace(/^www\./, ''));
-						return rfc.replace(email, newemail);
-					};
-
-					var defaultify = function (rfc) {
-						var host = ((document.location.host).replace(/^www\./, ''));
-						var email = getEmail(rfc);
-						var newemail = <?php print wp_json_encode( self::wp_mail_from( $config['from_email'] ) ); ?>;
-						if ((new RegExp('@' + host)).test(newemail))
-							return rfc.replace(email, newemail);
-						else
-							return noreplyify(rfc);
-					};
-
-					var getEmail = function (rfc) {
-						rfc = rfc.split('<');
-						if (rfc.length < 2) {
-							rfc.unshift('');
-						}
-						rfc = rfc[1].split('>');
-						return rfc[0];
-					};
-
-					var i = jQuery("#wpcf7-mail-sender,#wpcf7-mail-2-sender");
-					i.bind('keyup', function () {
-						var e = jQuery(this).siblings('.config-error'), v = jQuery(this).val();
-						if (e.length) {
-							e.find('.wpes-err-add').find('em.default:nth(0)').text(noreplyify(v));
-							e.find('.wpes-err-add').find('em.noreply:nth(0)').text(noreplyify(v));
-							e.find('.wpes-err-add').find('em.at-:nth(0)').text(atdottify(v));
-							e.find('.wpes-err-add').find('em:nth(1)').text(v);
-						}
-					}).trigger('keyup');
-
-					jQuery(".wpes-err-add em").addClass('quote');
-				});
-			</script>
-			<style>
-				.wpes-err-add {
-
-				}
-
-				.wpes-err-add em {
-					font-style: inherit;
-				}
-
-				.wpes-err-add em.quote {
-					background: lightgray;
-					font-family: monospace;
-					font-weight: bold;
-				}
-			</style>
-			<?php
-		}
+		return [
+			'contactForm7' => [
+				'notice'      => wp_kses_post( $text ),
+				'defaultFrom' => self::wp_mail_from( $config['from_email'] ),
+			],
+		];
 	}
 
 	/**
@@ -3469,7 +3450,7 @@ Item 2
 
 		print wp_kses_post( sprintf( '<div class="notice notice-warning is-dismissible wpes_deprecation_notice_dismissible"><p>%s</p></div>', $notices ) );
 
-		add_action( 'admin_footer', [ self::class, 'dismiss_deprecation_notice_js' ] );
+		wp_enqueue_script( 'email-essentials' );
 	}
 
 	/**
@@ -3478,25 +3459,9 @@ Item 2
 	 * @return void
 	 */
 	public static function dismiss_deprecation_notice() {
+		check_ajax_referer( 'acato_email_essentials_dismiss_deprecation_notice' );
 		update_user_meta( get_current_user_id(), 'wpes_deprecation_notice_dismissed', time() );
 		wp_send_json_success();
-	}
-
-	/**
-	 * Add the JavaScript to handle the dismissal of the deprecation notice.
-	 *
-	 * @return void
-	 */
-	public static function dismiss_deprecation_notice_js() {
-		?>
-		<script>
-			jQuery(document).on('click', '.wpes_deprecation_notice_dismissible .notice-dismiss', function () {
-				jQuery.post(ajaxurl, {
-					action: 'acato_email_essentials_dismiss_deprecation_notice'
-				});
-			});
-		</script>
-		<?php
 	}
 
 	/**
