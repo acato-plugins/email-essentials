@@ -579,9 +579,9 @@ $acato_email_essentials_dkim_identities  = [];
 						</label>
 						<p class="description wpes-field-description">
 							<?php
-							$sent_ok_status_text = _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' );
+							$acato_email_essentials_sent_ok_status_text = _x( 'Sent Ok', 'Email log: this email is Sent OK', 'email-essentials' );
 							// Translators: %s is a pre-tanslated string for 'Sent OK'. Keep as is.
-							print wp_kses_post( sprintf( __( 'Use this to be absolutely certain emails are delivered. Without this, the best status you can get is "%s"', 'email-essentials' ), $sent_ok_status_text ) );
+							print wp_kses_post( sprintf( __( 'Use this to be absolutely certain emails are delivered. Without this, the best status you can get is "%s"', 'email-essentials' ), $acato_email_essentials_sent_ok_status_text ) );
 							?>
 						</p>
 					</div>

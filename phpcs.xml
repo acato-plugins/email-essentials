@@ -94,9 +94,9 @@
 		</properties>
 	</rule>
 
-    <exclude-pattern>node_modules/*</exclude-pattern>
-    <exclude-pattern>languages/*</exclude-pattern>
-    <exclude-pattern>vendor/*</exclude-pattern>
-    <exclude-pattern>/\.js$/</exclude-pattern>
-    <exclude-pattern>/\.css$/</exclude-pattern>
+	<!-- PHP only: JS and CSS have their own tooling. Patterns are regexes without delimiters. -->
+	<exclude-pattern>languages/*</exclude-pattern>
+	<exclude-pattern>*\.js$</exclude-pattern>
+	<exclude-pattern>*\.css$</exclude-pattern>
+	<exclude-pattern>*\.scss$</exclude-pattern>
 </ruleset>
