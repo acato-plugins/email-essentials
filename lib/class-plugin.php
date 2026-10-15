@@ -1116,6 +1116,9 @@ class Plugin {
 			$ttl       = count( $transient ) > 0 && is_array( $transient[0] && isset( $transient[0]['ttl'] ) ) ? $transient[0]['ttl'] : 3600;
 			set_site_transient( $transient_name, $transient, $ttl );
 		}
+		if ( DNS_TXT === $filter && is_array( $transient ) ) {
+			$transient = self::patch_spf_records( $lookup, $transient );
+		}
 		if ( $single_output ) { // Most records are repeatable, should return array, calling code should process array.
 			if ( empty( $transient ) ) {
 				return false;
@@ -1129,6 +1132,57 @@ class Plugin {
 		}
 
 		return $transient;
+	}
+
+	/**
+	 * Patch known-incomplete SPF records of third party providers.
+	 *
+	 * Some providers forget to list their own sending servers in their SPF record. The missing mechanisms are injected
+	 * before the "all" mechanism, but only if not already present.
+	 *
+	 * @param string $lookup  The domain that was looked up.
+	 * @param array  $records The DNS TXT records.
+	 *
+	 * @return array
+	 */
+	private static function patch_spf_records( $lookup, $records ) {
+		$patches = apply_filters(
+			'acato_email_essentials_spf_patches',
+			[
+				// smtp.flowmailer.net is missing from spf.flowmailer.net.
+				'spf.flowmailer.net' => [ 'ip4:185.136.65.10' ],
+			]
+		);
+		$lookup  = strtolower( trim( $lookup, '.' ) );
+		if ( empty( $patches[ $lookup ] ) ) {
+			return $records;
+		}
+
+		foreach ( $records as &$record ) {
+			if ( empty( $record['txt'] ) || false === stripos( $record['txt'], 'v=spf1' ) ) {
+				continue;
+			}
+			$sections = explode( ' ', trim( $record['txt'] ) );
+			$missing  = array_diff( (array) $patches[ $lookup ], array_map( 'strtolower', $sections ) );
+			if ( [] === $missing ) {
+				continue;
+			}
+			$all_position = count( $sections );
+			foreach ( $sections as $index => $section ) {
+				if ( preg_match( '/^[~?+-]?all$/i', $section ) ) {
+					$all_position = $index;
+					break;
+				}
+			}
+			array_splice( $sections, $all_position, 0, $missing );
+			$record['txt'] = implode( ' ', $sections );
+			if ( isset( $record['entries'] ) ) {
+				$record['entries'] = [ $record['txt'] ];
+			}
+		}
+		unset( $record );
+
+		return $records;
 	}
 
 	/**
