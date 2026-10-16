@@ -241,7 +241,7 @@ Expected return:
 `$patches` format:
 - (array) An associative array where keys are domain names and values are arrays of missing SPF mechanisms.
 - Array keys are domain names (e.g., 'spf.example.com').
-- Array values are arrays of missing SPF mechanisms (e.g., ['ip4:1.2.3.4', 'ip4:5,6,7,8']).
+- Array values are arrays of missing SPF mechanisms (e.g., ['ip4:1.2.3.4', 'ip4:5.6.7.8']).
 
 When to use:
 - Use this filter to add missing SPF mechanisms for specific domains, for example when the detected IP for outgoing email is not listed in the officially documented SPF record for that domain.
