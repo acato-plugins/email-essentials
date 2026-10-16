@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.8
+Stable tag: 6.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,7 @@ Email Essentials uses one external service by default, two if you create and def
 * `acato_email_essentials_mail_throttle_batch_size` — Set mail batch size.
 * `acato_email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
 * `acato_email_essentials_ip_service` — Filter individual IP service URLs.
+* `acato_email_essentials_spf_patches` — Patch SPF lookup to fix false negative detections.
 * `acato_email_essentials_website_root_path` — Filter to supply the correct website root path in case of non-standard setups.
 * `acato_email_essentials_development_tlds` — Filter development/local TLDs.
 
@@ -297,6 +298,27 @@ Filter to modify individual IP service URLs based on type.
 
 ---
 
+`acato_email_essentials_spf_patches`
+
+Parameters:
+- (array) `$patches` The current SPF patches.
+
+Expected return:
+- (array) The (altered) SPF patches.
+
+`$patches` format:
+- (array) An associative array where keys are domain names and values are arrays of missing SPF mechanisms.
+- Array keys are domain names (e.g., 'spf.example.com').
+- Array values are arrays of missing SPF mechanisms (e.g., ['ip4:1.2.3.4', 'ip4:5,6,7,8']).
+
+When to use:
+- Use this filter to add missing SPF mechanisms for specific domains, for example when the detected IP for outgoing email is not listed in the officially documented SPF record for that domain.
+- This is the case for at least one service in the wild as of writing, namely Flowmailer.
+- The IP Address for smtp.flowmailer.net is not listed in the SPF record spf.flowmailer.net, causing Email Essentials to report failure, and therefore "You are not allowed to use this".
+- This is a detection-correction only! If you implement this filter incorrectly, you might be sending emails that are not allowed by the domain owner, and your emails will be rejected or marked as spam.
+
+---
+
 `acato_email_essentials_website_root_path`
 
 Parameters:
@@ -344,6 +366,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.9 =
+* Emergency patch held, transformed into documented filter without default
 
 = 6.0.8 =
 * Emergency patch: for flowmailer SMTP users, the SPF check would report no-good, as the IP used for SMTP is not in their SPF record. This patch spoofs the SMTP IP into the SPF record so the SPF succeeds and emails are sent out again. This patch will removed once FlowMailer fixes their SPF record.

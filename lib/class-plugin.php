@@ -1140,19 +1140,25 @@ class Plugin {
 	 * Some providers forget to list their own sending servers in their SPF record. The missing mechanisms are injected
 	 * before the "all" mechanism, but only if not already present.
 	 *
+	 * Usage: implement the filter acato_email_essentials_spf_patches to add your own patches, if needed.
+	 * Array Keys are the domain names, array values are arrays of missing mechanisms.
+	 * For example:
+	 * add_filter( 'acato_email_essentials_spf_patches', function( $patches ) {
+	 *    $patches['spf.example.com'] = [ 'ip4:1.2.3.4', 'ip4:5.6.7.8' ];
+	 *    return $patches;
+	 * } );
+	 *
 	 * @param string $lookup  The domain that was looked up.
 	 * @param array  $records The DNS TXT records.
 	 *
 	 * @return array
 	 */
 	private static function patch_spf_records( $lookup, $records ) {
-		$patches = apply_filters(
-			'acato_email_essentials_spf_patches',
-			[
-				// smtp.flowmailer.net is missing from spf.flowmailer.net.
-				'spf.flowmailer.net' => [ 'ip4:185.136.65.10' ],
-			]
-		);
+		$patches = apply_filters( 'acato_email_essentials_spf_patches', [] );
+		if ( ! is_array( $patches ) || [] === $patches ) {
+			return $records;
+		}
+
 		$lookup  = strtolower( trim( $lookup, '.' ) );
 		if ( empty( $patches[ $lookup ] ) ) {
 			return $records;
