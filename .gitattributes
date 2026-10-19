@@ -23,6 +23,7 @@
 /lib/class-deprecation.php export-ignore
 /lib/filter-deprecation.php export-ignore
 /lib/deprecation.php export-ignore
+/lib/debug-dont-send.php export-ignore
 /bitbucket-pipelines.yml export-ignore
 # Keep the .txt variant, but remove the .sh variant
 /tools/generate_dkim.sh export-ignore

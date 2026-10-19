@@ -2214,6 +2214,13 @@ class Plugin {
 						$new_config['make_from_valid'] = 'noreply';
 					}
 					self::set_config( $new_config );
+
+					/**
+					 * Allow add-ons to save their own settings, added with action `acato_email_essentials_settings_panels`.
+					 *
+					 * @param array $raw_settings The raw (unslashed, unsanitized) posted settings. Sanitize what you use.
+					 */
+					do_action( 'acato_email_essentials_settings_saved', $raw_settings );
 					set_transient( 'acato_email_essentials_admin_message', __( 'Settings saved.', 'email-essentials' ), 5 );
 					wp_safe_redirect( remove_query_arg( 'wpes-nonce' ) );
 					exit;

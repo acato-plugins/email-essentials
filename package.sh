@@ -26,6 +26,7 @@ for i in \
 	.wordpress-org \
 	wp_mail_key.patch tools/generate_dkim.php \
 	lib/class-migrations.php lib/class-deprecation.php lib/filter-deprecation.php lib/deprecation.php \
+	lib/debug-dont-send.php \
 	bitbucket-pipelines.yml; do
 	echo "Removing $i" ; rm -rf $i
 done

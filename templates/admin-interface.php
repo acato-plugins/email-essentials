@@ -1216,6 +1216,15 @@ $acato_email_essentials_dkim_identities  = [];
 				</div>
 			</div>
 
+			<?php
+			/**
+			 * Allow add-ons to add their own settings panels to the settings form.
+			 *
+			 * @param array $acato_email_essentials_config The current configuration.
+			 */
+			do_action( 'acato_email_essentials_settings_panels', $acato_email_essentials_config );
+			?>
+
 			<div id="email-preview" class="postbox">
 				<div class="postbox-header">
 					<h2>

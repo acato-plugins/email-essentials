@@ -66,3 +66,8 @@ if ( file_exists( __DIR__ . '/lib/deprecation.php' ) ) {
 }
 
 Plugin::instance( __FILE__ );
+
+// This file is only used for debugging in development, not applicable to the public version on WordPress.org.
+if ( file_exists( __DIR__ . '/lib/debug-dont-send.php' ) ) {
+	require_once __DIR__ . '/lib/debug-dont-send.php';
+}
