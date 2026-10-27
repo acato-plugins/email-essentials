@@ -997,12 +997,20 @@ class Plugin {
 	/**
 	 * Test: Does the SPF for $domain contain or refer to this $ip.
 	 *
-	 * @param string $domain The domain name.
-	 * @param string $ip     The IP address.
+	 * @param string   $domain  The domain name.
+	 * @param string   $ip      The IP address.
+	 * @param string[] $visited Internal: domains already visited in this include-chain, used to break include loops.
 	 *
 	 * @return bool|null
 	 */
-	public static function validate_ip_listed_in_spf( $domain, $ip ) {
+	public static function validate_ip_listed_in_spf( $domain, $ip, $visited = [] ) {
+		$domain = strtolower( trim( $domain, '.' ) );
+		// Guard against include loops (a > b > a) and runaway include chains; RFC 7208 allows at most 10 DNS lookups.
+		if ( in_array( $domain, $visited, true ) || count( $visited ) >= 10 ) {
+			return false;
+		}
+		$visited[] = $domain;
+
 		$dns = self::dns_get_record( $domain, DNS_TXT );
 		if ( ! $dns ) {
 			return null;
@@ -1013,7 +1021,8 @@ class Plugin {
 			if ( false !== strpos( $record['txt'], 'v=spf1' ) ) {
 				$sections = explode( ' ', $record['txt'] );
 				foreach ( $sections as $section ) {
-					if ( preg_match( '/(a|aaaa|mx):(.+)/', $section, $mx_match ) ) {
+					// Anchored, so we only match the a:, aaaa: and mx: mechanisms, not "a:" inside an ip6: address like ip6:2a02::21a:4aff:fe8a:db9c .
+					if ( preg_match( '/^[+?~-]?(a|aaaa|mx):([^\/]+)/', $section, $mx_match ) ) {
 						// here we only expand the record, the actual check is done later .
 						foreach ( self::dns_get_record( $mx_match[2], DNS_MX ) as $item ) {
 							$sections[] = 'a/' . $item['target'];
@@ -1076,7 +1085,7 @@ class Plugin {
 							return $section;
 						}
 					} elseif ( preg_match( '/include:(.+)$/', $section, $include ) ) {
-						$result = self::validate_ip_listed_in_spf( $include[1], $ip );
+						$result = self::validate_ip_listed_in_spf( $include[1], $ip, $visited );
 						if ( $result ) {
 							return $section . ' > ' . $result;
 						}
@@ -1195,14 +1204,22 @@ class Plugin {
 	 * DNS lookup; will do IPv4, IPv6 and CNAME lookups, will recurse CNAME lookups.
 	 * Will return the first IP found.
 	 *
-	 * @param string $lookup The domain to lookup.
-	 * @param int    $filter A DNS_* constant indicating which records you are looking for, DNS_A, DNS_AAAA or DNS_CNAME are allowed.
-	 * @param bool   $all    If true, will return all records found, not just the first one.
+	 * @param string   $lookup  The domain to lookup.
+	 * @param int      $filter  A DNS_* constant indicating which records you are looking for, DNS_A, DNS_AAAA or DNS_CNAME are allowed.
+	 * @param bool     $all     If true, will return all records found, not just the first one.
+	 * @param string[] $visited Internal: hostnames already visited in this CNAME-chain, used to break CNAME loops.
 	 *
 	 * @return string|string[]|false An IP address, either IPv4 or IPv6, whichever is found first.
 	 */
-	public static function dns_get_record_with_recurse( $lookup, $filter = DNS_A | DNS_AAAA | DNS_CNAME, $all = false ) {
+	public static function dns_get_record_with_recurse( $lookup, $filter = DNS_A | DNS_AAAA | DNS_CNAME, $all = false, $visited = [] ) {
 		$return_values = [];
+		$lookup        = strtolower( trim( $lookup, '.' ) );
+		// Guard against CNAME loops (a > b > a) and runaway CNAME chains.
+		if ( in_array( $lookup, $visited, true ) || count( $visited ) >= 10 ) {
+			return $all ? $return_values : false;
+		}
+		$visited[] = $lookup;
+
 		if ( ( $filter & DNS_AAAA ) === DNS_AAAA ) {
 			$ipv6 = self::dns_get_record( $lookup, DNS_AAAA );
 			foreach ( $ipv6 as $record ) {
@@ -1236,7 +1253,7 @@ class Plugin {
 			foreach ( $cname as $record ) {
 				$lookup = $record['cname'];
 				self::ip_trace_step( $lookup );
-				$result = self::dns_get_record_with_recurse( $lookup, $filter );
+				$result = self::dns_get_record_with_recurse( $lookup, $filter, false, $visited );
 				if ( $result ) {
 					if ( $all ) {
 						$return_values = array_merge( $return_values, (array) $result );
@@ -1303,7 +1320,8 @@ class Plugin {
 	 */
 	private static function dns_get_record__internal_cfdoh( $hostname, $type = DNS_ANY ) {
 
-		$is_wildcard          = 0 === strpos( $hostname, '*.' );
+		// No wildcard fallback for wildcards or single-label hostnames; "foo" and "*" both map to "*", which would recurse forever.
+		$is_wildcard          = 0 === strpos( $hostname, '*' ) || false === strpos( trim( $hostname ?? '', '.' ), '.' );
 		$wildcard_hostname    = explode( '.', $hostname ?? '' ) ?: [];
 		$wildcard_hostname[0] = '*';
 		$wildcard_hostname    = implode( '.', $wildcard_hostname );
