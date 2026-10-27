@@ -135,7 +135,7 @@ $acato_email_essentials_dkim_identities  = [];
 								id="from-email"/>
 							<div
 								class="wpes-notice--error on-regexp-test"
-								data-regexp="(no-?reply)@"
+								data-regexp="(no-?_?reply)@"
 								data-field="from-email">
 								<?php print wp_kses_post( __( 'Under GDPR, from May 25th, 2018, using a no-reply@ (or any variation of a not-responded-to email address) is prohibited. Please make sure the default sender address is valid and used in the setting below.', 'email-essentials' ) ); ?>
 							</div>
