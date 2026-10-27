@@ -303,10 +303,10 @@ class Plugin extends \Acato\Email_Essentials\Plugin {
 		return parent::get_sending_ip( $force_ip4 );
 	}
 
-	public static function validate_ip_listed_in_spf( $domain, $ip ) {
+	public static function validate_ip_listed_in_spf( $domain, $ip, $visited = [] ) {
 		\Acato\Email_Essentials\Plugin::_deprecated_function( 'WP_Email_Essentials\\Queue\\validate_ip_listed_in_spf', '5.0.0', 'Acato\\Email_Essentials\\Plugin\\validate_ip_listed_in_spf' );
 
-		return parent::validate_ip_listed_in_spf( $domain, $ip );
+		return parent::validate_ip_listed_in_spf( $domain, $ip, $visited );
 	}
 
 	public static function dns_get_record( $lookup, $filter, $single_output = null ) {

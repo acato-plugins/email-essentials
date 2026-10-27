@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.10
+Stable tag: 6.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -366,6 +366,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.11 =
+* [internal] Bugfix: deprecation handler used an incompatible method signature for Plugin::validate_ip_listed_in_spf(), causing a PHP Fatal error since 6.0.10. Not released to WordPress.org.
 
 = 6.0.10 =
 * Bugfix: The SPF check could hang in an endless loop (until PHP timed out) for some SPF records. An IPv6 address containing "a:" (e.g. ip6:2a02:2770::21a:4aff:fe8a:db9c) was mistaken for an a:/mx: mechanism, and the resulting lookup of a hostname without dots made the Cloudflare DNS wildcard fallback retry "*" forever. Both are fixed.
