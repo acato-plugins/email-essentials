@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.9
+Stable tag: 6.0.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -366,6 +366,11 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.0.10 =
+* Bugfix: The SPF check could hang in an endless loop (until PHP timed out) for some SPF records. An IPv6 address containing "a:" (e.g. ip6:2a02:2770::21a:4aff:fe8a:db9c) was mistaken for an a:/mx: mechanism, and the resulting lookup of a hostname without dots made the Cloudflare DNS wildcard fallback retry "*" forever. Both are fixed.
+* Bugfix: SPF include-chains are now protected against include loops and limited to 10 levels deep, as per RFC 7208.
+* Bugfix: Resolving the SMTP host is now protected against CNAME loops (a > b > a) and limited to 10 CNAME hops.
 
 = 6.0.9 =
 * Emergency patch held, transformed into documented filter without default
