@@ -251,6 +251,23 @@ When to use:
 
 ---
 
+`acato_email_essentials_spf_veto`
+
+Parameters:
+- (bool) `$veto` Whether to veto the SPF lookup, default false.
+- (string) `$domain` The (lowercase) domain of the sender email address.
+- (string) `$email` The sender email address.
+
+Expected return:
+- (bool) True to veto the SPF lookup.
+
+When to use:
+- Use this filter to prevent a sender domain from being accepted based on its SPF record, even though the SPF record allows this server.
+- This is useful when an SPF record whitelists a (shared) hosting server, for example an agency domain used as the admin email address on all websites it hosts. Without a veto, every website on that server is "allowed" to send in name of the agency domain.
+- A vetoed domain is treated as "not allowed", so the configured fallback (default sender, noreply@, etc.) is used instead.
+
+---
+
 `acato_email_essentials_website_root_path`
 
 Parameters:

@@ -145,7 +145,22 @@ $acato_email_essentials_dkim_identities  = [];
 						if ( $acato_email_essentials_config['spf_lookup_enabled'] ) {
 							// SPF match.
 							$acato_email_essentials_spf_result = Plugin::i_am_allowed_to_send_in_name_of( $acato_email_essentials_config['from_email'] );
-							if ( ! $acato_email_essentials_spf_result ) {
+							$acato_email_essentials_spf_vetoed = Plugin::spf_lookup_vetoed( $acato_email_essentials_config['from_email'] );
+							if ( $acato_email_essentials_spf_vetoed ) {
+								?>
+								<div class="wpes-notice--error">
+									<strong class="title">
+										<?php print wp_kses_post( __( 'SPF Records are checked', 'email-essentials' ) ); ?>
+									</strong>
+
+									<p>
+										<?php print wp_kses_post( __( 'you are NOT allowed to send mail with this domain.', 'email-essentials' ) ); ?>
+										<br/>
+										<?php print wp_kses_post( __( 'The SPF check for this domain is vetoed by the acato_email_essentials_spf_veto filter, regardless of the SPF record. Please use a sender email address on a different domain.', 'email-essentials' ) ); ?>
+									</p>
+								</div>
+								<?php
+							} elseif ( ! $acato_email_essentials_spf_result ) {
 								?>
 								<div class="wpes-notice--error">
 									<strong class="title">
@@ -222,7 +237,11 @@ $acato_email_essentials_dkim_identities  = [];
 								<p>
 									<code>
 										<?php
-										print $acato_email_essentials_spf_result ? wp_kses_post( $acato_email_essentials_spf_result ) : esc_html__( 'Nothing ;( - This IP is not found in any part of the SPF.', 'email-essentials' );
+										if ( $acato_email_essentials_spf_vetoed ) {
+											print esc_html__( 'Nothing - The SPF check is vetoed.', 'email-essentials' );
+										} else {
+											print $acato_email_essentials_spf_result ? wp_kses_post( $acato_email_essentials_spf_result ) : esc_html__( 'Nothing ;( - This IP is not found in any part of the SPF.', 'email-essentials' );
+										}
 										?>
 									</code>
 								</p>

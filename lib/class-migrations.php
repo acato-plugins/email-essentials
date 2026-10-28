@@ -30,11 +30,44 @@ class Migrations {
 			'acato_email_essentials_website_root_path',
 			[
 				self::class,
-				'acato_email_essentials_website_root_path',
+				'email_essentials_website_root_path',
 			]
 		);
+		add_filter( 'acato_email_essentials_spf_veto', [ self::class, 'acato_email_essentials_spf_veto' ], 10, 2 );
 
 		self::maybe_migrate_from_wp_email_essentials();
+	}
+
+	/**
+	 * Veto the SPF lookup for acato.nl unless this is an acato.nl website.
+	 *
+	 * Our SPF whitelists our servers, so all websites we host pass the SPF check for wordpress@acato.nl (our default
+	 * admin address), which results in client websites sending as acato.nl and being marked as spam.
+	 *
+	 * @param bool   $veto   The current veto.
+	 * @param string $domain The domain of the sender email address.
+	 *
+	 * @return bool
+	 */
+	public static function acato_email_essentials_spf_veto( $veto, $domain ) {
+		if ( ! self::is_acato_domain( $domain ) ) {
+			return $veto;
+		}
+
+		return ! self::is_acato_domain( (string) wp_parse_url( get_bloginfo( 'url' ), PHP_URL_HOST ) );
+	}
+
+	/**
+	 * Check if a domain is acato.nl or a subdomain thereof.
+	 *
+	 * @param string $domain The domain.
+	 *
+	 * @return bool
+	 */
+	private static function is_acato_domain( $domain ) {
+		$domain = strtolower( trim( $domain, '.' ) );
+
+		return 'acato.nl' === $domain || '.acato.nl' === substr( $domain, -9 );
 	}
 
 	/**

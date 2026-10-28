@@ -6,7 +6,7 @@ More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
 Tested up to: 7.0.1
 Requires PHP: 7.4
-Stable tag: 6.0.11
+Stable tag: 6.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,7 @@ Email Essentials uses one external service by default, two if you create and def
 * `acato_email_essentials_ip_services` — Define custom IP services for accurately determining the sender's IP address.
 * `acato_email_essentials_ip_service` — Filter individual IP service URLs.
 * `acato_email_essentials_spf_patches` — Patch SPF lookup to fix false negative detections.
+* `acato_email_essentials_spf_veto` — Veto the SPF lookup for a sender domain, to prevent false positive detections.
 * `acato_email_essentials_website_root_path` — Filter to supply the correct website root path in case of non-standard setups.
 * `acato_email_essentials_development_tlds` — Filter development/local TLDs.
 
@@ -319,6 +320,23 @@ When to use:
 
 ---
 
+`acato_email_essentials_spf_veto`
+
+Parameters:
+- (bool) `$veto` Whether to veto the SPF lookup, default false.
+- (string) `$domain` The (lowercase) domain of the sender email address.
+- (string) `$email` The sender email address.
+
+Expected return:
+- (bool) True to veto the SPF lookup.
+
+When to use:
+- Use this filter to prevent a sender domain from being accepted based on its SPF record, even though the SPF record allows this server.
+- This is useful when an SPF record whitelists a (shared) hosting server, for example an agency domain used as the admin email address on all websites it hosts. Without a veto, every website on that server is "allowed" to send in name of the agency domain.
+- A vetoed domain is treated as "not allowed", so the configured fallback (default sender, noreply@, etc.) is used instead.
+
+---
+
 `acato_email_essentials_website_root_path`
 
 Parameters:
@@ -366,6 +384,12 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.1.0 =
+* New filter: `acato_email_essentials_spf_veto` allows vetoing the SPF lookup for a sender domain. A vetoed domain is never allowed, regardless of its SPF record, so the configured fallback sender is used instead. Use this when an SPF record whitelists a (shared) hosting server, so not every website on that server may send in name of that domain.
+* The admin interface shows when the SPF check of the default sender is vetoed.
+* [internal] Acato: the SPF lookup for acato.nl is vetoed, unless the website itself is an acato.nl website.
+* [internal] Bugfix: the `acato_email_essentials_website_root_path` filter was registered with a non-existing callback, causing a PHP Fatal error when applied.
 
 = 6.0.11 =
 * [internal] Bugfix: deprecation handler used an incompatible method signature for Plugin::validate_ip_listed_in_spf(), causing a PHP Fatal error since 6.0.10. Not released to WordPress.org.
