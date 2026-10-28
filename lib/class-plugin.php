@@ -857,12 +857,43 @@ class Plugin {
 		if ( [] === $sending_domain ) {
 			return false; // invalid email.
 		}
+		if ( self::spf_lookup_vetoed( $email ) ) {
+			self::log_message( "SPF Check vetoed for {$sending_domain[1]}, I am not allowed to send in name of $email." );
+
+			return false;
+		}
+
 		$sending_server = self::get_sending_ip();
 
 		$result = self::validate_ip_listed_in_spf( $sending_domain[1], $sending_server );
 		self::log_message( 'SPF Check result: ' . ( $result ? 'spf allows' : 'spf does not allow' ) );
 
 		return $result;
+	}
+
+	/**
+	 * Test: Is the SPF lookup for the domain of given email address vetoed.
+	 *
+	 * A vetoed domain is never allowed, regardless of its SPF record.
+	 *
+	 * @param string $email The email address to check.
+	 *
+	 * @return bool
+	 */
+	public static function spf_lookup_vetoed( $email ) {
+		$sending_domain = self::get_domain( $email );
+		if ( '' === $sending_domain ) {
+			return false;
+		}
+
+		/**
+		 * Veto the SPF lookup for a sending domain.
+		 *
+		 * @param bool   $veto   True to veto, default false.
+		 * @param string $domain The (lowercase) domain of the email address.
+		 * @param string $email  The email address being checked.
+		 */
+		return (bool) apply_filters( 'acato_email_essentials_spf_veto', false, strtolower( $sending_domain ), $email );
 	}
 
 	/**
