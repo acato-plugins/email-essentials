@@ -27,7 +27,12 @@ class CssVarEval {
 	 * @return string The evaluated CSS string.
 	 */
 	public static function evaluate( $css ) {
-		return self::resolve_css_variables( $css );
+		try {
+			return self::resolve_css_variables( $css );
+		} catch ( \Throwable $e ) {
+			// Unparsable CSS should not break sending the email, use it as-is.
+			return $css;
+		}
 	}
 
 	/**

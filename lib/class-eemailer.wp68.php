@@ -55,8 +55,8 @@ class EEMailer extends WP_PHPMailer {
 		$single_to = false;
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- not our code.
 		if ( ! empty( $this->SingleTo ) ) {
-			$single_to = $this->SingleTo;
-			unset( $this->SingleTo );
+			$single_to      = $this->SingleTo;
+			$this->SingleTo = false; // Do not unset; PHPMailer declares this property and reads it later on.
 		}
 		// Don't want single to? Then just send the email.
 		if ( ! $single_to ) {

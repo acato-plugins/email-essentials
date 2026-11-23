@@ -22,22 +22,19 @@ class IP {
 	 * @return bool
 	 */
 	public static function ip4_match_cidr( $ip, $cidr ) {
-		[ $cidr_base, $prefix ] = explode( '/', $cidr );
+		[ $cidr_base, $prefix ] = explode( '/', $cidr . '/32' );
 
-		$generator = function () use ( $cidr_base, $prefix ) {
-			$start    = ip2long( $cidr_base );
-			$ip_count = 1 << ( 32 - $prefix );
-			for ( $i = 0; $i < $ip_count; $i++ ) {
-				yield long2ip( $start + $i );
-			}
-		};
-		foreach ( $generator() as $_ip ) {
-			if ( long2ip( ip2long( $ip ) ) === $_ip ) {
-				return true;
-			}
+		$ip_long   = ip2long( $ip );
+		$base_long = ip2long( $cidr_base );
+		// A non-numeric or out of range prefix would throw in the bit shift below.
+		if ( false === $ip_long || false === $base_long || ! is_numeric( $prefix ) || $prefix < 0 || $prefix > 32 ) {
+			return false;
 		}
 
-		return false;
+		// Compare network bits with a mask instead of walking every address; a /8 would be 16 million iterations.
+		$mask = ( 0xFFFFFFFF << ( 32 - (int) $prefix ) ) & 0xFFFFFFFF;
+
+		return ( $ip_long & $mask ) === ( $base_long & $mask );
 	}
 
 	/**
@@ -201,7 +198,7 @@ class IP {
 
 		// converts inet_pton output to string with bits.
 		$inet_to_bits = function ( $inet ) {
-			$unpacked = unpack( 'A16', $inet );
+			$unpacked = unpack( 'a16', $inet ); // Lowercase 'a': uppercase 'A' strips trailing null and space bytes.
 			$unpacked = str_split( $unpacked[1] );
 			$binaryip = '';
 			foreach ( $unpacked as $char ) {
@@ -214,7 +211,11 @@ class IP {
 		$ip       = inet_pton( $ip );
 		$binaryip = $inet_to_bits( $ip );
 
-		[ $net, $maskbits ] = explode( '/', $cidr );
+		[ $net, $maskbits ] = explode( '/', $cidr . '/128' );
+		if ( ! self::is_6( $net ) || ! is_numeric( $maskbits ) ) {
+			return false;
+		}
+		$maskbits = max( 0, min( 128, (int) $maskbits ) );
 
 		$net       = inet_pton( $net );
 		$binarynet = $inet_to_bits( $net );

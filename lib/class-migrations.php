@@ -167,12 +167,14 @@ class Migrations {
 		deactivate_plugins( $plugin, false, true );
 
 		// WordPress still thinks the plugin is active, do it the hard way.
-		$active = get_option( 'active_plugins', [] );
-		unset( $active[ array_search( $plugin, $active, true ) ] );
+		// When not found, array_search() returns false, which unset() treats as index 0; that would deactivate an unrelated plugin.
+		$active = (array) get_option( 'active_plugins', [] );
+		$active = array_values( array_diff( $active, [ $plugin ] ) );
 		update_option( 'active_plugins', $active );
 
-		$active = get_site_option( 'active_sitewide_plugins', [] );
-		unset( $active[ array_search( $plugin, $active, true ) ] );
+		// Network-active plugins are stored as plugin => timestamp.
+		$active = (array) get_site_option( 'active_sitewide_plugins', [] );
+		unset( $active[ $plugin ] );
 		update_site_option( 'active_sitewide_plugins', $active );
 
 		// log the deactivation.

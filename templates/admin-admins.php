@@ -122,7 +122,7 @@ $acato_email_essentials_wordpress_admin = get_option( 'admin_email' );
 
 						<?php
 						$acato_email_essentials_loop_iterator_0 = 0;
-						$acato_email_essentials_regexp_list     = get_option( 'acato_email_essentials_key_list', [] );
+						$acato_email_essentials_regexp_list     = (array) get_option( 'acato_email_essentials_key_list', [] );
 						foreach ( $acato_email_essentials_regexp_list as $acato_email_essentials_regexp => $acato_email_essentials_mail_key ) {
 							?>
 							<tr>
@@ -165,7 +165,7 @@ $acato_email_essentials_wordpress_admin = get_option( 'admin_email' );
 					</table>
 
 					<?php
-					$acato_email_essentials_missed_subjects = get_option( 'acato_email_essentials_failed_keys', [] );
+					$acato_email_essentials_missed_subjects = (array) get_option( 'acato_email_essentials_failed_keys', [] );
 					$acato_email_essentials_missed_subjects = array_filter(
 						$acato_email_essentials_missed_subjects,
 						function ( $item ) {

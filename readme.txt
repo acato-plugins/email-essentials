@@ -4,9 +4,9 @@ Donate link: https://acato.nl
 Tags: email, smtp, dkim, smime, deliverability
 More Tags: debugging, history, html, css, outgoing
 Requires at least: 5.6
-Tested up to: 7.0.1
+Tested up to: 7.1.5
 Requires PHP: 7.4
-Stable tag: 6.1.0
+Stable tag: 6.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -384,6 +384,9 @@ Tools are provided as-is, without support. Use at your own risk. Read the script
 You DO NOT HAVE TO USE these scripts, you can generate DKIM keys with any tool you like.
 
 == Changelog ==
+
+= 6.1.1 =
+* No functional changes, just code-hardening to prevent crashes on unexpected data.
 
 = 6.1.0 =
 * New filter: `acato_email_essentials_spf_veto` allows vetoing the SPF lookup for a sender domain. A vetoed domain is never allowed, regardless of its SPF record, so the configured fallback sender is used instead. Use this when an SPF record whitelists a (shared) hosting server, so not every website on that server may send in name of that domain.

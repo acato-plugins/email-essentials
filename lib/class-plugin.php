@@ -1140,11 +1140,11 @@ class Plugin {
 	public static function dns_get_record( $lookup, $filter, $single_output = null ) {
 		// pre-filter; these tlds can never have SPF or other special records.
 		$local_tlds = apply_filters( 'acato_email_essentials_development_tlds', [ 'local', 'test' ] );
-		$local_tlds = array_filter( array_unique( $local_tlds ) );
+		$local_tlds = array_filter( array_unique( (array) $local_tlds ) );
 		if ( [] !== $local_tlds ) {
 			$local_tlds = array_map( 'preg_quote', $local_tlds, [ '/' ] );
 			$local_tlds = implode( '|', $local_tlds );
-			if ( preg_match( '/\.(' . $local_tlds . ')$/', $lookup ) && ( DNS_A !== $filter || DNS_A6 !== $filter ) ) {
+			if ( preg_match( '/\.(' . $local_tlds . ')$/', $lookup ) && ! in_array( $filter, [ DNS_A, DNS_A6, DNS_AAAA ], true ) ) {
 				return [];
 			}
 		}
@@ -1153,10 +1153,17 @@ class Plugin {
 		$transient      = get_site_transient( $transient_name );
 		if ( ! $transient ) {
 			$transient = self::dns_get_record__internal( $lookup, $filter );
-			$ttl       = count( $transient ) > 0 && is_array( $transient[0] && isset( $transient[0]['ttl'] ) ) ? $transient[0]['ttl'] : 3600;
+			if ( ! is_array( $transient ) ) {
+				$transient = [];
+			}
+			// A TTL of 0 would make the transient permanent, so never cache shorter than 5 minutes.
+			$ttl = isset( $transient[0]['ttl'] ) ? max( 300, (int) $transient[0]['ttl'] ) : 3600;
 			set_site_transient( $transient_name, $transient, $ttl );
 		}
-		if ( DNS_TXT === $filter && is_array( $transient ) ) {
+		if ( ! is_array( $transient ) ) {
+			$transient = [];
+		}
+		if ( DNS_TXT === $filter ) {
 			$transient = self::patch_spf_records( $lookup, $transient );
 		}
 		if ( $single_output ) { // Most records are repeatable, should return array, calling code should process array.
@@ -1164,10 +1171,10 @@ class Plugin {
 				return false;
 			}
 			if ( DNS_A === $filter ) {
-				return $transient[0]['ip'];
+				return $transient[0]['ip'] ?? false;
 			}
 			if ( DNS_A6 === $filter || DNS_AAAA === $filter ) {
-				return $transient[0]['ipv6'];
+				return $transient[0]['ipv6'] ?? false;
 			}
 		}
 
@@ -1338,7 +1345,8 @@ class Plugin {
 			}
 		}
 
-		return $return;
+		// Native dns_get_record() returns false on failure.
+		return is_array( $return ) ? $return : [];
 	}
 
 	/**
@@ -1382,6 +1390,10 @@ class Plugin {
 
 		if ( 'ANY' === $cf_type ) {
 			$results = [];
+			// Native dns_get_record() is often disabled on shared hosting; calling it would be fatal.
+			if ( ! function_exists( 'dns_get_record' ) ) {
+				return $results;
+			}
 			foreach ( array_keys( $php_to_cf_type ) as $dns_type ) {
 				$results = array_merge( $results, dns_get_record( $hostname, $dns_type ) ?: [] );
 			}
@@ -1410,18 +1422,21 @@ class Plugin {
 		if ( ! $result ) {
 			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
-		$answer = $result['Answer'] ?? [];
-		if ( ! $answer ) {
+		$answer = is_array( $result ) ? ( $result['Answer'] ?? [] ) : [];
+		if ( ! $answer || ! is_array( $answer ) ) {
 			return $is_wildcard ? [] : self::dns_get_record__internal_cfdoh( $wildcard_hostname, $type );
 		}
 		$return = [];
 		foreach ( $answer as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				continue;
+			}
 			$entry                 = array_change_key_case( $entry, CASE_LOWER );
 			$return_type           = $entry['type'] ?? 0;
 			$request_type          = $php_to_cf_type[ $type ] ?? 'UNKNOWN';
 			$return_type           = $cf_numeric_types[ $return_type ] ?? $request_type;
 			$entry['type']         = $return_type;
-			$entry['ttl']          = $entry['TTL'] ?? 0;
+			$entry['ttl']          = $entry['ttl'] ?? 0; // Keys were lower-cased above, Cloudflare's 'TTL' is now 'ttl'.
 			$entry['class']        = $entry['class'] ?? 'IN';
 			$entry['host']         = $entry['name'] ?? $hostname;
 			$ip                    = $entry['data'] ?? '';
@@ -1523,10 +1538,15 @@ class Plugin {
 
 		if ( $config['is_html'] || $config['enable_history'] ) {
 			$check_encoding_result = false;
-			if ( 'auto' === $config['content_precode'] ) {
+			if ( 'auto' === $config['content_precode'] && function_exists( 'mb_check_encoding' ) ) {
 				$encoding_table = explode( ',', self::ENCODINGS );
 				foreach ( $encoding_table as $encoding ) {
-					$check_encoding_result = mb_check_encoding( $mailer->Body, $encoding );
+					try {
+						$check_encoding_result = mb_check_encoding( $mailer->Body, $encoding );
+					} catch ( \ValueError $e ) {
+						// PHP 8 throws on encodings mbstring does not know, like 'latin-1'.
+						continue;
+					}
 					if ( $check_encoding_result ) {
 						$check_encoding_result = $encoding;
 						break;
@@ -1552,14 +1572,14 @@ class Plugin {
 		}
 
 		if ( $config['alt_body'] || $config['enable_history'] ) {
-			$body = $mailer->Body;
-			$btag = strpos( $body, '<body' );
-			if ( false !== $btag ) {
-				$bodystart = strpos( $body, '>', $btag );
-				$bodytag   = substr( $body, $btag, $bodystart - $btag + 1 );
+			$body      = $mailer->Body;
+			$btag      = strpos( $body, '<body' );
+			$bodystart = false !== $btag ? strpos( $body, '>', $btag ) : false;
+			if ( false !== $bodystart ) {
+				$bodytag = substr( $body, $btag, $bodystart - $btag + 1 );
 
-				[ $body, $junk ] = explode( '</body', $body );
-				[ $junk, $body ] = explode( $bodytag, $body );
+				$body = explode( '</body', $body, 2 )[0];
+				$body = explode( $bodytag, $body, 2 )[1] ?? $body;
 			}
 
 			// remove all line breaks.
@@ -1886,9 +1906,12 @@ class Plugin {
 			'make_from_valid'      => 'default',
 		];
 
-		$defaults = apply_filters( 'acato_email_essentials_defaults', $defaults );
+		$defaults = (array) apply_filters( 'acato_email_essentials_defaults', $defaults );
 
 		$settings = get_option( 'acato_email_essentials_config', $defaults );
+		if ( ! is_array( $settings ) ) {
+			$settings = $defaults;
+		}
 		if ( ! $raw ) {
 			$settings = apply_filters( 'acato_email_essentials_settings', $settings );
 			if ( ! is_array( $settings ) ) {
@@ -2112,8 +2135,12 @@ class Plugin {
 	 * @return string
 	 */
 	public static function rfc_encode( $email_array ) {
-		if ( ! $email_array['name'] ) {
-			return $email_array['email'];
+		// rfc_decode() returns false for unparsable input.
+		if ( ! is_array( $email_array ) ) {
+			return '';
+		}
+		if ( empty( $email_array['name'] ) ) {
+			return $email_array['email'] ?? '';
 		}
 
 		// this is the unescaped, unencasulated RFC, as WP 4.6 and higher want it.
@@ -2360,7 +2387,7 @@ class Plugin {
 			$list    = [];
 			$__regex = '/^\/[\s\S]+\/$/';
 			foreach ( $regexps as $entry ) {
-				if ( preg_match( $__regex, $entry['regexp'] ) ) {
+				if ( is_array( $entry ) && is_string( $entry['regexp'] ?? null ) && preg_match( $__regex, $entry['regexp'] ) ) {
 					$list[ $entry['regexp'] ] = $entry['key'];
 				}
 			}
@@ -2375,10 +2402,11 @@ class Plugin {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above, data prepared below.
 			$new_data = ( isset( $_POST['settings']['keys'] ) && is_array( $_POST['settings']['keys'] ) ) ? wp_unslash( $_POST['settings']['keys'] ) : [];
 			foreach ( $new_data as &$_keys ) {
+				$_keys = (array) $_keys;
 				foreach ( $_keys as &$keys ) {
 					// this is where we sanitize the input.
 					$keys = array_filter(
-						$keys,
+						(array) $keys,
 						function ( $el ) {
 							return Plugin::sanitize_commaseparated_email_list( $el, true );
 						}
@@ -2669,7 +2697,7 @@ Item 2
 		$ids                = [];
 		$certificate_folder = $c['certificate_folder'];
 		if ( is_dir( $certificate_folder ) ) {
-			$files = glob( $certificate_folder . '/*.crt' );
+			$files = glob( $certificate_folder . '/*.crt' ) ?: [];
 			foreach ( $files as $file ) {
 				if ( is_file( $file ) && is_file( preg_replace( '/\.crt$/', '.key', $file ) ) ) {
 					$ids[ basename( preg_replace( '/\.crt$/', '', $file ) ) ] = [
@@ -2710,7 +2738,7 @@ Item 2
 		$ids                = [];
 		$certificate_folder = $c['dkim_certificate_folder'];
 		if ( is_dir( $certificate_folder ) ) {
-			$files = glob( $certificate_folder . '/*.crt' );
+			$files = glob( $certificate_folder . '/*.crt' ) ?: [];
 			foreach ( $files as $file ) {
 				if ( is_file( $file ) && is_file( preg_replace( '/\.crt$/', '.key', $file ) ) ) {
 					$domain         = basename( preg_replace( '/\.crt$/', '', $file ) );
@@ -2851,7 +2879,7 @@ Item 2
 		}
 
 		// sorry, we failed :( .
-		$fails = get_option( 'acato_email_essentials_failed_keys', [] );
+		$fails = (array) get_option( 'acato_email_essentials_failed_keys', [] );
 		if ( $fails ) {
 			$fails = array_combine( $fails, $fails );
 		}
@@ -3047,7 +3075,7 @@ Item 2
 	 * @return false|string
 	 */
 	public static function mail_subject_match( $subject ) {
-		$store = get_option( 'acato_email_essentials_key_list', [] );
+		$store = (array) get_option( 'acato_email_essentials_key_list', [] );
 		foreach ( $store as $regexp => $mail_key ) {
 			if ( preg_match( $regexp, $subject ) ) {
 				return $mail_key;
@@ -3297,8 +3325,8 @@ Item 2
 	 * @author Steffen Becker
 	 */
 	public static function minify_css( $css ) {
-		// Before we minify, replace variables with their values.
-		$css = self::evaluate_css_variables( $css );
+		// Before we minify, replace variables with their values. Cast, as third party filters may pass null.
+		$css = self::evaluate_css_variables( (string) $css );
 
 		// some of the following functions to minimize the css-output are directly taken.
 		// from the awesome CSS JS Booster: https://github.com/Schepp/CSS-JS-Booster .

@@ -344,6 +344,8 @@ class Queue {
 			mkdir( $tmp );
 			chmod( $tmp, 0777 );
 		}
+		// Unserialize returns false for corrupted data.
+		$mail_data['attachments'] = is_array( $mail_data['attachments'] ) ? $mail_data['attachments'] : [];
 		foreach ( $mail_data['attachments'] as $filename => $data ) {
 			// @phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			$data = base64_decode( $data );
@@ -431,6 +433,10 @@ class Queue {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$mail_data = $wpdb->get_row( $wpdb->prepare( "SELECT `to`, `subject`, `message`, `headers`, `attachments` FROM {$wpdb->prefix}acato_email_essentials_queue WHERE id = %d", $id ), ARRAY_A );
+		// The item may have been removed in the meantime, for example by a parallel queue run.
+		if ( ! is_array( $mail_data ) ) {
+			return;
+		}
 		self::instance()->set_skip_queue( true );
 		$mail_data = array_map( 'unserialize', $mail_data );
 		self::set_status( $id, self::SENDING );
